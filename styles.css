@@ -1,69 +1,51 @@
-@font-face {
-    font-family: 'Shabnam';
-    src: url('https://cdn.fontcdn.ir/Font/Persian/Shabnam/Shabnam.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-}
-
 body {
-    font-family: 'Shabnam', Arial, sans-serif;
-    direction: rtl;
-    text-align: right;
-    background-color: #121212; /* تیره نوک‌مدادی */
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    overflow: hidden;
+  font-family: Arial, sans-serif;
+  background: #1a1a1a;
+  color: #fff;
+  direction: rtl;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
 .container {
-    position: relative;
-    z-index: 10;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  text-align: center;
+  padding: 20px;
 }
 
-.balance-box {
-    background-color: #000;
-    color: #ffffff; /* سفید خالص */
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 0 20px rgba(229, 9, 20, 0.8), 0 0 40px rgba(255, 0, 51, 0.5); /* قرمز ترونی با افکت گلو */
-    text-align: center;
-    width: 300px;
-    min-height: 100px; /* اطمینان از نمایش */
-    z-index: 100; /* بالاتر از همه */
-    position: relative;
-    animation: breathe 2s ease-in-out infinite; /* انیمیشن تنفس */
-    cursor: pointer; /* برای کلیک */
+header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
-.balance-box p {
-    margin: 10px 0;
-    font-size: 18px;
+.balance {
+  font-size: 2em;
+  margin-top: 10px;
 }
 
-.balance-box span {
-    font-weight: bold;
-    color: #ff0033; /* قرمز ترونی */
-    text-shadow: 0 0 10px rgba(229, 9, 20, 0.8); /* افکت گلو */
+.phone-animation {
+  position: relative;
+  animation: breathe 4s infinite ease-in-out;
 }
 
-#animation-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 5; /* زیر مستطیل */
+.phone {
+  width: 200px;
+  height: auto;
 }
 
 @keyframes breathe {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+.currency-list {
+  margin-top: 20px;
+}
+
+.currency-item {
+  font-size: 1.2em;
+  margin: 10px 0;
 }

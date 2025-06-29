@@ -1,21 +1,25 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تله‌ترون - کیف پول</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SwapWallet Mini App</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <div class="balance-box" id="balance-box">
-            <p>💰 موجودی تومانی: <span id="toman-balance">در حال بارگذاری...</span></p>
-            <p>🪙 موجودی ترونی: <span id="trx-balance">در حال بارگذاری...</span></p>
-        </div>
-        <div class="light-bar" id="light-bar"></div>
-        <canvas id="animation-canvas"></canvas>
+  <div class="container">
+    <header>
+      <h1>SwapWallet</h1>
+      <div id="total-balance" class="balance">۰ تومان</div>
+    </header>
+    <div class="phone-animation">
+      <img src="phone-off.png" alt="Phone" class="phone">
     </div>
-    <script src="script.js"></script>
+    <div class="currency-list">
+      <div class="currency-item">ترون: ۰ TRX</div>
+      <div class="currency-item">تومان: ۰ تومان</div>
+    </div>
+  </div>
+  <script src="script.js"></script>
 </body>
 </html>
