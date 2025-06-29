@@ -43,6 +43,12 @@ header {
   align-items: center;
 }
 
+.icon-crown {
+  width: 30px;
+  height: auto;
+  margin-left: 10px;
+}
+
 .balance-container {
   display: flex;
   gap: 15px;
@@ -133,17 +139,27 @@ header {
   margin: 5px 0;
 }
 
+.wallet-icon {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.wallet-icon img {
+  width: 50px;
+  height: auto;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
 @keyframes slideDown {
-  from { transform: translateY(-20px); opacity: 0; }
+  from { transform: translateY(-10px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
 
 @keyframes slideUp {
   from { transform: translateY(0); opacity: 1; }
-  to { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(-10px); opacity: 0; }
 }

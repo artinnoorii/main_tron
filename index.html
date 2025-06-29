@@ -6,14 +6,13 @@
   <title>Teletron Wallet - مدیریت ترون</title>
   <link rel="stylesheet" href="styles.css">
   <link href="https://fonts.googleapis.com/css2?family=Vazir:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
   <div class="background-animation"></div>
   
   <header>
     <div class="logo">
-      <i class="fas fa-crown" style="color: #FFD700; margin-left: 10px;"></i>
+      <img src="icon/icons8-fairytale-50.png" alt="Crown" class="icon-crown">
       Teletron Wallet
     </div>
     <div class="balance-container">
@@ -33,7 +32,7 @@
 
   <div class="crypto-list">
     <div class="crypto-item" onclick="toggleDetails()">
-      <img src="icon/tron-icon.png" alt="TRX">
+      <img src="icon/tron-trx-logo.png" alt="TRX">
       <div class="details">
         <div>ترون (TRX)</div>
         <div id="trx-value">0 TRX</div>
@@ -44,6 +43,10 @@
       <p>بیشترین قیمت امروز: <span id="max-price">0 تومان</span></p>
       <p>کمترین قیمت امروز: <span id="min-price">0 تومان</span></p>
     </div>
+  </div>
+
+  <div class="wallet-icon">
+    <img src="icon/icons8-wallet-50.png" alt="Wallet">
   </div>
 
   <script src="script.js"></script>
