@@ -10,11 +10,12 @@ const tomanBalance = tronBalance * tronPrice;
 
 // نمایش در هدر
 document.getElementById('tron-balance').textContent = `${tronBalance} TRX`;
+document.getElementById('tron-price').textContent = `${tronPrice.toLocaleString()} تومان`;
 document.getElementById('toman-balance').textContent = `${tomanBalance.toLocaleString()} تومان`;
 
 // نمایش در لیست ارزها
 document.getElementById('trx-value').textContent = `${tronBalance} TRX`;
-document.getElementById('trx-price').textContent = `${tronPrice.toLocaleString()} تومان`;
+document.getElementById('trx-price-display').textContent = `${tronPrice.toLocaleString()} تومان`;
 document.getElementById('trx-change').textContent = `${changePercentage}%`;
 
 // نمایش جزئیات قیمت
