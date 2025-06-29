@@ -54,13 +54,19 @@
 
   <section class="referral-section" id="referral-section" style="display: none;">
     <h2>رفرال</h2>
-    <div class="referral-content">
-      <p>ترون خریداری‌شده: <span id="total-trx">0 TRX</span></p>
-      <p>سود رفرال: <span id="referral-profit">0 تومان</span></p>
-      <p>لینک رفرال: <span id="referral-link">https://example.com</span></p>
-      <button onclick="acceptReferral()">قبول می‌کنم</button>
-      <button onclick="declineReferral()">لغو</button>
+    <div class="referral-rules">
+      <p>قوانین رفرال:</p>
+      <ul>
+        <li>حداقل 15 ترون از ربات بخرید.</li>
+        <li>لینک رفرال رو با دوستانتون به اشتراک بگذارید.</li>
+        <li>سود 20% از خرید دوستان به حساب شما اضافه می‌شه.</li>
+      </ul>
+      <button onclick="startTimer()">تأیید</button>
     </div>
+    <div class="timer" id="timer" style="display: none;">
+      <p>زمان باقی‌مونده: <span id="timer-value">10:00</span></p>
+    </div>
+    <p id="thank-you" style="display: none;">ممنون که قوانین رو خوندید! برای ادامه به کیف پول برگردید.</p>
   </section>
 
   <div class="menu-bar">

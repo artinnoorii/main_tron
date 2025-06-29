@@ -17,16 +17,11 @@ function loadData() {
 
       // نمایش در کادر تومان
       document.getElementById('toman-amount').textContent = `${data.tomanBalance.toLocaleString()} تومان`;
-      document.getElementById('toman-change').textContent = '0 تومان'; // تغییر برای تومان صفر فرض شده
+      document.getElementById('toman-change').textContent = '0 تومان';
 
       // نمایش جزئیات قیمت
       document.getElementById('max-price').textContent = `${data.maxPriceToday.toLocaleString()} تومان`;
       document.getElementById('min-price').textContent = `${data.minPriceToday.toLocaleString()} تومان`;
-
-      // نمایش داده‌های رفرال
-      document.getElementById('total-trx').textContent = `${data.totalTrx} TRX`;
-      document.getElementById('referral-profit').textContent = `${data.referralProfit.toLocaleString()} تومان`;
-      document.getElementById('referral-link').textContent = data.referralLink;
     })
     .catch(error => console.error('خطا در بارگذاری داده‌ها:', error));
 }
@@ -53,18 +48,54 @@ function showSection(section) {
   } else if (section === 'referral') {
     walletSection.style.display = 'none';
     referralSection.style.display = 'block';
+    document.getElementById('timer').style.display = 'none';
+    document.getElementById('thank-you').style.display = 'none';
   }
 }
 
-// تابع‌های رفرال (برای تعامل با کاربر)
+// تابع برای شروع تایمر رفرال
+let timerInterval;
+function startTimer() {
+  let timeLeft = 10 * 60; // 10 دقیقه به ثانیه
+  const timerValue = document.getElementById('timer-value');
+  document.getElementById('referral-rules').style.display = 'none';
+  document.getElementById('timer').style.display = 'block';
+
+  timerInterval = setInterval(() => {
+    let minutes = Math.floor(timeLeft / 60);
+    let seconds = timeLeft % 60;
+    timerValue.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    timeLeft--;
+
+    if (timeLeft < 0) {
+      clearInterval(timerInterval);
+      alert('تایمر به پایان رسید! رفرال فعال شد.');
+      document.getElementById('timer').style.display = 'none';
+    }
+  }, 1000);
+}
+
+// تابع‌های رفرال
 function acceptReferral() {
-  alert('قبول شد! لطفاً منتظر تأیید از ربات باشید.');
-  // اینجا باید به API ربات برای تأیید رفرال متصل بشه
+  const thankYou = document.getElementById('thank-you');
+  if (document.getElementById('timer').style.display === 'none') {
+    startTimer();
+  } else {
+    thankYou.style.display = 'block';
+    setTimeout(() => {
+      thankYou.style.display = 'none';
+      showSection('wallet');
+    }, 3000);
+  }
 }
 
 function declineReferral() {
-  alert('لغو شد! می‌تونی بعداً برگردی.');
-  showSection('wallet'); // برمی‌گرده به صفحه اصلی
+  const thankYou = document.getElementById('thank-you');
+  thankYou.style.display = 'block';
+  setTimeout(() => {
+    thankYou.style.display = 'none';
+    showSection('wallet');
+  }, 3000);
 }
 
 // بارگذاری اولیه داده‌ها
