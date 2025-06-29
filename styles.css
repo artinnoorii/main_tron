@@ -9,7 +9,7 @@ body {
     font-family: 'Shabnam', Arial, sans-serif;
     direction: rtl;
     text-align: right;
-    background-color: #121212; /* تیره نوک‌مدادی */
+    background-color: #1c2526; /* طوسی مایل به مشکی */
     margin: 0;
     padding: 0;
     display: flex;
@@ -76,8 +76,11 @@ body {
     width: 600px; /* دو برابر عرض مستطیل */
     height: 10px;
     background: linear-gradient(90deg, transparent, #00bcd4, transparent); /* گرادیان آبی */
+    top: 50%;
+    left: 50%;
     z-index: 8;
-    animation: rotate 6s linear infinite; /* چرخش 360 درجه */
+    transform-origin: center center;
+    animation: rotate-around-box 6s linear infinite; /* چرخش دور مستطیل */
 }
 
 .glow-bar-click {
@@ -98,9 +101,9 @@ body {
     100% { transform: scale(1); }
 }
 
-@keyframes rotate {
-    0% { transform: translate(-50%, -50%) rotate(0deg); }
-    100% { transform: translate(-50%, -50%) rotate(360deg); }
+@keyframes rotate-around-box {
+    0% { transform: translate(-50%, -50%) rotate(0deg) translate(0, -150px) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg) translate(0, -150px) rotate(-360deg); }
 }
 
 @keyframes glow-click {
