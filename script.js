@@ -35,8 +35,7 @@ class Logo {
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height;
         this.size = 15; // اندازه دایره
-        this.speedX = (Math.random() - 0.5) * 1.5; // سرعت کمتر برای حرکت نرم
-        this.speedY = (Math.random() - 0.5) * 1.5;
+        this.baseSize = this.size; // اندازه اولیه برای تنفس
     }
 
     update() {
@@ -45,19 +44,13 @@ class Logo {
         const rect = box.getBoundingClientRect();
         const boxLeft = rect.left, boxRight = rect.right, boxTop = rect.top, boxBottom = rect.bottom;
 
-        const nextX = this.x + this.speedX;
-        const nextY = this.y + this.speedY;
+        const isInsideBox = this.x > boxLeft && this.x < boxRight && this.y > boxTop && this.y < boxBottom;
 
-        const isInsideBox = nextX > boxLeft && nextX < boxRight && nextY > boxTop && nextY < boxBottom;
-
-        if (!isInsideBox) {
-            this.x = nextX;
-            this.y = nextY;
+        if (isInsideBox) {
+            this.size = this.baseSize * (1 + Math.sin(Date.now() / 500) * 0.1); // انیمیشن تنفس
+        } else {
+            this.size = this.baseSize; // اندازه ثابت خارج از مستطیل
         }
-
-        // برگشت به لبه‌ها در صورت خروج از صفحه
-        if (this.x < 0 || this.x > canvas.width) this.speedX = -this.speedX;
-        if (this.y < 0 || this.y > canvas.height) this.speedY = -this.speedY;
     }
 
     draw() {
