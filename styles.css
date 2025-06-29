@@ -2,13 +2,12 @@ body {
   font-family: 'Vazir', Arial, sans-serif;
   background: #1a1a1a;
   color: #D3D3D3;
-  direction: rtl;
   margin: 0;
   padding: 0;
   overflow-x: hidden;
 }
 
-.background-animation {
+.background {
   position: fixed;
   top: 0;
   left: 0;
@@ -59,14 +58,15 @@ header {
   color: #D3D3D3;
 }
 
-.tron-info {
+.main-section, .referral-section {
   margin: 15px;
+}
+
+.tron-info {
   padding: 10px;
   background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(8px);
   border-radius: 12px;
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
-  animation: fadeIn 1s ease-in-out;
 }
 
 .tron-info h2 {
@@ -82,7 +82,7 @@ header {
 }
 
 .crypto-section {
-  margin: 15px;
+  margin: 15px 0;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -95,13 +95,11 @@ header {
   background: rgba(255, 255, 255, 0.05);
   border-radius: 12px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s, box-shadow 0.3s;
-  position: relative;
+  transition: transform 0.3s;
 }
 
 .crypto-item:hover {
   transform: scale(1.02);
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
 }
 
 .crypto-item img {
@@ -171,7 +169,6 @@ header {
 
 .referral-section {
   display: none;
-  text-align: center;
   margin: 20px;
   padding: 15px;
   background: rgba(255, 255, 255, 0.1);
@@ -182,6 +179,30 @@ header {
 .referral-section h2 {
   font-size: 16px;
   color: #cc0000;
+  margin-bottom: 10px;
+}
+
+.referral-content {
+  text-align: center;
+}
+
+.referral-content p {
+  font-size: 12px;
+  margin: 5px 0;
+}
+
+.referral-content button {
+  margin: 5px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  background: #cc0000;
+  color: #fff;
+  cursor: pointer;
+}
+
+.referral-content button:hover {
+  background: #990000;
 }
 
 .menu-bar {
@@ -215,11 +236,6 @@ header {
 
 .menu-item.wallet {
   border-right: 1px solid #666;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
 }
 
 @keyframes slideDown {

@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Teletron Wallet - مدیریت ترون</title>
+  <title>Teletron Wallet</title>
   <link rel="stylesheet" href="styles.css">
   <link href="https://fonts.googleapis.com/css2?family=Vazir:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="background-animation"></div>
+  <div class="background"></div>
   
   <header>
     <div class="logo">
@@ -20,39 +20,48 @@
     </div>
   </header>
 
-  <section class="tron-info">
-    <h2>ترون (TRX)</h2>
-    <p>ترون یک پلتفرم بلاک‌چین است که هدف آن ایجاد یک اینترنت غیرمتمرکز است. با استفاده از ترون، کاربران می‌توانند محتوا را به اشتراک بگذارند و تراکنش‌های مالی را با کارمزد کم انجام دهند. ارز دیجیتال TRX برای پرداخت‌ها و دسترسی به خدمات در شبکه ترون استفاده می‌شود.</p>
+  <section class="main-section" id="wallet-section">
+    <div class="tron-info">
+      <h2>ترون (TRX)</h2>
+      <p>ترون یک پلتفرم بلاک‌چین است که هدف آن ایجاد اینترنت غیرمتمرکز است.</p>
+    </div>
+
+    <div class="crypto-section">
+      <div class="crypto-item" onclick="toggleDetails()">
+        <img src="icon/tron-trx-logo.png" alt="TRX">
+        <div class="crypto-details">
+          <div class="crypto-amount" id="tron-amount">0 تومان</div>
+          <div class="crypto-value" id="tron-value">0 TRX</div>
+        </div>
+        <div class="price-change">
+          <span id="tron-price">0 تومان</span>
+          <span id="tron-change">0 تومان</span>
+        </div>
+      </div>
+      <div class="crypto-details-hidden" id="crypto-details">
+        <p>بیشترین قیمت امروز: <span id="max-price">0 تومان</span></p>
+        <p>کمترین قیمت امروز: <span id="min-price">0 تومان</span></p>
+      </div>
+      <div class="crypto-item">
+        <img src="icon/icons8-circled-t-50.png" alt="Toman">
+        <div class="crypto-details">
+          <div class="crypto-amount" id="toman-amount">0 تومان</div>
+        </div>
+        <div class="change" id="toman-change">0 تومان</div>
+      </div>
+    </div>
   </section>
 
-  <div class="crypto-section">
-    <div class="crypto-item" onclick="toggleDetails()">
-      <img src="icon/tron-trx-logo.png" alt="TRX">
-      <div class="crypto-details">
-        <div class="crypto-amount" id="tron-amount">0 تومان</div>
-        <div class="crypto-value" id="tron-value">0 TRX</div>
-      </div>
-      <div class="price-change">
-        <span id="tron-price">0 تومان</span>
-        <span id="tron-change">0 تومان</span>
-      </div>
-    </div>
-    <div class="crypto-details-hidden" id="crypto-details">
-      <p>بیشترین قیمت امروز: <span id="max-price">0 تومان</span></p>
-      <p>کمترین قیمت امروز: <span id="min-price">0 تومان</span></p>
-    </div>
-    <div class="crypto-item">
-      <img src="icon/icons8-circled-t-50.png" alt="Toman">
-      <div class="crypto-details">
-        <div class="crypto-amount" id="toman-amount">0 تومان</div>
-      </div>
-      <div class="change" id="toman-change">0 تومان</div>
-    </div>
-  </div>
-
-  <div class="referral-section" id="referral-section">
+  <section class="referral-section" id="referral-section" style="display: none;">
     <h2>رفرال</h2>
-  </div>
+    <div class="referral-content">
+      <p>ترون خریداری‌شده: <span id="total-trx">0 TRX</span></p>
+      <p>سود رفرال: <span id="referral-profit">0 تومان</span></p>
+      <p>لینک رفرال: <span id="referral-link">https://example.com</span></p>
+      <button onclick="acceptReferral()">قبول می‌کنم</button>
+      <button onclick="declineReferral()">لغو</button>
+    </div>
+  </section>
 
   <div class="menu-bar">
     <div class="menu-item wallet" onclick="showSection('wallet')">
