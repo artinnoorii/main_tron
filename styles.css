@@ -1,106 +1,57 @@
-body {
-  font-family: 'Vazir', Arial, sans-serif;
-  background: #1a1a1a;
-  color: #fff;
-  direction: rtl;
+body, html {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  position: relative;
+  height: 100vh;
+  background: #000;
+  font-family: sans-serif;
 }
 
-.container {
-  text-align: center;
-  padding: 20px;
+.scene {
   position: relative;
-  z-index: 1;
-}
-
-header {
+  width: 100vw;
+  height: 100vh;
   display: flex;
-  justify-content: center;
   align-items: center;
-  flex-direction: column;
-  margin-bottom: 20px;
-}
-
-h1 {
-  font-size: 1.5em;
-  color: #ff4d4d;
-}
-
-.balance {
-  font-size: 2em;
-  margin-top: 10px;
-  color: #ff9999;
-}
-
-.background-animation {
-  position: relative;
-  width: 100%;
-  height: 300px;
-  background: radial-gradient(circle at center, #000 0%, rgba(255, 0, 0, 0.3) 70%, transparent 100%);
-  animation: wave 6s infinite ease-in-out;
-  display: flex;
   justify-content: center;
-  align-items: center;
 }
 
-.phone-animation {
-  position: relative;
-  animation: breathe 4s infinite ease-in-out;
-}
-
-.phone {
-  width: 200px;
-  height: auto;
-  position: relative;
-  z-index: 2;
+.breathing {
+  animation: breathe 6s ease-in-out infinite;
 }
 
 @keyframes breathe {
-  0% { transform: scale(1) translateY(0); }
-  50% { transform: scale(1.02) translateY(-5px); }
-  100% { transform: scale(1) translateY(0); }
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
+  }
 }
 
-@keyframes wave {
-  0% { background-position: 0 0; }
-  50% { background-position: 100px 0; }
-  100% { background-position: 0 0; }
+.background-layer {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: url("hand-phone.jpg") no-repeat center center;
+  background-size: cover;
+  z-index: 1;
+  opacity: 0.95;
 }
 
-.currency-list {
-  margin-top: 20px;
-  padding: 20px;
-  background: rgba(0, 0, 0, 0.7);
-  border-radius: 10px;
-  max-width: 300px;
-  margin-left: auto;
-  margin-right: auto;
+.hand-phone {
+  position: absolute;
+  width: 300px;
+  z-index: 2;
+  animation: breathe 5s ease-in-out infinite;
 }
 
-.currency-item {
-  font-size: 1.2em;
-  margin: 10px 0;
-  color: #ffcccc;
-}
-
-.footer {
-  margin-top: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
-
-.wallet-icon {
-  width: 50px;
-  height: auto;
-  filter: drop-shadow(0 0 5px #ff0000);
-}
-
-.wallet-status {
-  font-size: 0.9em;
-  color: #ff9999;
+.dark-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.2);
+  z-index: 3;
 }

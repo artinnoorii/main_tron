@@ -3,30 +3,126 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Teletron Wallet</title>
-  <link rel="stylesheet" href="styles.css">
-  <link href="https://fonts.googleapis.com/css2?family=Vazir:wght@400;700&display=swap" rel="stylesheet">
+  <title>انیمیشن دست و گوشی - نفس کشیدن زنده</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      background-color: #000;
+      overflow: hidden;
+      font-family: "Vazir", sans-serif;
+    }
+
+    .scene {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .background-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: url('/mnt/data/6d25ea4c-46c8-4785-b7ff-d661ca240acf.jpg') center center no-repeat;
+      background-size: cover;
+      z-index: 1;
+      animation: breathe 6s ease-in-out infinite;
+    }
+
+    .hand-phone {
+      position: absolute;
+      width: 300px;
+      height: auto;
+      z-index: 2;
+      animation: breathe 4s ease-in-out infinite, float 8s ease-in-out infinite;
+    }
+
+    .dark-overlay {
+      position: absolute;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.3);
+      z-index: 3;
+    }
+
+    @keyframes breathe {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.03);
+      }
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    .animated-particles {
+      position: absolute;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      animation: drift 10s linear infinite;
+    }
+
+    @keyframes drift {
+      from {
+        transform: translateY(100vh);
+      }
+      to {
+        transform: translateY(-10vh);
+      }
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>Teletron Wallet</h1>
-      <div id="total-balance" class="balance">۰ تومان</div>
-    </header>
-    <div class="background-animation">
-      <div class="phone-animation">
-        <img src="phone-off.png" alt="Phone" class="phone">
-      </div>
-    </div>
-    <div class="currency-list">
-      <div class="currency-item">ترون: ۰ TRX</div>
-      <div class="currency-item">تومان: ۰ تومان</div>
-    </div>
-    <div class="footer">
-      <img src="wallet-icon.png" alt="Wallet Icon" class="wallet-icon">
-      <span class="wallet-status">شما در بخش کیف پول هستید</span>
-    </div>
+  <div class="scene">
+    <div class="background-layer"></div>
+    <img class="hand-phone" src="/mnt/data/6d25ea4c-46c8-4785-b7ff-d661ca240acf.jpg" alt="دست با گوشی">
+    <div class="dark-overlay"></div>
+    <div class="animated-particles" id="particles"></div>
   </div>
-  <script src="script.js"></script>
+
+  <script>
+    const particleContainer = document.getElementById('particles');
+    const numParticles = 50;
+
+    for (let i = 0; i < numParticles; i++) {
+      const p = document.createElement('div');
+      p.classList.add('particle');
+      p.style.left = Math.random() * 100 + 'vw';
+      p.style.top = Math.random() * 100 + 'vh';
+      p.style.animationDuration = (5 + Math.random() * 5) + 's';
+      p.style.opacity = Math.random();
+      particleContainer.appendChild(p);
+    }
+  </script>
 </body>
 </html>
