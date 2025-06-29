@@ -2,19 +2,21 @@ const tg = window.Telegram.WebApp;
 tg.ready();
 
 // درخواست خودکار موجودی هنگام لود
-tg.sendData(JSON.stringify({
-    type: 'get_balance',
-    user_id: tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null
-}));
+if (tg.initDataUnsafe.user) {
+    tg.sendData(JSON.stringify({
+        type: 'get_balance',
+        user_id: tg.initDataUnsafe.user.id
+    }));
+}
 
 // دریافت پاسخ از ربات
-tg.onEvent('web_app_data', data => {
+tg.onEvent('web_app_data', (data) => {
     try {
         const response = JSON.parse(data);
         document.getElementById('toman-balance').textContent = `${response.toman_balance.toLocaleString('fa-IR')} تومان`;
         document.getElementById('trx-balance').textContent = `${response.trx_balance.toFixed(2)} TRX`;
     } catch (e) {
-        console.error('Error processing web app data:', e);
+        console.error('Error processing Web App data:', e);
         document.getElementById('toman-balance').textContent = 'خطا در بارگذاری';
         document.getElementById('trx-balance').textContent = 'خطا در بارگذاری';
     }
@@ -33,7 +35,7 @@ class Logo {
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height;
         this.size = 15; // اندازه دایره
-        this.speedX = (Math.random() - 0.5) * 2; // حرکت تصادفی با سرعت کم
+        this.speedX = (Math.random() - 0.5) * 2; // حرکت تصادفی
         this.speedY = (Math.random() - 0.5) * 2;
     }
 
@@ -67,7 +69,7 @@ class Logo {
     }
 }
 
-function animateLogos() {
+function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (logos.length < 20) {
         logos.push(new Logo());
@@ -76,31 +78,20 @@ function animateLogos() {
         logo.update();
         logo.draw();
     });
-    requestAnimationFrame(animateLogos);
+    requestAnimationFrame(animate);
 }
 
-animateLogos();
+animate();
 
 // انیمیشن کلیک روی مستطیل
-const balanceBox = document.querySelector('.balance-box');
-if (balanceBox) {
-    const glowBar = document.createElement('div');
-    glowBar.className = 'glow-bar';
-    balanceBox.appendChild(glowBar);
+const balanceBox = document.getElementById('balance-box');
+const lightBar = document.getElementById('light-bar');
 
-    const glowBarClick = document.createElement('div');
-    glowBarClick.className = 'glow-bar-click';
-    balanceBox.appendChild(glowBarClick);
-
+if (balanceBox && lightBar) {
     balanceBox.addEventListener('click', () => {
-        glowBarClick.style.animation = 'glow-click 2s ease-in-out';
+        lightBar.classList.add('pulse');
         setTimeout(() => {
-            glowBarClick.style.animation = '';
-            glowBar.style.animation = 'expand-bar 1s ease-in-out forwards, rotate-around-box 6s linear infinite';
-        }, 2000);
+            lightBar.classList.remove('pulse');
+        }, 2000); // 2 ثانیه
     });
-
-    // تنظیم موقعیت نوار نوری
-    glowBar.style.left = '50%';
-    glowBar.style.top = '50%';
 }
