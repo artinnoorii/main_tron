@@ -1,128 +1,200 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>انیمیشن دست و گوشی - نفس کشیدن زنده</title>
+  <title>سواپ‌والِت - مدیریت ارز دیجیتال</title>
   <style>
-    * {
+    body {
       margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+      background: #1a1a1a;
+      color: #fff;
+      direction: rtl;
     }
 
-    body, html {
-      width: 100%;
-      height: 100%;
-      background-color: #000;
-      overflow: hidden;
-      font-family: "Vazir", sans-serif;
-    }
-
-    .scene {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .background-layer {
-      position: absolute;
+    /* Wavy Background */
+    .wavy-bg {
+      position: fixed;
       top: 0;
       left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: url('/mnt/data/6d25ea4c-46c8-4785-b7ff-d661ca240acf.jpg') center center no-repeat;
-      background-size: cover;
-      z-index: 1;
-      animation: breathe 6s ease-in-out infinite;
+      width: 100%;
+      height: 100%;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%231a1a1a" fill-opacity="1" d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,208C672,213,768,203,864,186.7C960,171,1056,149,1152,149.3C1248,149,1344,171,1392,181.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') repeat-x bottom;
+      z-index: -1;
     }
 
-    .hand-phone {
-      position: absolute;
-      width: 300px;
-      height: auto;
-      z-index: 2;
-      animation: breathe 4s ease-in-out infinite, float 8s ease-in-out infinite;
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.8);
+    }
+    .logo { font-size: 24px; font-weight: bold; }
+    .balance { font-size: 32px; }
+    .nav-icons i {
+      margin-left: 15px;
+      font-size: 20px;
+      cursor: pointer;
     }
 
-    .dark-overlay {
-      position: absolute;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.3);
-      z-index: 3;
+    /* Action Buttons */
+    .action-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 20px;
     }
-
-    @keyframes breathe {
-      0%, 100% {
-        transform: scale(1);
-      }
-      50% {
-        transform: scale(1.03);
-      }
-    }
-
-    @keyframes float {
-      0%, 100% {
-        transform: translateY(0);
-      }
-      50% {
-        transform: translateY(-10px);
-      }
-    }
-
-    .animated-particles {
-      position: absolute;
-      width: 100vw;
-      height: 100vh;
-      z-index: 0;
-      overflow: hidden;
-      pointer-events: none;
-    }
-
-    .particle {
-      position: absolute;
-      width: 6px;
-      height: 6px;
-      background: rgba(255, 255, 255, 0.2);
+    .action-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #333;
+      padding: 15px;
       border-radius: 50%;
-      animation: drift 10s linear infinite;
+      width: 60px;
+      height: 60px;
+      cursor: pointer;
+    }
+    .action-btn i { font-size: 24px; margin-bottom: 5px; }
+    .action-btn span { font-size: 12px; }
+
+    /* Banner */
+    .banner {
+      background: #40c4ff;
+      margin: 20px;
+      padding: 20px;
+      border-radius: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .banner-text h2 { margin: 0; font-size: 24px; color: #000; }
+    .banner-text p { margin: 10px 0; color: #000; }
+    .banner-text button {
+      background: #0288d1;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+    .banner-image img {
+      width: 100px;
+      height: auto;
     }
 
-    @keyframes drift {
-      from {
-        transform: translateY(100vh);
-      }
-      to {
-        transform: translateY(-10vh);
-      }
+    /* Crypto List */
+    .crypto-list {
+      margin: 20px;
+    }
+    .crypto-item {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      border-bottom: 1px solid #333;
+    }
+    .crypto-item img { width: 40px; margin-left: 10px; }
+    .crypto-item .details { flex-grow: 1; }
+    .crypto-item .change { color: #f00; }
+    .crypto-item .change.green { color: #0f0; }
+
+    /* Navigation Bar */
+    footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      padding: 10px 0;
+      display: flex;
+      justify-content: space-around;
+    }
+    footer i {
+      font-size: 24px;
+      cursor: pointer;
+    }
+    footer i.active { color: #40c4ff; }
+
+    /* Responsive Design */
+    @media (max-width: 600px) {
+      .banner { flex-direction: column; text-align: center; }
+      .action-buttons { flex-wrap: wrap; }
+      .action-btn { margin: 10px; }
     }
   </style>
 </head>
 <body>
-  <div class="scene">
-    <div class="background-layer"></div>
-    <img class="hand-phone" src="/mnt/data/6d25ea4c-46c8-4785-b7ff-d661ca240acf.jpg" alt="دست با گوشی">
-    <div class="dark-overlay"></div>
-    <div class="animated-particles" id="particles"></div>
+  <div class="wavy-bg"></div>
+  
+  <header>
+    <div class="logo">سواپ‌والِت</div>
+    <div class="balance">$0</div>
+    <div class="nav-icons">
+      <i>👁️</i>
+      <i>⋮</i>
+    </div>
+  </header>
+
+  <div class="action-buttons">
+    <div class="action-btn"><i>💰</i><span>ارزها</span></div>
+    <div class="action-btn"><i>⏰</i><span>نقل و انتقالات</span></div>
+    <div class="action-btn"><i>⬆️</i><span>واریز</span></div>
+    <div class="action-btn"><i>⬇️</i><span>برداشت</span></div>
   </div>
 
-  <script>
-    const particleContainer = document.getElementById('particles');
-    const numParticles = 50;
+  <section class="banner">
+    <div class="banner-text">
+      <h2>سواپ‌والِت: مدیریت و انجام تراکنش‌ها</h2>
+      <p>یه تجربه عالی با اپلیکیشن ما داشته باش</p>
+      <button>دانلود اپلیکیشن</button>
+    </div>
+    <div class="banner-image">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAPFBMVEUAAAD///8AAADAwMAAAADAwMAAwMAAAMDAAADAwMAAwMAAAMDAAADAwMAAwMAAAMDAAADAwMAAwMAAAMDAwMAxu8wFAAAAE3RSTlMAAQIDBAYHCQsMDRUWFxgZGxweICGatgAAAJNJREFUOI2NkUkOgzAMRVHShg1N8f+/lW4QSC8JLYkHM5PdbYaLBEHAzGyF2U5K4Qw4nW6fBy8zcyRwvzI8usA8mB8eF5jXg1eA3xke3cB2cL8zPLrA/QiPbjBXgTsbnt3gfoTHN5h34NEJ5i14fIO5B+7fYN6DRyeY++DxDeYBeHSDuQ0e32BugMc3mLfg0QnmAXi8g/kDHh0mWTD2U5gAAAAASUVORK5CYII=" alt="دست با گوشی">
+    </div>
+  </section>
 
-    for (let i = 0; i < numParticles; i++) {
-      const p = document.createElement('div');
-      p.classList.add('particle');
-      p.style.left = Math.random() * 100 + 'vw';
-      p.style.top = Math.random() * 100 + 'vh';
-      p.style.animationDuration = (5 + Math.random() * 5) + 's';
-      p.style.opacity = Math.random();
-      particleContainer.appendChild(p);
-    }
+  <div class="crypto-list">
+    <div class="crypto-item">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAP1BMVEUAAAD///8AAADAwMAAAADAwMAAwMAAAMDAAADAwMAAwMAAAMDAAADAwMAAwMAAAMDAAADAwMAAwMAAAMDAAADA7eE+AAAAFHRSTlMAAQIDBAUGBwgJCgsMDQ4PEBEaGxweGusAAACVSURBVCjPjdJLEsMgDERRK22y9P7XvUoQSC8JLUkHM5Pd7QYXCYKAmdkKs51UwgnwOt0+D15m5kjgfmc4dIF5MXgF+B3h0Q3sAPczw6Mb3I/w6AbzEjjg4dEN7kf4fIO5B+7fYN6DRyeY++DxDeYBeHSDuQ0e32BugMc3mLfg0QnmAXi8g/kDHh0mWTD2U5gH4PEO5g54dJj/AW5mJsovM6eQAAAAAElFTkSuQmCC" alt="ETH">
+      <div class="details">
+        <div>ETH</div>
+        <div>$0 - 0 ETH</div>
+      </div>
+      <div class="change">-0.02%</div>
+    </div>
+    <div class="crypto-item">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAPFBMVEUAAAD///8AAADAwMAAAADAwMAAwMAAAMDAAADAwMAAwMAAAMDAAADAwMAAwMAAAMDAAADAwMAAwMAAAMDAwMAxu8wFAAAAE3RSTlMAAQIDBAYHCQsMDRUWFxgZGxweICGatgAAAJNJREFUOI2NkUkOgzAMRVHShg1N8f+/lW4QSC8JLYkHM5PdbYaLBEHAzGyF2U5K4Qw4nW6fBy8zcyRwvzI8usA8mB8eF5jXg1eA3xke3cB2cL8zPLrA/QiPbjBXgTsbnt3gfoTHN5h34NEJ5i14fIO5B+7fYN6DRyeY++DxDeYBeHSDuQ0e32BugMc3mLfg0QnmAXi8g/kDHh0mWTD2U5gAAAAASUVORK5CYII=" alt="TRX">
+      <div class="details">
+        <div>TRX</div>
+        <div>$0 - 0 TRX</div>
+      </div>
+      <div class="change">-0.01%</div>
+    </div>
+    <div class="crypto-item">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAANlBMVEUAAAD///8AAADAwMAAAADAwMAAwMAAAMDAAADAwMAAwMAAAMDAAADAwMAAwMAAAMDAAADAwMBcTUkPAAAAEXRSTlMAAQIDBAUGBwgJCgsMDQ4PEBEZ2icAAACPSURBVCjPjc3bDoAgEERRK42y9P5XW4UgSC8JLUkHM5PdbYaLBEHAzGyF2U5K4Qw4nW6fBy8zcyRwvzI8usA8mB8eF5jXg1eA3xke3cB2cL8zPLrA/QiPbjBXgTsbnt3gfoTHN5h34NEJ5i14fIO5B+7fYN6DRyeY++DxDeYBeHSDuQ0e32BugMc3mLfg0QnmAXh0g/kDHi0mWZoO2rMAAAAASUVORK5CYII=" alt="BTC">
+      <div class="details">
+        <div>BTC</div>
+        <div>$0 - 0 BTC</div>
+      </div>
+      <div class="change green">+0.10%</div>
+    </div>
+  </div>
+
+  <footer>
+    <i class="active">💼</i>
+    <i>📋</i>
+    <i>🔄</i>
+    <i>📊</i>
+    <i>👤</i>
+  </footer>
+
+  <script>
+    // Basic interactivity for buttons
+    document.querySelectorAll('.action-btn').forEach(btn => {
+      btn.addEventListener('click', () => alert('این دکمه هنوز فعال نشده!'));
+    });
   </script>
 </body>
 </html>
