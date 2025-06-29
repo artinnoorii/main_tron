@@ -32,14 +32,11 @@ logoImg.src = 'tron_logo.png';
 
 class Logo {
     constructor() {
-        const edge = Math.floor(Math.random() * 4);
-        const x = edge % 2 === 0 ? (edge === 0 ? 0 : canvas.width) : Math.random() * canvas.width;
-        const y = edge % 2 === 0 ? Math.random() * canvas.height : (edge === 1 ? 0 : canvas.height);
-        this.x = x;
-        this.y = y;
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
         this.size = 30;
-        this.speedX = (canvas.width / 2 - x) / 300; // کاهش سرعت (از 100 به 300)
-        this.speedY = (canvas.height / 2 - y) / 300; // کاهش سرعت
+        this.speedX = (Math.random() - 0.5) * 2; // حرکت تصادفی با سرعت کم
+        this.speedY = (Math.random() - 0.5) * 2;
     }
 
     update() {
@@ -58,13 +55,9 @@ class Logo {
             this.y = nextY;
         }
 
-        // متوقف شدن در نزدیکی مرکز، اما نه دقیقاً در مرکز
-        if (Math.abs(this.x - canvas.width / 2) < 50 && Math.abs(this.y - canvas.height / 2) < 50) {
-            this.x = Math.random() * canvas.width;
-            this.y = Math.random() * canvas.height;
-            this.speedX = (canvas.width / 2 - this.x) / 300;
-            this.speedY = (canvas.height / 2 - this.y) / 300;
-        }
+        // برگشت به لبه‌ها در صورت خروج از صفحه
+        if (this.x < 0 || this.x > canvas.width) this.speedX = -this.speedX;
+        if (this.y < 0 || this.y > canvas.height) this.speedY = -this.speedY;
     }
 
     draw() {
