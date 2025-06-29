@@ -96,6 +96,7 @@ header {
   border-radius: 12px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s, box-shadow 0.3s;
+  position: relative;
 }
 
 .crypto-item:hover {
@@ -123,6 +124,22 @@ header {
   margin-top: 2px;
 }
 
+.price-change {
+  font-size: 10px;
+  color: #D3D3D3;
+  position: absolute;
+  bottom: 5px;
+  left: 10px;
+}
+
+.price-change #tron-price {
+  margin-right: 5px;
+}
+
+.price-change #tron-change {
+  margin-left: 5px;
+}
+
 .change {
   font-size: 10px;
   margin-right: 8px;
@@ -134,6 +151,22 @@ header {
 
 .change.red {
   color: #FF0000;
+}
+
+.crypto-details-hidden {
+  display: none;
+  margin-top: 10px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  animation: slideDown 0.5s ease-in-out;
+}
+
+.crypto-details-hidden p {
+  font-size: 10px;
+  color: #D3D3D3;
+  margin: 4px 0;
 }
 
 .menu-bar {

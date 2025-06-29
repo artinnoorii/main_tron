@@ -26,16 +26,23 @@
   </section>
 
   <div class="crypto-section">
-    <div class="crypto-item">
+    <div class="crypto-item" onclick="toggleDetails()">
       <img src="icon/tron-trx-logo.png" alt="TRX">
       <div class="crypto-details">
         <div class="crypto-amount" id="tron-amount">0 تومان</div>
         <div class="crypto-value" id="tron-value">0 TRX</div>
       </div>
-      <div class="change" id="trx-change">+100 تومان</div>
+      <div class="price-change">
+        <span id="tron-price">0 تومان</span>
+        <span id="tron-change">0 تومان</span>
+      </div>
+      <div class="crypto-details-hidden" id="crypto-details">
+        <p>بیشترین قیمت امروز: <span id="max-price">0 تومان</span></p>
+        <p>کمترین قیمت امروز: <span id="min-price">0 تومان</span></p>
+      </div>
     </div>
     <div class="crypto-item">
-      <img src="icon/tron-trx-logo.png" alt="Toman">
+      <img src="icon/icons8-circled-t-50.png" alt="Toman">
       <div class="crypto-details">
         <div class="crypto-amount" id="toman-amount">0 تومان</div>
       </div>
@@ -49,7 +56,7 @@
       <span>کیف پول</span>
     </div>
     <div class="menu-item referral">
-      <img src="icon/icons8-coins.png" alt="Referral">
+      <img src="icon/icons8-us-dollar-circled-50.png" alt="Referral">
       <span>رفرال</span>
     </div>
   </div>

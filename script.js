@@ -4,7 +4,7 @@ const tomanBalanceUser = 50000; // مقدار فرضی تومان کاربر
 const tronPrice = 23500; // قیمت فرضی TRX به تومان
 const maxPriceToday = 24000; // بیشترین قیمت امروز
 const minPriceToday = 23000; // کمترین قیمت امروز
-const changeAmount = 100; // تغییر قیمت (مثبت یا منفی)
+const changeAmount = 100; // تغییر قیمت (مثبت)
 
 // محاسبه موجودی کل (ترون به تومان + موجودی تومانی)
 const tronValue = tronBalance * tronPrice;
@@ -14,15 +14,15 @@ const totalAmount = tronValue + tomanBalanceUser;
 document.getElementById('total-amount').textContent = totalAmount.toLocaleString();
 
 // نمایش در کادر ترون
-document.getElementById('tron-balance').textContent = `${tronBalance} TRX | ${tronPrice.toLocaleString()} تومان`;
-document.getElementById('trx-price').textContent = `${tronPrice.toLocaleString()} تومان`;
-document.getElementById('trx-change').textContent = (changeAmount > 0 ? '+' : '') + `${changeAmount} تومان`;
-document.getElementById('trx-change').className = 'change ' + (changeAmount > 0 ? 'green' : 'red');
+document.getElementById('tron-amount').textContent = `${tronValue.toLocaleString()} تومان`;
+document.getElementById('tron-value').textContent = `${tronBalance} TRX`;
+document.getElementById('tron-price').textContent = `${tronPrice.toLocaleString()} تومان`;
+document.getElementById('tron-change').textContent = (changeAmount > 0 ? '+' : '') + `${changeAmount} تومان`;
+document.getElementById('tron-change').className = 'change ' + (changeAmount > 0 ? 'green' : 'red');
 
 // نمایش در کادر تومان
-document.getElementById('toman-price').textContent = `${tomanBalanceUser.toLocaleString()} تومان`;
+document.getElementById('toman-amount').textContent = `${tomanBalanceUser.toLocaleString()} تومان`;
 document.getElementById('toman-change').textContent = '0 تومان'; // فرض می‌کنیم تغییر برای تومان صفره
-document.getElementById('toman-user-balance').textContent = `${tomanBalanceUser.toLocaleString()} تومان`;
 
 // نمایش جزئیات قیمت
 document.getElementById('max-price').textContent = `${maxPriceToday.toLocaleString()} تومان`;
