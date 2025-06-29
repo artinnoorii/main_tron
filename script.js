@@ -20,7 +20,7 @@ tg.onEvent('web_app_data', data => {
     }
 });
 
-// تنظیمات Canvas برای انیمیشن لوگوها
+// تنظیمات Canvas برای انیمیشن دایره‌ها
 const canvas = document.getElementById('animation-canvas');
 const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
@@ -61,7 +61,7 @@ class Logo {
     draw() {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fillStyle = '#ff0033'; // دایره قرمز به جای لوگوی ترون
+        ctx.fillStyle = '#ff0033'; // دایره قرمز
         ctx.fill();
         ctx.closePath();
     }

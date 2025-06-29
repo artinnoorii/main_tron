@@ -32,10 +32,11 @@ body {
     color: #ffffff; /* سفید خالص */
     padding: 20px;
     border-radius: 15px;
-    box-shadow: 0 0 30px #ff0033, 0 0 60px rgba(255, 0, 51, 0.6); /* افکت نور قرمز باکیفیت */
+    box-shadow: 0 0 30px #ff0033, 0 0 60px rgba(255, 0, 51, 0.6); /* افکت نور قرمز */
     text-align: center;
     width: 300px;
-    z-index: 10;
+    min-height: 100px; /* اطمینان از نمایش */
+    z-index: 100; /* بالاتر از همه */
     position: relative;
     animation: breathe 3s ease-in-out infinite; /* انیمیشن تنفس */
     cursor: pointer; /* برای کلیک */
@@ -49,7 +50,7 @@ body {
 .balance-box span {
     font-weight: bold;
     color: #ff0033; /* قرمز ترونی */
-    text-shadow: 0 0 10px #ff0033, 0 0 20px #ff0033; /* افکت گلو باکیفیت */
+    text-shadow: 0 0 10px #ff0033, 0 0 20px #ff0033; /* افکت گلو */
 }
 
 #animation-canvas {
@@ -58,7 +59,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 5;
+    z-index: 5; /* زیر مستطیل */
 }
 
 .glow-bar {
@@ -79,7 +80,7 @@ body {
     height: 100%;
     border: 3px solid #ff0033; /* نوار قرمز */
     border-radius: 15px;
-    box-shadow: 0 0 30px #ff0033, 0 0 60px #ff0033; /* افکت گلو باکیفیت */
+    box-shadow: 0 0 30px #ff0033, 0 0 60px #ff0033; /* افکت گلو */
     z-index: 9;
     pointer-events: none;
     opacity: 0;
