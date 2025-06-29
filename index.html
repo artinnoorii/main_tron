@@ -5,42 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Teletron Wallet - مدیریت ترون</title>
   <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Vazir:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
+  <div class="background-animation"></div>
+  
   <header>
     <div class="logo">Teletron Wallet</div>
     <div class="balance">
-      <span id="tron-balance">0 TRX</span> | 
+      <span id="tron-balance">0 TRX</span>
       <span id="toman-balance">0 تومان</span>
-    </div>
-    <div class="nav-icons">
-      <i class="fas fa-eye"></i>
-      <i class="fas fa-ellipsis-v"></i>
     </div>
   </header>
 
-  <div class="action-buttons">
-    <div class="action-btn"><i class="fas fa-wallet"></i><span>کیف پول</span></div>
-    <div class="action-btn"><i class="fas fa-history"></i><span>تاریخچه</span></div>
-    <div class="action-btn"><i class="fas fa-arrow-up"></i><span>واریز</span></div>
-    <div class="action-btn"><i class="fas fa-arrow-down"></i><span>برداشت</span></div>
-  </div>
-
-  <section class="banner">
-    <div class="banner-text">
-      <h2>Teletron Wallet: مدیریت ترون با اطمینان</h2>
-      <p>با اپلیکیشن ما تجربه‌ای امن و ساده داشته باشید</p>
-      <button>دانلود اپلیکیشن</button>
-    </div>
-    <div class="banner-image">
-      <img src="images/tron-hand.png" alt="دست با گوشی">
-    </div>
+  <section class="tron-info">
+    <h2>ترون (TRX)</h2>
+    <p>ترون یک پلتفرم بلاک‌چین است که هدف آن ایجاد یک اینترنت غیرمتمرکز است. با استفاده از ترون، کاربران می‌توانند محتوا را به اشتراک بگذارند و تراکنش‌های مالی را با کارمزد کم انجام دهند. ارز دیجیتال TRX برای پرداخت‌ها و دسترسی به خدمات در شبکه ترون استفاده می‌شود.</p>
   </section>
 
   <div class="crypto-list">
     <div class="crypto-item">
-      <img src="images/tron-logo.png" alt="TRX">
+      <img src="png/tron-logo.png" alt="TRX">
       <div class="details">
         <div>ترون (TRX)</div>
         <div id="trx-value">0 TRX</div>
@@ -48,13 +33,6 @@
       <div class="change" id="trx-change">0.00%</div>
     </div>
   </div>
-
-  <footer>
-    <i class="fas fa-wallet active"></i>
-    <i class="fas fa-exchange-alt"></i>
-    <i class="fas fa-chart-line"></i>
-    <i class="fas fa-user"></i>
-  </footer>
 
   <script src="script.js"></script>
 </body>
