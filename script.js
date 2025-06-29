@@ -1,8 +1,8 @@
 // داده‌های نمونه (باید با API یا دیتابیس واقعی جایگزین شود)
 const tronBalance = 100; // مقدار فرضی TRX کاربر
-const tronPrice = 5000; // قیمت فرضی TRX به تومان
-const maxPriceToday = 5100; // بیشترین قیمت امروز
-const minPriceToday = 4900; // کمترین قیمت امروز
+const tronPrice = 23500; // قیمت فرضی TRX به تومان
+const maxPriceToday = 24000; // بیشترین قیمت امروز
+const minPriceToday = 23000; // کمترین قیمت امروز
 const changePercentage = 0.05; // 0.05% تغییر
 
 // محاسبه موجودی تومانی
@@ -14,6 +14,7 @@ document.getElementById('toman-balance').textContent = `${tomanBalance.toLocaleS
 
 // نمایش در لیست ارزها
 document.getElementById('trx-value').textContent = `${tronBalance} TRX`;
+document.getElementById('trx-price').textContent = `${tronPrice.toLocaleString()} تومان`;
 document.getElementById('trx-change').textContent = `${changePercentage}%`;
 
 // نمایش جزئیات قیمت
