@@ -1,57 +1,118 @@
-body, html {
+body {
   margin: 0;
-  padding: 0;
-  overflow: hidden;
-  height: 100vh;
-  background: #000;
-  font-family: sans-serif;
+  font-family: Arial, sans-serif;
+  background: #1a1a1a;
+  color: #fff;
+  direction: rtl;
 }
 
-.scene {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.breathing {
-  animation: breathe 6s ease-in-out infinite;
-}
-
-@keyframes breathe {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.03);
-  }
-}
-
-.background-layer {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: url("hand-phone.jpg") no-repeat center center;
-  background-size: cover;
-  z-index: 1;
-  opacity: 0.95;
-}
-
-.hand-phone {
-  position: absolute;
-  width: 300px;
-  z-index: 2;
-  animation: breathe 5s ease-in-out infinite;
-}
-
-.dark-overlay {
-  position: absolute;
+/* Wavy Background */
+.wavy-bg {
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.2);
-  z-index: 3;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%231a1a1a" fill-opacity="1" d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,208C672,213,768,203,864,186.7C960,171,1056,149,1152,149.3C1248,149,1344,171,1392,181.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') repeat-x bottom;
+  z-index: -1;
+}
+
+/* Header */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.8);
+}
+.logo { font-size: 24px; font-weight: bold; }
+.balance { font-size: 32px; }
+.nav-icons i {
+  margin-left: 15px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+}
+.action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #333;
+  padding: 15px;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+}
+.action-btn i { font-size: 24px; margin-bottom: 5px; }
+.action-btn span { font-size: 12px; }
+
+/* Banner */
+.banner {
+  background: #40c4ff;
+  margin: 20px;
+  padding: 20px;
+  border-radius: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.banner-text h2 { margin: 0; font-size: 24px; color: #000; }
+.banner-text p { margin: 10px 0; color: #000; }
+.banner-text button {
+  background: #0288d1;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+.banner Stir-image img {
+  width: 100px;
+  height: auto;
+}
+
+/* Crypto List */
+.crypto-list {
+  margin: 20px;
+}
+.crypto-item {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #333;
+}
+.crypto-item img { width: 40px; margin-left: 10px; }
+.crypto-item .details { flex-grow: 1; }
+.crypto-item .change { color: #f00; }
+.crypto-item .change.green { color: #0f0; }
+
+/* Navigation Bar */
+footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  padding: 10px 0;
+  display: flex;
+  justify-content: space-around;
+}
+footer i {
+  font-size: 24px;
+  cursor: pointer;
+}
+footer i.active { color: #40c4ff; }
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .banner { flex-direction: column; text-align: center; }
+  .action-buttons { flex-wrap: wrap; }
+  .action-btn { margin: 10px; }
 }
