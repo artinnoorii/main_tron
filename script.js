@@ -1,12 +1,11 @@
-// نمونه اولیه برای محاسبه موجودی (باید با API یا داده واقعی جایگزین شود)
 function updateBalance() {
-  // داده‌های نمونه
+  // داده‌های نمونه (باید با API یا دیتابیس واقعی جایگزین شود)
   let tronBalance = 10; // مقدار فرضی ترون کاربر
-  let tronPrice = 5000; // قیمت فرضی ترون به تومان
+  let tronPrice = 6000; // قیمت فرضی ترون به تومان
   
   // محاسبه موجودی تومانی
   let tronValue = tronBalance * tronPrice;
-  let totalBalance = tronValue; // برای سادگی، فقط ترون را در نظر می‌گیریم
+  let totalBalance = tronValue;
   
   // نمایش در صفحه
   document.getElementById('total-balance').textContent = totalBalance.toLocaleString() + ' تومان';
