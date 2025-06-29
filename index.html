@@ -18,6 +18,7 @@
     <div class="total-balance">
       <span id="total-amount">0</span> <span class="currency-unit">تومان</span>
     </div>
+    <div id="notification" class="notification"></div>
   </header>
 
   <section class="main-section" id="wallet-section">
@@ -53,20 +54,27 @@
   </section>
 
   <section class="referral-section" id="referral-section" style="display: none;">
-    <h2>رفرال</h2>
-    <div class="referral-rules">
-      <p>قوانین رفرال:</p>
-      <ul>
-        <li>حداقل 15 ترون از ربات بخرید.</li>
-        <li>لینک رفرال رو با دوستانتون به اشتراک بگذارید.</li>
-        <li>سود 20% از خرید دوستان به حساب شما اضافه می‌شه.</li>
-      </ul>
-      <button onclick="startTimer()">تأیید</button>
+    <div class="referral-rules-container">
+      <h2>قوانین و شرایط رفرال</h2>
+      <div class="referral-rules">
+        <p>به سیستم رفرال تله‌ترون خوش آمدید! این برنامه به شما امکان کسب درآمد اضافی را از طریق دعوت دوستانتان فراهم می‌کند. لطفاً قوانین زیر را با دقت مطالعه کنید:</p>
+        <ul>
+          <li>برای فعال‌سازی رفرال، باید حداقل 15 ترون (TRX) از ربات خریداری کنید.</li>
+          <li>لینک اختصاصی رفرال خود را با دوستانتان به اشتراک بگذارید تا با آن وارد ربات شوند.</li>
+          <li>20% از سود خرید ترون دوستان شما به‌صورت خودکار به حساب رفرال شما اضافه می‌شود.</li>
+          <li>لینک رفرال فقط پس از تأیید اولیه و طی یک دوره انتظار 10 دقیقه‌ای فعال می‌شود.</li>
+          <li>برای برداشت سود، باید حداقل 1000 تومان سود انباشته داشته باشید.</li>
+          <li>هرگونه تخلف (مثل استفاده از ربات یا لینک جعلی) منجر به مسدود شدن حساب می‌شود.</li>
+        </ul>
+        <p>با تأیید این قوانین، موافقت خود را با شرایط اعلام می‌کنید و می‌توانید از مزایای این برنامه بهره‌مند شوید. برای شروع، روی دکمه تأیید کلیک کنید!</p>
+        <button onclick="startReferralProcess()">تأیید</button>
+      </div>
     </div>
-    <div class="timer" id="timer" style="display: none;">
-      <p>زمان باقی‌مونده: <span id="timer-value">10:00</span></p>
+    <div class="timer-section" id="timer-section" style="display: none;">
+      <h2>فعال‌سازی رفرال</h2>
+      <p>لطفاً منتظر بمانید: <span id="timer-value">10:00</span></p>
     </div>
-    <p id="thank-you" style="display: none;">ممنون که قوانین رو خوندید! برای ادامه به کیف پول برگردید.</p>
+    <p id="thank-you" style="display: none;">ممنون که قوانین را مطالعه کردید! برای ادامه به کیف پول برگردید.</p>
   </section>
 
   <div class="menu-bar">

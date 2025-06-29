@@ -48,19 +48,21 @@ function showSection(section) {
   } else if (section === 'referral') {
     walletSection.style.display = 'none';
     referralSection.style.display = 'block';
-    document.getElementById('timer').style.display = 'none';
+    document.getElementById('timer-section').style.display = 'none';
     document.getElementById('thank-you').style.display = 'none';
   }
 }
 
-// تابع برای شروع تایمر رفرال
+// تابع برای شروع فرآیند رفرال
 let timerInterval;
-function startTimer() {
+function startReferralProcess() {
+  const timerSection = document.getElementById('timer-section');
+  const thankYou = document.getElementById('thank-you');
+  timerSection.style.display = 'block';
+  document.querySelector('.referral-rules-container').style.display = 'none';
+
   let timeLeft = 10 * 60; // 10 دقیقه به ثانیه
   const timerValue = document.getElementById('timer-value');
-  document.getElementById('referral-rules').style.display = 'none';
-  document.getElementById('timer').style.display = 'block';
-
   timerInterval = setInterval(() => {
     let minutes = Math.floor(timeLeft / 60);
     let seconds = timeLeft % 60;
@@ -69,24 +71,24 @@ function startTimer() {
 
     if (timeLeft < 0) {
       clearInterval(timerInterval);
-      alert('تایمر به پایان رسید! رفرال فعال شد.');
-      document.getElementById('timer').style.display = 'none';
+      timerSection.style.display = 'none';
+      showNotification('رفرال با موفقیت فعال شد!');
     }
   }, 1000);
 }
 
+// تابع برای نمایش نوتیفیکیشن
+function showNotification(message) {
+  const notification = document.getElementById('notification');
+  notification.textContent = message;
+  notification.style.display = 'block';
+  setTimeout(() => notification.style.display = 'none', 3000);
+}
+
 // تابع‌های رفرال
 function acceptReferral() {
-  const thankYou = document.getElementById('thank-you');
-  if (document.getElementById('timer').style.display === 'none') {
-    startTimer();
-  } else {
-    thankYou.style.display = 'block';
-    setTimeout(() => {
-      thankYou.style.display = 'none';
-      showSection('wallet');
-    }, 3000);
-  }
+  startReferralProcess();
+  showNotification('تأیید شد! منتظر فعال‌سازی باشید.');
 }
 
 function declineReferral() {
