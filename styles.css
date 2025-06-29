@@ -32,7 +32,7 @@ body {
     color: #ffffff; /* سفید خالص */
     padding: 20px;
     border-radius: 15px;
-    box-shadow: 0 0 30px #ff0033, 0 0 60px rgba(255, 0, 51, 0.6); /* افکت نور قرمز */
+    box-shadow: 0 0 20px rgba(229, 9, 20, 0.8), 0 0 40px rgba(255, 0, 51, 0.5); /* قرمز ترونی با افکت گلو */
     text-align: center;
     width: 300px;
     min-height: 100px; /* اطمینان از نمایش */
@@ -50,7 +50,7 @@ body {
 .balance-box span {
     font-weight: bold;
     color: #ff0033; /* قرمز ترونی */
-    text-shadow: 0 0 10px #ff0033, 0 0 20px #ff0033; /* افکت گلو */
+    text-shadow: 0 0 10px rgba(229, 9, 20, 0.8); /* افکت گلو */
 }
 
 #animation-canvas {

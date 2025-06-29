@@ -35,8 +35,8 @@ class Logo {
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height;
         this.size = 15; // اندازه دایره
-        this.speedX = (Math.random() - 0.5) * 2; // حرکت تصادفی
-        this.speedY = (Math.random() - 0.5) * 2;
+        this.speedX = (Math.random() - 0.5) * 1.5; // سرعت کمتر برای حرکت نرم
+        this.speedY = (Math.random() - 0.5) * 1.5;
     }
 
     update() {
@@ -71,7 +71,7 @@ class Logo {
 
 function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (logos.length < 20) {
+    if (logos.length < 5) { // محدود به 5 دایره
         logos.push(new Logo());
     }
     logos.forEach(logo => {
