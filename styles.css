@@ -1,0 +1,110 @@
+   @font-face {
+       font-family: 'Shabnam';
+       src: url('https://cdn.fontcdn.ir/Font/Persian/Shabnam/Shabnam.woff') format('woff');
+       font-weight: normal;
+       font-style: normal;
+   }
+
+   body {
+       font-family: 'Shabnam', Arial, sans-serif;
+       direction: rtl;
+       text-align: right;
+       background-color: #121212; /* تیره نوک‌مدادی */
+       margin: 0;
+       padding: 0;
+       display: flex;
+       justify-content: center;
+       align-items: center;
+       height: 100vh;
+       overflow: hidden;
+   }
+
+   .container {
+       position: relative;
+       z-index: 10;
+       display: flex;
+       flex-direction: column;
+       align-items: center;
+   }
+
+   .tron-logo {
+       width: 50px;
+       height: 50px;
+       position: absolute;
+       top: -60px;
+       z-index: 15;
+   }
+
+   .balance-box {
+       background-color: #000;
+       color: #ffffff; /* سفید خالص برای متن */
+       padding: 20px;
+       border-radius: 15px;
+       box-shadow: 0 0 20px rgba(229, 9, 20, 0.8), 0 0 40px rgba(255, 0, 51, 0.5); /* قرمز ترونی با افکت گلو */
+       text-align: center;
+       width: 300px;
+       z-index: 10;
+       position: relative;
+       animation: breathe 2s ease-in-out infinite; /* انیمیشن نفس کشیدن */
+   }
+
+   .balance-box p {
+       margin: 10px 0;
+       font-size: 18px;
+   }
+
+   .balance-box span {
+       font-weight: bold;
+       color: #ff0033; /* قرمز ترونی برای قیمت‌ها */
+       text-shadow: 0 0 10px rgba(229, 9, 20, 0.8); /* افکت گلو برای قیمت‌ها */
+   }
+
+   .light-bar {
+       position: absolute;
+       width: 600px; /* دو برابر عرض مستطیل */
+       height: 10px;
+       background: linear-gradient(90deg, transparent, #00bcd4, transparent); /* آبی سایبری */
+       z-index: 5;
+       top: 50%;
+       left: 50%;
+       transform-origin: center;
+       animation: rotate 5s linear infinite; /* چرخش 360 درجه */
+   }
+
+   .light-bar.pulse {
+       background: linear-gradient(90deg, transparent, #ff0033, transparent); /* قرمز ترونی برای افکت کلیک */
+       animation: pulse 2s ease-in-out forwards; /* افکت پر شدن و روشن-خاموش */
+   }
+
+   #animation-canvas {
+       position: fixed;
+       top: 0;
+       left: 0;
+       width: 100%;
+       height: 100%;
+       z-index: 5;
+       animation: glow 3s ease-in-out infinite; /* انیمیشن گلو برای پس‌زمینه */
+   }
+
+   @keyframes breathe {
+       0% { transform: scale(1); }
+       50% { transform: scale(1.05); }
+       100% { transform: scale(1); }
+   }
+
+   @keyframes glow {
+       0% { background-color: #121212; box-shadow: 0 0 20px rgba(0, 188, 212, 0.3); } /* آبی سایبری */
+       50% { background-color: #121212; box-shadow: 0 0 40px rgba(0, 188, 212, 0.5); }
+       100% { background-color: #121212; box-shadow: 0 0 20px rgba(0, 188, 212, 0.3); }
+   }
+
+   @keyframes rotate {
+       0% { transform: translate(-50%, -50%) rotate(0deg); }
+       100% { transform: translate(-50%, -50%) rotate(360deg); }
+   }
+
+   @keyframes pulse {
+       0% { background: linear-gradient(90deg, transparent, #ff0033, transparent); opacity: 1; }
+       50% { background: linear-gradient(90deg, #ff0033, #ff0033, #ff0033); opacity: 0.5; }
+       100% { background: linear-gradient(90deg, transparent, #00bcd4, transparent); opacity: 1; width: 600px; }
+   }
