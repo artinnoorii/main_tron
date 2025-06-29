@@ -41,3 +41,13 @@ function toggleDetails() {
     details.style.animation = 'slideDown 0.5s ease-in-out';
   }
 }
+
+// تابع برای نمایش بخش‌های مختلف منو
+function showSection(section) {
+  const referralSection = document.getElementById('referral-section');
+  if (section === 'referral') {
+    referralSection.style.display = 'block';
+  } else {
+    referralSection.style.display = 'none';
+  }
+}

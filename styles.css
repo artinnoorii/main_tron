@@ -169,6 +169,21 @@ header {
   margin: 4px 0;
 }
 
+.referral-section {
+  display: none;
+  text-align: center;
+  margin: 20px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+.referral-section h2 {
+  font-size: 16px;
+  color: #cc0000;
+}
+
 .menu-bar {
   position: fixed;
   bottom: 0;
@@ -189,6 +204,7 @@ header {
   width: 50%;
   color: #D3D3D3;
   font-size: 10px;
+  cursor: pointer;
 }
 
 .menu-item img {
