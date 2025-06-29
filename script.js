@@ -20,12 +20,16 @@ document.getElementById('trx-change').textContent = `${changePercentage}%`;
 document.getElementById('max-price').textContent = `${maxPriceToday.toLocaleString()} تومان`;
 document.getElementById('min-price').textContent = `${minPriceToday.toLocaleString()} تومان`;
 
-// تابع برای نمایش/پنهان کردن جزئیات
+// تابع برای نمایش/پنهان کردن جزئیات با انیمیشن
 function toggleDetails() {
   const details = document.getElementById('crypto-details');
   if (details.style.display === 'block') {
-    details.style.display = 'none';
+    details.style.animation = 'slideUp 0.5s ease-in-out forwards';
+    setTimeout(() => {
+      details.style.display = 'none';
+    }, 500);
   } else {
     details.style.display = 'block';
+    details.style.animation = 'slideDown 0.5s ease-in-out';
   }
 }
