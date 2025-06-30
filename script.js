@@ -38,9 +38,11 @@ function toggleDetails() {
 function showSection(section) {
   const walletSection = document.getElementById('wallet-section');
   const referralSection = document.getElementById('referral-section');
+  const menuBar = document.querySelector('.menu-bar');
   if (section === 'wallet') {
     walletSection.style.display = 'block';
     referralSection.style.display = 'none';
+    menuBar.classList.remove('clicked');
   } else if (section === 'referral') {
     walletSection.style.display = 'none';
     referralSection.style.display = 'block';
@@ -54,6 +56,7 @@ function showSection(section) {
       document.querySelector('.referral-welcome').style.display = 'none';
       document.querySelector('.referral-rules-container').style.display = 'none';
     }
+    menuBar.classList.add('clicked');
   }
 }
 
@@ -91,40 +94,59 @@ function showReferralRules() {
   document.querySelector('.referral-rules-container').style.display = 'block';
 }
 
-function showNotification(message) {
-  const notification = document.getElementById('notification');
+function showNotification(message, isConfirm = false) {
+  const notification = isConfirm ? document.getElementById('confirm-notification') : document.getElementById('notification');
   notification.textContent = message;
   notification.style.display = 'block';
 
   let startX;
-  notification.addEventListener('mousedown', (e) => startX = e.clientX);
-  notification.addEventListener('mouseup', (e) => {
-    if (e.clientX - startX > 50 || e.clientX - startX < -50) {
-      notification.classList.add('dragging');
-      setTimeout(() => notification.style.display = 'none', 300);
-    }
-  });
+  const handleDrag = (e) => {
+    if (e.type === 'touchmove') startX = e.touches[0].clientX;
+    else startX = e.clientX;
+    const moveHandler = (moveEvent) => {
+      const currentX = moveEvent.type === 'touchmove' ? moveEvent.touches[0].clientX : moveEvent.clientX;
+      const diff = currentX - startX;
+      if (Math.abs(diff) > 50) {
+        notification.classList.add('dragging');
+        setTimeout(() => notification.style.display = 'none', 300);
+        document.removeEventListener('mousemove', moveHandler);
+        document.removeEventListener('touchmove', moveHandler);
+        document.removeEventListener('mouseup', upHandler);
+        document.removeEventListener('touchend', upHandler);
+      }
+    };
+    const upHandler = () => {
+      document.removeEventListener('mousemove', moveHandler);
+      document.removeEventListener('touchmove', moveHandler);
+    };
 
-  notification.addEventListener('touchstart', (e) => startX = e.touches[0].clientX);
-  notification.addEventListener('touchend', (e) => {
-    if (e.changedTouches[0].clientX - startX > 50 || e.changedTouches[0].clientX - startX < -50) {
-      notification.classList.add('dragging');
-      setTimeout(() => notification.style.display = 'none', 300);
-    }
-  });
+    notification.addEventListener('mousedown', (e) => {
+      startX = e.clientX;
+      document.addEventListener('mousemove', moveHandler);
+      document.addEventListener('mouseup', upHandler);
+    });
 
-  setTimeout(() => {
-    if (notification.style.display !== 'none') notification.style.display = 'none';
-  }, 5000);
+    notification.addEventListener('touchstart', (e) => {
+      startX = e.touches[0].clientX;
+      document.addEventListener('touchmove', moveHandler);
+      document.addEventListener('touchend', upHandler);
+    });
+
+    setTimeout(() => {
+      if (notification.style.display !== 'none') notification.style.display = 'none';
+    }, 5000);
+  };
+
+  handleDrag({ type: 'init' });
 }
 
 function acceptReferral() {
   startReferralProcess();
-  showNotification('تأیید شد! منتظر فعال‌سازی باشید.');
+  showNotification('تأیید شد! منتظر فعال‌سازی باشید.', true);
 }
 
 function declineReferral() {
-  showNotification('قسمت رفرال‌گیری برای شما فعال نشد');
+  showNotification('رفرال‌گیری فعال نشد');
   const thankYou = document.getElementById('thank-you');
   thankYou.style.display = 'block';
   setTimeout(() => {
