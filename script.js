@@ -83,7 +83,7 @@ function startReferralProcess() {
     if (timeLeft < 0) {
       clearInterval(timerInterval);
       timerSection.style.display = 'none';
-      showNotification('رفرال با موفقیت فعال شد!');
+      showNotification('رفرال با موفقیت فعال شد!', true);
       sessionStorage.removeItem('referralTimer');
     }
   }, 1000);

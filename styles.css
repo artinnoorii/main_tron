@@ -74,6 +74,7 @@ header {
 
 .main-section, .referral-section {
   margin: 15px;
+  max-height: 80vh; /* محدود کردن ارتفاع برای جلوگیری از اسکرول بیش از حد */
 }
 
 .tron-info {
@@ -184,7 +185,9 @@ header {
 
 .referral-section {
   display: none;
-  margin: 20px;
+  margin: 15px;
+  max-height: 80vh; /* محدود کردن ارتفاع */
+  overflow-y: auto; /* اسکرول عمودی فقط وقتی لازم باشه */
 }
 
 .referral-welcome {
@@ -377,10 +380,6 @@ header {
   width: 25px;
   height: auto;
   margin-bottom: 2px;
-}
-
-.menu-item.wallet {
-  border-right: 1px solid #666;
 }
 
 .menu-item:hover {
