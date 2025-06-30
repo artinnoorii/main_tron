@@ -43,12 +43,10 @@ function showSection(section) {
   const walletSection = document.getElementById('wallet-section');
   const referralSection = document.getElementById('referral-section');
   const profileSection = document.getElementById('profile-section');
-  const menuBar = document.querySelector('.menu-bar');
   if (section === 'wallet') {
     walletSection.style.display = 'block';
     referralSection.style.display = 'none';
     profileSection.style.display = 'none';
-    menuBar.classList.remove('clicked');
   } else if (section === 'referral') {
     walletSection.style.display = 'none';
     referralSection.style.display = 'block';
@@ -58,19 +56,17 @@ function showSection(section) {
       document.querySelector('.referral-confirmation').style.display = 'block';
       document.querySelector('.referral-welcome').style.display = 'none';
       document.querySelector('.referral-rules-container').style.display = 'none';
+      document.getElementById('guidelines').style.display = 'block';
     } else {
       document.querySelector('.referral-welcome').style.display = 'block';
       document.querySelector('.referral-rules-container').style.display = 'none';
       document.querySelector('.referral-confirmation').style.display = 'none';
+      document.getElementById('guidelines').style.display = 'none';
     }
-    menuBar.classList.add('clicked');
-    setTimeout(() => menuBar.classList.remove('clicked'), 500);
   } else if (section === 'profile') {
     walletSection.style.display = 'none';
     referralSection.style.display = 'none';
     profileSection.style.display = 'block';
-    menuBar.classList.add('clicked');
-    setTimeout(() => menuBar.classList.remove('clicked'), 500);
   }
 }
 
@@ -89,9 +85,13 @@ function startReferralProcess() {
 
 function copyLink() {
   const link = document.getElementById('referral-link').textContent;
-  navigator.clipboard.writeText(link).then(() => {
-    showNotification('لینک کپی شد!', true);
-  });
+  const tempInput = document.createElement('input');
+  document.body.appendChild(tempInput);
+  tempInput.value = link;
+  tempInput.select();
+  document.execCommand('copy');
+  document.body.removeChild(tempInput);
+  showNotification('لینک کپی شد!', true);
 }
 
 function shareLink() {
