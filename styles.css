@@ -54,7 +54,7 @@ header {
 .logo {
   font-size: 16px;
   font-weight: 700;
-  color: #808080; /* طوسی */
+  color: #808080;
   display: flex;
   align-items: center;
 }
@@ -340,6 +340,7 @@ header {
   padding: 10px;
   background: #4A4A4A;
   border-radius: 10px;
+  margin-bottom: 10px;
 }
 
 .copy-button button {
@@ -350,24 +351,92 @@ header {
   cursor: pointer;
 }
 
-.timer-section {
-  display: none;
+.share-button {
+  padding: 10px;
+  background: #4A4A4A;
+  border-radius: 10px;
+}
+
+.share-button button {
+  border: none;
+  background: none;
+  color: #000000;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+#guidelines {
+  display: block;
   text-align: center;
+  font-weight: bold;
+  font-size: 14px;
+  color: #cc0000;
+  cursor: pointer;
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.guidelines-section {
+  display: none;
   padding: 20px;
   background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(51, 0, 0, 0.7));
   border-radius: 20px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  text-align: center;
+  max-height: 70vh;
+  overflow-y: auto;
 }
 
-.timer-section h2 {
+.guidelines-section h2 {
   font-size: 18px;
   color: #cc0000;
   margin-bottom: 15px;
 }
 
-.timer-section p {
-  font-size: 14px;
+.guidelines-section p {
+  font-size: 12px;
+  margin-bottom: 10px;
+  line-height: 1.6;
+}
+
+.guidelines-section ul {
+  list-style: none;
+  padding: 0;
+  text-align: right;
   margin: 10px 0;
+}
+
+.guidelines-section ul li {
+  font-size: 12px;
+  margin: 8px 0;
+  position: relative;
+  padding-right: 15px;
+}
+
+.guidelines-section ul li:before {
+  content: "•";
+  color: #cc0000;
+  position: absolute;
+  right: 0;
+}
+
+.guidelines-section button {
+  margin: 10px;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 25px;
+  background: linear-gradient(90deg, #cc0000, #990000);
+  color: #fff;
+  font-size: 12px;
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.guidelines-section button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(204, 0, 0, 0.5);
 }
 
 #thank-you {
@@ -427,10 +496,7 @@ header {
   border-radius: 15px;
   box-shadow: 0 -5px 10px rgba(0, 0, 0, 0.3);
   animation: breathe 4s infinite ease-in-out;
-}
-
-.menu-bar {
-  z-index: 1000; /* همیشه بالای همه بخش‌ها باشه */
+  z-index: 1000;
 }
 
 .menu-bar.clicked {

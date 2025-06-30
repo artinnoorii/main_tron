@@ -46,13 +46,20 @@ function showSection(section) {
   } else if (section === 'referral') {
     walletSection.style.display = 'none';
     referralSection.style.display = 'block';
-    document.querySelector('.referral-welcome').style.display = 'block';
-    document.querySelector('.referral-rules-container').style.display = 'none';
-    document.querySelector('.referral-confirmation').style.display = 'none';
+    const isConfirmed = sessionStorage.getItem('referralConfirmed');
+    if (isConfirmed === 'true') {
+      document.querySelector('.referral-confirmation').style.display = 'block';
+      document.querySelector('.referral-welcome').style.display = 'none';
+      document.querySelector('.referral-rules-container').style.display = 'none';
+    } else {
+      document.querySelector('.referral-welcome').style.display = 'block';
+      document.querySelector('.referral-rules-container').style.display = 'none';
+      document.querySelector('.referral-confirmation').style.display = 'none';
+    }
     document.querySelector('.timer-section').style.display = 'none';
     document.getElementById('thank-you').style.display = 'none';
     menuBar.classList.add('clicked');
-    setTimeout(() => menuBar.classList.remove('clicked'), 500); // برمی‌گرده به حالت عادی
+    setTimeout(() => menuBar.classList.remove('clicked'), 500);
   }
 }
 
@@ -66,6 +73,7 @@ function startReferralProcess() {
   const thankYou = document.getElementById('thank-you');
   referralConfirmation.style.display = 'block';
   document.querySelector('.referral-rules-container').style.display = 'none';
+  sessionStorage.setItem('referralConfirmed', 'true');
 }
 
 function copyLink() {
@@ -73,6 +81,11 @@ function copyLink() {
   navigator.clipboard.writeText(link).then(() => {
     alert('لینک کپی شد!');
   });
+}
+
+function shareLink() {
+  const link = document.getElementById('referral-link').textContent;
+  window.open(`https://telegram.me/share/url?url=${encodeURIComponent(link)}`, '_blank');
 }
 
 function showNotification(message, isConfirm = false) {
@@ -140,6 +153,10 @@ function declineReferral() {
     thankYou.style.display = 'none';
     showSection('wallet');
   }, 3000);
+}
+
+function closeGuidelines() {
+  document.querySelector('.guidelines-section').style.display = 'none';
 }
 
 // بارگذاری اولیه داده‌ها
