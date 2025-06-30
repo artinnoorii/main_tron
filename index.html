@@ -19,6 +19,7 @@
     </div>
     <div id="notification" class="notification">رفرال‌گیری فعال نشد</div>
     <div id="confirm-notification" class="notification confirm">تأیید شد!</div>
+    <div id="copy-notification" class="notification copy">لینک کپی شد!</div>
   </header>
 
   <section class="main-section" id="wallet-section">
@@ -96,7 +97,7 @@
         </div>
       </div>
     </div>
-    <p id="guidelines" style="display: none; text-align: center; font-weight: bold; cursor: pointer; margin-bottom: 60px;">راهنمایی و قوانین</p>
+    <p id="guidelines" style="display: block; text-align: center; font-weight: bold; font-size: 14px; color: #cc0000; cursor: pointer; position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);">راهنمایی و قوانین</p>
     <div class="guidelines-section" style="display: none;">
       <h2>راهنمایی و قوانین</h2>
       <p>سلام id_usres عزیز، به بخش جذاب کسب درآمد با رفرال خوش اومدی! 💰</p>
@@ -111,7 +112,7 @@
         <li>لینک اختصاصی رفرال خود را با دوستانتان به اشتراک بگذارید تا با آن وارد ربات شوند.</li>
         <li>20% از سود خالص خرید ترون دوستان شما به حساب رفرال شما واریز می‌شود (مثلاً اگر سود هر ترون 600 تومان باشد، 120 تومان برای شما است!).</li>
         <li>لینک رفرال پس از تأیید فعال می‌شود.</li>
-        <li>هر خریدی که دوستان شما انجام دهند، سود آن به‌صورت خودکار و فوری به کیف پول تومانی شما واریز می‌شود!</li>
+        <li>برای برداشت سود، حداقل 1000 تومان سود انباشته نیاز است.</li>
         <li>هرگونه تخلف (مثل استفاده از ربات یا لینک جعلی) منجر به مسدود شدن حساب می‌شود.</li>
       </ul>
       <button onclick="closeGuidelines()">بازگشت</button>
@@ -120,15 +121,23 @@
   </section>
 
   <div class="menu-bar">
-    <div class="menu-item wallet" onclick="showSection('wallet')">
-      <img src="icon/icons8-wallet-50 (green).png" alt="Wallet">
-      <span>کیف پول</span>
+    <div class="menu-item profile" onclick="showSection('profile')">
+      <img src="icon/icons8-profile-50.png" alt="Profile">
+      <span>پروفایل</span>
     </div>
     <div class="menu-item referral" onclick="showSection('referral')">
       <img src="icon/icons8-us-dollar-circled-50.png" alt="Referral">
       <span>رفرال</span>
     </div>
+    <div class="menu-item wallet" onclick="showSection('wallet')">
+      <img src="icon/icons8-wallet-50 (green).png" alt="Wallet">
+      <span>کیف پول</span>
+    </div>
   </div>
+
+  <section class="profile-section" id="profile-section" style="display: none;">
+    <h2>پروفایل</h2>
+  </section>
 
   <script src="script.js"></script>
 </body>

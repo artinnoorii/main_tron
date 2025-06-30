@@ -116,6 +116,7 @@ header {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s;
   position: relative;
+  outline: none; /* حذف خط سفید در ویندوز */
 }
 
 .crypto-item:hover {
@@ -439,6 +440,21 @@ header {
   box-shadow: 0 4px 12px rgba(204, 0, 0, 0.5);
 }
 
+.profile-section {
+  display: none;
+  text-align: center;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.profile-section h2 {
+  font-size: 18px;
+  color: #cc0000;
+  animation: breathe 4s infinite ease-in-out;
+}
+
 #thank-you {
   display: none;
   text-align: center;
@@ -471,6 +487,11 @@ header {
 
 .notification.show {
   animation: slideInOut 1s ease-out forwards;
+}
+
+.copy {
+  background: rgba(0, 0, 0, 0.2);
+  color: #000000;
 }
 
 @keyframes slideInOut {
@@ -507,7 +528,7 @@ header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 50%;
+  width: 33.33%; /* تغییر برای 3 بخش */
   color: #D3D3D3;
   font-size: 10px;
   cursor: pointer;

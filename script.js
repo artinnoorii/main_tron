@@ -1,8 +1,12 @@
-// بارگذاری داده‌ها از API ربات (URL واقعی رو جایگزین کن)
+// تنظیم ورودی ID کاربر (برنامه‌نویس باید این مقدار رو از API ربات بگیره)
+let userId = '12345'; // نمونه، باید از API جایگزین بشه
+
+// بارگذاری داده‌ها از API ربات
 function loadData() {
   fetch('/api/user-data')
     .then(response => response.json())
     .then(data => {
+      userId = data.userId || userId; // به‌روزرسانی ID کاربر
       const tronValue = data.tronBalance * data.tronPrice;
       const totalAmount = tronValue + data.tomanBalance;
       document.getElementById('total-amount').textContent = totalAmount.toLocaleString();
@@ -38,14 +42,17 @@ function toggleDetails() {
 function showSection(section) {
   const walletSection = document.getElementById('wallet-section');
   const referralSection = document.getElementById('referral-section');
+  const profileSection = document.getElementById('profile-section');
   const menuBar = document.querySelector('.menu-bar');
   if (section === 'wallet') {
     walletSection.style.display = 'block';
     referralSection.style.display = 'none';
+    profileSection.style.display = 'none';
     menuBar.classList.remove('clicked');
   } else if (section === 'referral') {
     walletSection.style.display = 'none';
     referralSection.style.display = 'block';
+    profileSection.style.display = 'none';
     const isConfirmed = sessionStorage.getItem('referralConfirmed');
     if (isConfirmed === 'true') {
       document.querySelector('.referral-confirmation').style.display = 'block';
@@ -56,8 +63,12 @@ function showSection(section) {
       document.querySelector('.referral-rules-container').style.display = 'none';
       document.querySelector('.referral-confirmation').style.display = 'none';
     }
-    document.querySelector('.timer-section').style.display = 'none';
-    document.getElementById('thank-you').style.display = 'none';
+    menuBar.classList.add('clicked');
+    setTimeout(() => menuBar.classList.remove('clicked'), 500);
+  } else if (section === 'profile') {
+    walletSection.style.display = 'none';
+    referralSection.style.display = 'none';
+    profileSection.style.display = 'block';
     menuBar.classList.add('clicked');
     setTimeout(() => menuBar.classList.remove('clicked'), 500);
   }
@@ -79,7 +90,7 @@ function startReferralProcess() {
 function copyLink() {
   const link = document.getElementById('referral-link').textContent;
   navigator.clipboard.writeText(link).then(() => {
-    alert('لینک کپی شد!');
+    showNotification('لینک کپی شد!', true);
   });
 }
 
@@ -88,8 +99,8 @@ function shareLink() {
   window.open(`https://telegram.me/share/url?url=${encodeURIComponent(link)}`, '_blank');
 }
 
-function showNotification(message, isConfirm = false) {
-  const notification = isConfirm ? document.getElementById('confirm-notification') : document.getElementById('notification');
+function showNotification(message, isCopy = false) {
+  const notification = isCopy ? document.getElementById('copy-notification') : (message.includes('فعال') ? document.getElementById('confirm-notification') : document.getElementById('notification'));
   notification.textContent = message;
   notification.style.display = 'block';
   notification.classList.remove('dragging', 'show');
@@ -142,7 +153,7 @@ function showNotification(message, isConfirm = false) {
 
 function acceptReferral() {
   startReferralProcess();
-  showNotification('تأیید شد! منتظر فعال‌سازی باشید.', true);
+  showNotification('تأیید شد! منتظر فعال‌سازی باشید.', false);
 }
 
 function declineReferral() {
