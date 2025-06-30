@@ -48,6 +48,12 @@ function showSection(section) {
     document.querySelector('.referral-rules-container').style.display = 'none';
     document.querySelector('.timer-section').style.display = 'none';
     document.getElementById('thank-you').style.display = 'none';
+    const timer = sessionStorage.getItem('referralTimer');
+    if (timer && parseInt(timer) > 0) {
+      document.querySelector('.timer-section').style.display = 'block';
+      document.querySelector('.referral-welcome').style.display = 'none';
+      document.querySelector('.referral-rules-container').style.display = 'none';
+    }
   }
 }
 
@@ -94,14 +100,16 @@ function showNotification(message) {
   notification.addEventListener('mousedown', (e) => startX = e.clientX);
   notification.addEventListener('mouseup', (e) => {
     if (e.clientX - startX > 50 || e.clientX - startX < -50) {
-      notification.style.display = 'none';
+      notification.classList.add('dragging');
+      setTimeout(() => notification.style.display = 'none', 300);
     }
   });
 
   notification.addEventListener('touchstart', (e) => startX = e.touches[0].clientX);
   notification.addEventListener('touchend', (e) => {
     if (e.changedTouches[0].clientX - startX > 50 || e.changedTouches[0].clientX - startX < -50) {
-      notification.style.display = 'none';
+      notification.classList.add('dragging');
+      setTimeout(() => notification.style.display = 'none', 300);
     }
   });
 
@@ -116,8 +124,8 @@ function acceptReferral() {
 }
 
 function declineReferral() {
-  const thankYou = document.getElementById('thank-you');
   showNotification('قسمت رفرال‌گیری برای شما فعال نشد');
+  const thankYou = document.getElementById('thank-you');
   thankYou.style.display = 'block';
   setTimeout(() => {
     thankYou.style.display = 'none';
