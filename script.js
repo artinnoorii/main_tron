@@ -48,45 +48,12 @@ function showSection(section) {
     referralSection.style.display = 'block';
     document.querySelector('.referral-welcome').style.display = 'block';
     document.querySelector('.referral-rules-container').style.display = 'none';
+    document.querySelector('.referral-confirmation').style.display = 'none';
     document.querySelector('.timer-section').style.display = 'none';
     document.getElementById('thank-you').style.display = 'none';
-    const timer = sessionStorage.getItem('referralTimer');
-    if (timer && parseInt(timer) > 0) {
-      document.querySelector('.timer-section').style.display = 'block';
-      document.querySelector('.referral-welcome').style.display = 'none';
-      document.querySelector('.referral-rules-container').style.display = 'none';
-    }
     menuBar.classList.add('clicked');
+    setTimeout(() => menuBar.classList.remove('clicked'), 500); // برمی‌گرده به حالت عادی
   }
-}
-
-let timerInterval;
-function startReferralProcess() {
-  const timerSection = document.querySelector('.timer-section');
-  const thankYou = document.getElementById('thank-you');
-  timerSection.style.display = 'block';
-  document.querySelector('.referral-rules-container').style.display = 'none';
-
-  let timeLeft = sessionStorage.getItem('referralTimer');
-  if (!timeLeft) timeLeft = 10 * 60; // 10 دقیقه به ثانیه
-  else timeLeft = parseInt(timeLeft);
-
-  const timerValue = document.getElementById('timer-value');
-  clearInterval(timerInterval); // پاک کردن تایمر قبلی
-  timerInterval = setInterval(() => {
-    let minutes = Math.floor(timeLeft / 60);
-    let seconds = timeLeft % 60;
-    timerValue.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-    sessionStorage.setItem('referralTimer', timeLeft); // ذخیره تایمر
-    timeLeft--;
-
-    if (timeLeft < 0) {
-      clearInterval(timerInterval);
-      timerSection.style.display = 'none';
-      showNotification('رفرال با موفقیت فعال شد!', true);
-      sessionStorage.removeItem('referralTimer');
-    }
-  }, 1000);
 }
 
 function showReferralRules() {
@@ -94,12 +61,27 @@ function showReferralRules() {
   document.querySelector('.referral-rules-container').style.display = 'block';
 }
 
+function startReferralProcess() {
+  const referralConfirmation = document.querySelector('.referral-confirmation');
+  const thankYou = document.getElementById('thank-you');
+  referralConfirmation.style.display = 'block';
+  document.querySelector('.referral-rules-container').style.display = 'none';
+}
+
+function copyLink() {
+  const link = document.getElementById('referral-link').textContent;
+  navigator.clipboard.writeText(link).then(() => {
+    alert('لینک کپی شد!');
+  });
+}
+
 function showNotification(message, isConfirm = false) {
   const notification = isConfirm ? document.getElementById('confirm-notification') : document.getElementById('notification');
   notification.textContent = message;
   notification.style.display = 'block';
-  notification.classList.remove('dragging'); // ریست موقعیت
+  notification.classList.remove('dragging', 'show');
   notification.style.transform = 'translateX(-50%)';
+  notification.style.opacity = '1';
 
   let startX;
   const handleDrag = (e) => {
@@ -163,8 +145,3 @@ function declineReferral() {
 // بارگذاری اولیه داده‌ها
 loadData();
 setInterval(loadData, 10000); // به‌روزرسانی هر 10 ثانیه
-
-// چک کردن تایمر ذخیره‌شده
-if (sessionStorage.getItem('referralTimer')) {
-  startReferralProcess();
-}
