@@ -1,4 +1,4 @@
-// گرفتن اطلاعات از API ربات (باید URL واقعی رو جایگزین کنی)
+// بارگذاری داده‌ها از API ربات (URL واقعی رو جایگزین کن)
 function loadData() {
   fetch('/api/user-data')
     .then(response => response.json())
@@ -22,7 +22,7 @@ function loadData() {
     .catch(error => console.error('خطا در بارگذاری داده‌ها:', error));
 }
 
-// تابع برای نمایش/پنهان کردن جزئیات ترون
+// نمایش/پنهان کردن جزئیات ترون
 function toggleDetails() {
   const details = document.getElementById('crypto-details');
   if (details.style.display === 'block') {
@@ -34,7 +34,7 @@ function toggleDetails() {
   }
 }
 
-// تابع برای نمایش بخش‌های مختلف منو
+// نمایش بخش‌های مختلف منو
 function showSection(section) {
   const walletSection = document.getElementById('wallet-section');
   const referralSection = document.getElementById('referral-section');
@@ -98,6 +98,8 @@ function showNotification(message, isConfirm = false) {
   const notification = isConfirm ? document.getElementById('confirm-notification') : document.getElementById('notification');
   notification.textContent = message;
   notification.style.display = 'block';
+  notification.classList.remove('dragging'); // ریست موقعیت
+  notification.style.transform = 'translateX(-50%)';
 
   let startX;
   const handleDrag = (e) => {
@@ -107,8 +109,8 @@ function showNotification(message, isConfirm = false) {
       const currentX = moveEvent.type === 'touchmove' ? moveEvent.touches[0].clientX : moveEvent.clientX;
       const diff = currentX - startX;
       if (Math.abs(diff) > 50) {
-        notification.classList.add('dragging');
-        setTimeout(() => notification.style.display = 'none', 300);
+        notification.classList.add('show');
+        setTimeout(() => notification.style.display = 'none', 500);
         document.removeEventListener('mousemove', moveHandler);
         document.removeEventListener('touchmove', moveHandler);
         document.removeEventListener('mouseup', upHandler);
@@ -133,7 +135,10 @@ function showNotification(message, isConfirm = false) {
     });
 
     setTimeout(() => {
-      if (notification.style.display !== 'none') notification.style.display = 'none';
+      if (notification.style.display !== 'none') {
+        notification.classList.add('show');
+        setTimeout(() => notification.style.display = 'none', 500);
+      }
     }, 5000);
   };
 
