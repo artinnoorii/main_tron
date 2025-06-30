@@ -174,7 +174,44 @@ header {
   margin: 20px;
 }
 
+.referral-welcome {
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(51, 0, 0, 0.7));
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  text-align: center;
+}
+
+.referral-welcome h2 {
+  font-size: 18px;
+  color: #cc0000;
+  margin-bottom: 15px;
+}
+
+.referral-welcome p {
+  font-size: 12px;
+  margin-bottom: 15px;
+}
+
+.referral-welcome button {
+  margin: 10px;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 25px;
+  background: linear-gradient(90deg, #cc0000, #990000);
+  color: #fff;
+  font-size: 12px;
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.referral-welcome button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(204, 0, 0, 0.5);
+}
+
 .referral-rules-container {
+  display: none;
   padding: 20px;
   background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(51, 0, 0, 0.7));
   border-radius: 20px;
@@ -273,20 +310,18 @@ header {
   top: 10px;
   left: 50%;
   transform: translateX(-50%);
-  background: #cc0000;
-  color: #fff;
+  background: rgba(255, 0, 0, 0.2);
+  color: #FF0000;
   padding: 10px 20px;
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
   z-index: 1000;
-  animation: fadeInOut 3s ease-in-out;
+  cursor: pointer;
+  transition: transform 0.3s;
 }
 
-@keyframes fadeInOut {
-  0% { opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { opacity: 0; }
+.notification.dragging {
+  transform: translateX(-50%) translateX(100px);
 }
 
 .menu-bar {

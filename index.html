@@ -18,7 +18,7 @@
     <div class="total-balance">
       <span id="total-amount">0</span> <span class="currency-unit">تومان</span>
     </div>
-    <div id="notification" class="notification"></div>
+    <div id="notification" class="notification">قسمت رفرال‌گیری برای شما فعال نشد</div>
   </header>
 
   <section class="main-section" id="wallet-section">
@@ -54,7 +54,12 @@
   </section>
 
   <section class="referral-section" id="referral-section" style="display: none;">
-    <div class="referral-rules-container">
+    <div class="referral-welcome">
+      <h2>خوش آمدید به رفرال تله‌ترون!</h2>
+      <p>به سیستم رفرال تله‌ترون خوش آمدید! با دعوت دوستان درآمد کسب کنید.</p>
+      <button onclick="showReferralRules()">مرحله بعد</button>
+    </div>
+    <div class="referral-rules-container" style="display: none;">
       <h2>قوانین و شرایط رفرال</h2>
       <div class="referral-rules">
         <p>به سیستم رفرال تله‌ترون خوش آمدید! این برنامه به شما امکان کسب درآمد اضافی را از طریق دعوت دوستانتان فراهم می‌کند. لطفاً قوانین زیر را با دقت مطالعه کنید:</p>
@@ -68,6 +73,7 @@
         </ul>
         <p>با تأیید این قوانین، موافقت خود را با شرایط اعلام می‌کنید و می‌توانید از مزایای این برنامه بهره‌مند شوید. برای شروع، روی دکمه تأیید کلیک کنید!</p>
         <button onclick="startReferralProcess()">تأیید</button>
+        <button onclick="declineReferral()">تأیید نمی‌کنم</button>
       </div>
     </div>
     <div class="timer-section" id="timer-section" style="display: none;">
