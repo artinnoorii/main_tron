@@ -6,7 +6,7 @@
 
 body {
   font-family: 'Vazir', Arial, sans-serif;
-  background: #000000;
+  background: #1a1a1a;
   color: #D3D3D3;
   margin: 0;
   padding: 0;
@@ -20,10 +20,10 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(45deg, #000000, #6B4F27);
+  background: linear-gradient(45deg, #1a1a1a, #330000);
   z-index: -1;
   animation: gradientWave 20s infinite alternate, shadowPulse 12s infinite;
-  box-shadow: inset 0 0 200px #E50914;
+  box-shadow: inset 0 0 200px rgba(51, 0, 0, 0.5);
 }
 
 @keyframes gradientWave {
@@ -36,9 +36,9 @@ body {
 }
 
 @keyframes shadowPulse {
-  0% { box-shadow: inset 0 0 150px rgba(229, 9, 20, 0.3); }
-  50% { box-shadow: inset 0 0 250px rgba(229, 9, 20, 0.6); }
-  100% { box-shadow: inset 0 0 150px rgba(229, 9, 20, 0.3); }
+  0% { box-shadow: inset 0 0 150px rgba(51, 0, 0, 0.3); }
+  50% { box-shadow: inset 0 0 250px rgba(51, 0, 0, 0.6); }
+  100% { box-shadow: inset 0 0 150px rgba(51, 0, 0, 0.3); }
 }
 
 header {
@@ -46,7 +46,7 @@ header {
   justify-content: space-between;
   align-items: center;
   padding: 15px;
-  background: rgba(107, 79, 39, 0.8);
+  background: rgba(0, 0, 0, 0.8);
   border-bottom-left-radius: 30px;
   border-bottom-right-radius: 30px;
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
@@ -55,7 +55,7 @@ header {
 .logo {
   font-size: 16px;
   font-weight: 700;
-  color: #F1C76D;
+  color: #cc0000;
   display: flex;
   align-items: center;
 }
@@ -67,33 +67,13 @@ header {
 }
 
 .total-balance {
-  font-size: 18px;
-  color: #D4A44B;
-  font-weight: bold;
+  font-size: 12px;
+  color: #D3D3D3;
 }
 
 .currency-unit {
-  font-size: 12px;
-  color: #D4A44B;
-}
-
-.quick-actions {
-  text-align: center;
-  margin: 10px 0;
-}
-
-.quick-actions button {
-  padding: 10px 20px;
-  background: #D4A44B;
-  color: #000000;
-  border: none;
-  border-radius: 25px;
-  cursor: pointer;
-  transition: transform 0.3s;
-}
-
-.quick-actions button:hover {
-  transform: scale(1.05);
+  font-size: 10px;
+  color: #D3D3D3;
 }
 
 .main-section, .referral-section {
@@ -103,22 +83,21 @@ header {
 }
 
 .tron-info {
-  padding: 15px;
-  background: rgba(107, 79, 39, 0.5);
-  border-radius: 15px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  text-align: center;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
 }
 
 .tron-info h2 {
-  font-size: 16px;
-  color: #E50914;
-  margin-bottom: 10px;
+  font-size: 14px;
+  color: #cc0000;
+  margin-bottom: 8px;
 }
 
 .tron-info p {
-  font-size: 12px;
-  line-height: 1.5;
+  font-size: 10px;
+  line-height: 1.4;
   color: #D3D3D3;
 }
 
@@ -132,10 +111,10 @@ header {
 .crypto-item {
   display: flex;
   align-items: center;
-  padding: 12px;
-  background: rgba(212, 164, 75, 0.2);
-  border-radius: 15px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s;
   position: relative;
   outline: none;
@@ -148,12 +127,12 @@ header {
 .crypto-item img {
   width: 30px;
   height: 30px;
-  margin-left: 10px;
+  margin-left: 8px;
 }
 
 .crypto-details {
   flex-grow: 1;
-  font-size: 14px;
+  font-size: 12px;
   color: #D3D3D3;
 }
 
@@ -163,23 +142,27 @@ header {
 
 .crypto-value {
   margin-top: 2px;
-  font-size: 12px;
 }
 
 .price-change {
-  font-size: 12px;
+  font-size: 10px;
   color: #D3D3D3;
   position: absolute;
-  bottom: 8px;
+  bottom: 5px;
   left: 10px;
 }
 
-.price-change #tron-price, .price-change #toman-price {
+.price-change #tron-price {
   margin-right: 5px;
 }
 
-.price-change #tron-change, .price-change #toman-change {
+.price-change #tron-change {
   margin-left: 5px;
+}
+
+.change {
+  font-size: 10px;
+  margin-right: 8px;
 }
 
 .change.green {
@@ -190,40 +173,20 @@ header {
   color: #FF0000;
 }
 
-.crypto-actions {
-  display: flex;
-  gap: 5px;
-}
-
-.crypto-actions button {
-  padding: 5px 10px;
-  background: #D4A44B;
-  color: #000000;
-  border: none;
-  border-radius: 15px;
-  font-size: 10px;
-  cursor: pointer;
-  transition: transform 0.3s;
-}
-
-.crypto-actions button:hover {
-  transform: scale(1.05);
-}
-
 .crypto-details-hidden {
   display: none;
   margin: 10px 15px;
-  padding: 10px;
-  background: rgba(107, 79, 39, 0.5);
-  border-radius: 15px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   animation: slideDown 0.5s ease-in-out;
 }
 
 .crypto-details-hidden p {
-  font-size: 12px;
+  font-size: 10px;
   color: #D3D3D3;
-  margin: 5px 0;
+  margin: 4px 0;
 }
 
 .referral-section {
@@ -236,15 +199,15 @@ header {
 
 .referral-welcome {
   padding: 20px;
-  background: rgba(107, 79, 39, 0.7);
-  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
   text-align: center;
 }
 
 .referral-welcome h2 {
   font-size: 18px;
-  color: #E50914;
+  color: #cc0000;
   margin-bottom: 15px;
 }
 
@@ -259,8 +222,8 @@ header {
   padding: 8px 20px;
   border: none;
   border-radius: 25px;
-  background: #D4A44B;
-  color: #000000;
+  background: #cc0000;
+  color: #fff;
   font-size: 12px;
   cursor: pointer;
   transition: transform 0.3s, box-shadow 0.3s;
@@ -268,28 +231,28 @@ header {
 
 .referral-welcome button:hover {
   transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(212, 164, 75, 0.5);
+  box-shadow: 0 4px 12px rgba(204, 0, 0, 0.5);
 }
 
 .referral-rules-container {
   display: none;
   padding: 20px;
-  background: rgba(107, 79, 39, 0.7);
-  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
   text-align: center;
 }
 
 .referral-rules-container h2 {
   font-size: 18px;
-  color: #E50914;
+  color: #cc0000;
   margin-bottom: 15px;
   text-transform: uppercase;
 }
 
 .referral-rules {
   padding: 15px;
-  background: rgba(212, 164, 75, 0.2);
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 15px;
 }
 
@@ -315,7 +278,7 @@ header {
 
 .referral-rules ul li:before {
   content: "•";
-  color: #E50914;
+  color: #cc0000;
   position: absolute;
   right: 0;
 }
@@ -325,8 +288,8 @@ header {
   padding: 8px 20px;
   border: none;
   border-radius: 25px;
-  background: #D4A44B;
-  color: #000000;
+  background: #cc0000;
+  color: #fff;
   font-size: 12px;
   cursor: pointer;
   transition: transform 0.3s, box-shadow 0.3s;
@@ -334,21 +297,21 @@ header {
 
 .referral-rules button:hover {
   transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(212, 164, 75, 0.5);
+  box-shadow: 0 4px 12px rgba(204, 0, 0, 0.5);
 }
 
 .referral-confirmation {
   display: none;
   padding: 20px;
-  background: rgba(107, 79, 39, 0.7);
-  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
   text-align: center;
 }
 
 .referral-confirmation h2 {
   font-size: 18px;
-  color: #E50914;
+  color: #cc0000;
   margin-bottom: 15px;
 }
 
@@ -365,7 +328,7 @@ header {
 
 .link-container {
   padding: 10px;
-  background: rgba(212, 164, 75, 0.2);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 10px;
   margin-bottom: 10px;
 }
@@ -378,7 +341,7 @@ header {
 
 .copy-button {
   padding: 10px;
-  background: #4A4A4A;
+  background: #808080;
   border-radius: 10px;
   margin-bottom: 10px;
 }
@@ -393,7 +356,7 @@ header {
 
 .share-button {
   padding: 10px;
-  background: #4A4A4A;
+  background: #808080;
   border-radius: 10px;
 }
 
@@ -410,7 +373,7 @@ header {
   text-align: center;
   font-weight: bold;
   font-size: 14px;
-  color: #D4A44B;
+  color: #cc0000;
   cursor: pointer;
   position: fixed;
   bottom: 80px;
@@ -421,8 +384,8 @@ header {
 .guidelines-section {
   display: none;
   padding: 20px;
-  background: rgba(107, 79, 39, 0.7);
-  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
   text-align: center;
   max-height: 70vh;
@@ -432,7 +395,7 @@ header {
 
 .guidelines-section h2 {
   font-size: 18px;
-  color: #E50914;
+  color: #cc0000;
   margin-bottom: 15px;
 }
 
@@ -458,7 +421,7 @@ header {
 
 .guidelines-section ul li:before {
   content: "•";
-  color: #E50914;
+  color: #cc0000;
   position: absolute;
   right: 0;
 }
@@ -468,8 +431,8 @@ header {
   padding: 8px 20px;
   border: none;
   border-radius: 25px;
-  background: #D4A44B;
-  color: #000000;
+  background: #cc0000;
+  color: #fff;
   font-size: 12px;
   cursor: pointer;
   transition: transform 0.3s, box-shadow 0.3s;
@@ -477,21 +440,21 @@ header {
 
 .guidelines-section button:hover {
   transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(212, 164, 75, 0.5);
+  box-shadow: 0 4px 12px rgba(204, 0, 0, 0.5);
 }
 
 .profile-section {
   display: none;
   text-align: center;
   padding: 20px;
-  background: rgba(107, 79, 39, 0.5);
-  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
 .profile-section h2 {
   font-size: 18px;
-  color: #E50914;
+  color: #cc0000;
   animation: breathe 4s infinite ease-in-out;
 }
 
@@ -543,7 +506,7 @@ header {
   bottom: 20px;
   width: 90%;
   left: 5%;
-  background: #6B4F27;
+  background: #808080;
   display: flex;
   justify-content: space-around;
   padding: 10px 0;
@@ -557,7 +520,7 @@ header {
   flex-direction: column;
   align-items: center;
   width: 33.33%;
-  color: #D4A44B;
+  color: #D3D3D3;
   font-size: 10px;
   cursor: pointer;
   transition: transform 0.3s;

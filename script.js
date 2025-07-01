@@ -17,11 +17,11 @@ function loadData() {
       document.getElementById('tron-amount').textContent = `${tronValue.toLocaleString()} تومان`;
       document.getElementById('tron-value').textContent = `${data.tronBalance} TRX`;
       document.getElementById('tron-price').textContent = `${data.tronPrice.toLocaleString()} تومان`;
-      document.getElementById('tron-change').textContent = `${(data.changeAmount / data.tronPrice * 100).toFixed(2)}%`;
+      document.getElementById('tron-change').textContent = (data.changeAmount > 0 ? '+' : '') + `${data.changeAmount} تومان`;
       document.getElementById('tron-change').className = 'change ' + (data.changeAmount >= 0 ? 'green' : 'red');
 
       document.getElementById('toman-amount').textContent = `${data.tomanBalance.toLocaleString()} تومان`;
-      document.getElementById('toman-change').textContent = '0%';
+      document.getElementById('toman-change').textContent = '0 تومان';
 
       document.getElementById('max-price').textContent = `${data.maxPriceToday.toLocaleString()} تومان`;
       document.getElementById('min-price').textContent = `${data.minPriceToday.toLocaleString()} تومان`;
@@ -119,6 +119,8 @@ function showNotification(message, isCopy = false) {
       const diff = currentX - startX;
       if (Math.abs(diff) > 50) {
         notification.classList.add('show');
+        const direction = diff > 0 ? '150px' : '-150px'; // چپ یا راست
+        notification.style.transform = `translateX(-50%) translateX(${direction})`;
         setTimeout(() => notification.style.display = 'none', 500);
         document.removeEventListener('mousemove', moveHandler);
         document.removeEventListener('touchmove', moveHandler);
@@ -160,7 +162,7 @@ function acceptReferral() {
 }
 
 function declineReferral() {
-  showNotification('رفرال‌گیری فعال نشد', true); // تغییر به سبز
+  showNotification('رفرال‌گیری فعال نشد', true); // سبز برای تأیید نمی‌کنم
   const thankYou = document.getElementById('thank-you');
   thankYou.style.display = 'block';
   setTimeout(() => {
