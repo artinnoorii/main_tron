@@ -199,6 +199,8 @@ function toggleTheme() {
 document.addEventListener('DOMContentLoaded', () => {
   const savedTheme = localStorage.getItem('theme');
   const switchButton = document.querySelector('.switch-button');
+  const themeToggle = document.getElementById('theme-toggle');
+  themeToggle.addEventListener('click', toggleTheme);
   if (savedTheme === 'day') {
     document.body.classList.add('day-mode');
     switchButton.style.transform = 'translateX(30px)';
