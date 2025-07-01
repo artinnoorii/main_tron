@@ -180,36 +180,6 @@ function closeGuidelines() {
   document.querySelector('.guidelines-section').style.display = 'none';
 }
 
-// مدیریت تم روز/شب
-function toggleTheme() {
-  const body = document.body;
-  const switchButton = document.querySelector('.switch-button');
-  if (body.classList.contains('day-mode')) {
-    body.classList.remove('day-mode');
-    switchButton.style.transform = 'translateX(2px)';
-    localStorage.setItem('theme', 'night');
-  } else {
-    body.classList.add('day-mode');
-    switchButton.style.transform = 'translateX(30px)';
-    localStorage.setItem('theme', 'day');
-  }
-}
-
-// بارگذاری تم ذخیره‌شده
-document.addEventListener('DOMContentLoaded', () => {
-  const savedTheme = localStorage.getItem('theme');
-  const switchButton = document.querySelector('.switch-button');
-  const themeToggle = document.getElementById('theme-toggle');
-  themeToggle.addEventListener('click', toggleTheme);
-  if (savedTheme === 'day') {
-    document.body.classList.add('day-mode');
-    switchButton.style.transform = 'translateX(30px)';
-  } else {
-    document.body.classList.remove('day-mode');
-    switchButton.style.transform = 'translateX(2px)';
-  }
-});
-
 // بارگذاری اولیه داده‌ها
 loadData();
 setInterval(loadData, 10000); // به‌روزرسانی هر 10 ثانیه
