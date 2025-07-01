@@ -180,6 +180,31 @@ function closeGuidelines() {
   document.querySelector('.guidelines-section').style.display = 'none';
 }
 
+function showEditProfileForm() {
+  document.getElementById('edit-profile-section').style.display = 'block';
+}
+
+function hideEditProfileForm() {
+  document.getElementById('edit-profile-section').style.display = 'none';
+}
+
+document.getElementById('edit-profile-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const firstName = document.getElementById('firstName').value;
+  const lastName = document.getElementById('lastName').value;
+  const phone = document.getElementById('phone').value;
+  const email = document.getElementById('email').value;
+
+  localStorage.setItem('firstName', firstName);
+  localStorage.setItem('lastName', lastName);
+  localStorage.setItem('phone', phone);
+  localStorage.setItem('email', email);
+
+  loadData(); // به‌روزرسانی اطلاعات پروفایل
+  hideEditProfileForm();
+  showNotification('مشخصات با موفقیت آپدیت شد!', false);
+});
+
 // بارگذاری اولیه داده‌ها
 loadData();
 setInterval(loadData, 10000); // به‌روزرسانی هر 10 ثانیه
