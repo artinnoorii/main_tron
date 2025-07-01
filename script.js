@@ -10,10 +10,25 @@ function loadData() {
       document.querySelector('.referral-welcome p:nth-child(2)').textContent = `سلام ${userId} عزیز، به بخش جذاب کسب درآمد با رفرال خوش اومدی! 💰`;
       document.querySelector('.guidelines-section p:nth-child(2)').textContent = `سلام ${userId} عزیز، به بخش جذاب کسب درآمد با رفرال خوش اومدی! 💰`;
       document.getElementById('user-id').textContent = `ID: ${userId}`;
-      document.querySelector('.user-card p:nth-child(2)').textContent = `<strong>نام:</strong> ${localStorage.getItem('firstName') || '[نام کاربر]'}`;
-      document.querySelector('.user-card p:nth-child(3)').textContent = `<strong>نام خانوادگی:</strong> ${localStorage.getItem('lastName') || '[نام خانوادگی]'}`;
-      document.querySelector('.user-card p:nth-child(4)').textContent = `<strong>شماره تلفن:</strong> ${localStorage.getItem('phone') || '[شماره تلفن]'}`;
-      document.querySelector('.user-card p:nth-child(5)').textContent = `<strong>ایمیل:</strong> ${localStorage.getItem('email') || '[ایمیل]'}`;
+      const userCard = document.getElementById('user-card');
+      const editBtn = userCard.querySelector('.edit-profile-btn');
+      const userInfo = userCard.querySelectorAll('p');
+      const firstName = localStorage.getItem('firstName');
+      const lastName = localStorage.getItem('lastName');
+      const phone = localStorage.getItem('phone');
+      const email = localStorage.getItem('email');
+
+      if (firstName && lastName && phone && email) {
+        userInfo[1].textContent = `<strong>نام:</strong> ${firstName}`;
+        userInfo[2].textContent = `<strong>نام خانوادگی:</strong> ${lastName}`;
+        userInfo[3].textContent = `<strong>شماره تلفن:</strong> ${phone}`;
+        userInfo[4].textContent = `<strong>ایمیل:</strong> ${email}`;
+        userInfo.forEach(p => p.style.display = 'block');
+        editBtn.style.display = 'none';
+      } else {
+        userInfo.forEach(p => p.style.display = 'none');
+        editBtn.style.display = 'block';
+      }
 
       const tronValue = data.tronBalance * data.tronPrice;
       const totalAmount = tronValue + data.tomanBalance;
@@ -196,14 +211,18 @@ document.getElementById('edit-profile-form').addEventListener('submit', function
   const phone = document.getElementById('phone').value;
   const email = document.getElementById('email').value;
 
-  localStorage.setItem('firstName', firstName);
-  localStorage.setItem('lastName', lastName);
-  localStorage.setItem('phone', phone);
-  localStorage.setItem('email', email);
+  if (firstName && lastName && phone && email) {
+    localStorage.setItem('firstName', firstName);
+    localStorage.setItem('lastName', lastName);
+    localStorage.setItem('phone', phone);
+    localStorage.setItem('email', email);
 
-  loadData(); // به‌روزرسانی اطلاعات پروفایل
-  hideEditProfileForm();
-  showNotification('مشخصات با موفقیت آپدیت شد!', false);
+    loadData(); // به‌روزرسانی اطلاعات پروفایل
+    hideEditProfileForm();
+    showNotification('مشخصات با موفقیت آپدیت شد!', false);
+  } else {
+    showNotification('لطفاً همه فیلدها را پر کنید!', false);
+  }
 });
 
 // بارگذاری اولیه داده‌ها
