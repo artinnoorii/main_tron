@@ -9,6 +9,11 @@ function loadData() {
       userId = data.userId || userId; // به‌روزرسانی ID کاربر
       document.querySelector('.referral-welcome p:nth-child(2)').textContent = `سلام ${userId} عزیز، به بخش جذاب کسب درآمد با رفرال خوش اومدی! 💰`;
       document.querySelector('.guidelines-section p:nth-child(2)').textContent = `سلام ${userId} عزیز، به بخش جذاب کسب درآمد با رفرال خوش اومدی! 💰`;
+      document.getElementById('user-id').textContent = `ID: ${userId}`;
+      document.querySelector('.profile-info p:nth-child(3)').textContent = `<strong>نام:</strong> ${data.firstName || '[نام کاربر]'}`;
+      document.querySelector('.profile-info p:nth-child(4)').textContent = `<strong>نام خانوادگی:</strong> ${data.lastName || '[نام خانوادگی]'}`;
+      document.querySelector('.profile-info p:nth-child(5)').textContent = `<strong>شماره تلفن:</strong> ${data.phone || '[شماره تلفن]'}`;
+      document.querySelector('.profile-info p:nth-child(6)').textContent = `<strong>ایمیل:</strong> ${data.email || '[ایمیل]'}`;
 
       const tronValue = data.tronBalance * data.tronPrice;
       const totalAmount = tronValue + data.tomanBalance;
@@ -162,7 +167,7 @@ function acceptReferral() {
 }
 
 function declineReferral() {
-  showNotification('رفرال‌گیری فعال نشد', true); // سبز برای تأیید نمی‌کنم
+  showNotification('رفرال‌گیری فعال نشد', false); // برگشت به رنگ قرمز
   const thankYou = document.getElementById('thank-you');
   thankYou.style.display = 'block';
   setTimeout(() => {
@@ -174,6 +179,34 @@ function declineReferral() {
 function closeGuidelines() {
   document.querySelector('.guidelines-section').style.display = 'none';
 }
+
+// مدیریت تم روز/شب
+function toggleTheme() {
+  const body = document.body;
+  const switchButton = document.querySelector('.switch-button');
+  if (body.classList.contains('day-mode')) {
+    body.classList.remove('day-mode');
+    switchButton.style.transform = 'translateX(2px)';
+    localStorage.setItem('theme', 'night');
+  } else {
+    body.classList.add('day-mode');
+    switchButton.style.transform = 'translateX(30px)';
+    localStorage.setItem('theme', 'day');
+  }
+}
+
+// بارگذاری تم ذخیره‌شده
+document.addEventListener('DOMContentLoaded', () => {
+  const savedTheme = localStorage.getItem('theme');
+  const switchButton = document.querySelector('.switch-button');
+  if (savedTheme === 'day') {
+    document.body.classList.add('day-mode');
+    switchButton.style.transform = 'translateX(30px)';
+  } else {
+    document.body.classList.remove('day-mode');
+    switchButton.style.transform = 'translateX(2px)';
+  }
+});
 
 // بارگذاری اولیه داده‌ها
 loadData();
