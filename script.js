@@ -7,6 +7,9 @@ function loadData() {
     .then(response => response.json())
     .then(data => {
       userId = data.userId || userId; // به‌روزرسانی ID کاربر
+      document.querySelector('.referral-welcome p:nth-child(2)').textContent = `سلام ${userId} عزیز، به بخش جذاب کسب درآمد با رفرال خوش اومدی! 💰`;
+      document.querySelector('.guidelines-section p:nth-child(2)').textContent = `سلام ${userId} عزیز، به بخش جذاب کسب درآمد با رفرال خوش اومدی! 💰`;
+
       const tronValue = data.tronBalance * data.tronPrice;
       const totalAmount = tronValue + data.tomanBalance;
       document.getElementById('total-amount').textContent = totalAmount.toLocaleString();
@@ -14,11 +17,11 @@ function loadData() {
       document.getElementById('tron-amount').textContent = `${tronValue.toLocaleString()} تومان`;
       document.getElementById('tron-value').textContent = `${data.tronBalance} TRX`;
       document.getElementById('tron-price').textContent = `${data.tronPrice.toLocaleString()} تومان`;
-      document.getElementById('tron-change').textContent = (data.changeAmount > 0 ? '+' : '') + `${data.changeAmount} تومان`;
-      document.getElementById('tron-change').className = 'change ' + (data.changeAmount > 0 ? 'green' : 'red');
+      document.getElementById('tron-change').textContent = `${(data.changeAmount / data.tronPrice * 100).toFixed(2)}%`;
+      document.getElementById('tron-change').className = 'change ' + (data.changeAmount >= 0 ? 'green' : 'red');
 
       document.getElementById('toman-amount').textContent = `${data.tomanBalance.toLocaleString()} تومان`;
-      document.getElementById('toman-change').textContent = '0 تومان';
+      document.getElementById('toman-change').textContent = '0%';
 
       document.getElementById('max-price').textContent = `${data.maxPriceToday.toLocaleString()} تومان`;
       document.getElementById('min-price').textContent = `${data.minPriceToday.toLocaleString()} تومان`;
@@ -85,9 +88,9 @@ function startReferralProcess() {
 
 function copyLink() {
   const link = document.getElementById('referral-link').textContent;
-  const tempInput = document.createElement('input');
-  document.body.appendChild(tempInput);
+  const tempInput = document.createElement('textarea');
   tempInput.value = link;
+  document.body.appendChild(tempInput);
   tempInput.select();
   document.execCommand('copy');
   document.body.removeChild(tempInput);
@@ -157,7 +160,7 @@ function acceptReferral() {
 }
 
 function declineReferral() {
-  showNotification('رفرال‌گیری فعال نشد');
+  showNotification('رفرال‌گیری فعال نشد', true); // تغییر به سبز
   const thankYou = document.getElementById('thank-you');
   thankYou.style.display = 'block';
   setTimeout(() => {

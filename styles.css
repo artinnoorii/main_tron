@@ -6,11 +6,12 @@
 
 body {
   font-family: 'Vazir', Arial, sans-serif;
-  background: #1a1a1a;
+  background: #000000;
   color: #D3D3D3;
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  overscroll-behavior: contain;
 }
 
 .background {
@@ -19,10 +20,10 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(45deg, #1a1a1a, #330000);
+  background: linear-gradient(45deg, #000000, #6B4F27);
   z-index: -1;
   animation: gradientWave 20s infinite alternate, shadowPulse 12s infinite;
-  box-shadow: inset 0 0 200px rgba(51, 0, 0, 0.5);
+  box-shadow: inset 0 0 200px #E50914;
 }
 
 @keyframes gradientWave {
@@ -35,9 +36,9 @@ body {
 }
 
 @keyframes shadowPulse {
-  0% { box-shadow: inset 0 0 150px rgba(51, 0, 0, 0.3); }
-  50% { box-shadow: inset 0 0 250px rgba(51, 0, 0, 0.6); }
-  100% { box-shadow: inset 0 0 150px rgba(51, 0, 0, 0.3); }
+  0% { box-shadow: inset 0 0 150px rgba(229, 9, 20, 0.3); }
+  50% { box-shadow: inset 0 0 250px rgba(229, 9, 20, 0.6); }
+  100% { box-shadow: inset 0 0 150px rgba(229, 9, 20, 0.3); }
 }
 
 header {
@@ -45,7 +46,7 @@ header {
   justify-content: space-between;
   align-items: center;
   padding: 15px;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(107, 79, 39, 0.8);
   border-bottom-left-radius: 30px;
   border-bottom-right-radius: 30px;
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
@@ -54,7 +55,7 @@ header {
 .logo {
   font-size: 16px;
   font-weight: 700;
-  color: #808080;
+  color: #F1C76D;
   display: flex;
   align-items: center;
 }
@@ -66,13 +67,33 @@ header {
 }
 
 .total-balance {
-  font-size: 12px;
-  color: #D3D3D3;
+  font-size: 18px;
+  color: #D4A44B;
+  font-weight: bold;
 }
 
 .currency-unit {
-  font-size: 10px;
-  color: #D3D3D3;
+  font-size: 12px;
+  color: #D4A44B;
+}
+
+.quick-actions {
+  text-align: center;
+  margin: 10px 0;
+}
+
+.quick-actions button {
+  padding: 10px 20px;
+  background: #D4A44B;
+  color: #000000;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.quick-actions button:hover {
+  transform: scale(1.05);
 }
 
 .main-section, .referral-section {
@@ -82,21 +103,22 @@ header {
 }
 
 .tron-info {
-  padding: 10px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+  padding: 15px;
+  background: rgba(107, 79, 39, 0.5);
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  text-align: center;
 }
 
 .tron-info h2 {
-  font-size: 14px;
-  color: #cc0000;
-  margin-bottom: 8px;
+  font-size: 16px;
+  color: #E50914;
+  margin-bottom: 10px;
 }
 
 .tron-info p {
-  font-size: 10px;
-  line-height: 1.4;
+  font-size: 12px;
+  line-height: 1.5;
   color: #D3D3D3;
 }
 
@@ -110,13 +132,13 @@ header {
 .crypto-item {
   display: flex;
   align-items: center;
-  padding: 8px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  padding: 12px;
+  background: rgba(212, 164, 75, 0.2);
+  border-radius: 15px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s;
   position: relative;
-  outline: none; /* حذف خط سفید در ویندوز */
+  outline: none;
 }
 
 .crypto-item:hover {
@@ -126,12 +148,12 @@ header {
 .crypto-item img {
   width: 30px;
   height: 30px;
-  margin-left: 8px;
+  margin-left: 10px;
 }
 
 .crypto-details {
   flex-grow: 1;
-  font-size: 12px;
+  font-size: 14px;
   color: #D3D3D3;
 }
 
@@ -141,27 +163,23 @@ header {
 
 .crypto-value {
   margin-top: 2px;
+  font-size: 12px;
 }
 
 .price-change {
-  font-size: 10px;
+  font-size: 12px;
   color: #D3D3D3;
   position: absolute;
-  bottom: 5px;
+  bottom: 8px;
   left: 10px;
 }
 
-.price-change #tron-price {
+.price-change #tron-price, .price-change #toman-price {
   margin-right: 5px;
 }
 
-.price-change #tron-change {
+.price-change #tron-change, .price-change #toman-change {
   margin-left: 5px;
-}
-
-.change {
-  font-size: 10px;
-  margin-right: 8px;
 }
 
 .change.green {
@@ -172,20 +190,40 @@ header {
   color: #FF0000;
 }
 
+.crypto-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.crypto-actions button {
+  padding: 5px 10px;
+  background: #D4A44B;
+  color: #000000;
+  border: none;
+  border-radius: 15px;
+  font-size: 10px;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.crypto-actions button:hover {
+  transform: scale(1.05);
+}
+
 .crypto-details-hidden {
   display: none;
   margin: 10px 15px;
-  padding: 8px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  background: rgba(107, 79, 39, 0.5);
+  border-radius: 15px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
   animation: slideDown 0.5s ease-in-out;
 }
 
 .crypto-details-hidden p {
-  font-size: 10px;
+  font-size: 12px;
   color: #D3D3D3;
-  margin: 4px 0;
+  margin: 5px 0;
 }
 
 .referral-section {
@@ -193,19 +231,20 @@ header {
   margin: 15px;
   max-height: 80vh;
   overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .referral-welcome {
   padding: 20px;
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(51, 0, 0, 0.7));
-  border-radius: 20px;
+  background: rgba(107, 79, 39, 0.7);
+  border-radius: 15px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
   text-align: center;
 }
 
 .referral-welcome h2 {
   font-size: 18px;
-  color: #cc0000;
+  color: #E50914;
   margin-bottom: 15px;
 }
 
@@ -220,8 +259,8 @@ header {
   padding: 8px 20px;
   border: none;
   border-radius: 25px;
-  background: linear-gradient(90deg, #cc0000, #990000);
-  color: #fff;
+  background: #D4A44B;
+  color: #000000;
   font-size: 12px;
   cursor: pointer;
   transition: transform 0.3s, box-shadow 0.3s;
@@ -229,28 +268,28 @@ header {
 
 .referral-welcome button:hover {
   transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(204, 0, 0, 0.5);
+  box-shadow: 0 4px 12px rgba(212, 164, 75, 0.5);
 }
 
 .referral-rules-container {
   display: none;
   padding: 20px;
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(51, 0, 0, 0.7));
-  border-radius: 20px;
+  background: rgba(107, 79, 39, 0.7);
+  border-radius: 15px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
   text-align: center;
 }
 
 .referral-rules-container h2 {
   font-size: 18px;
-  color: #cc0000;
+  color: #E50914;
   margin-bottom: 15px;
   text-transform: uppercase;
 }
 
 .referral-rules {
   padding: 15px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(212, 164, 75, 0.2);
   border-radius: 15px;
 }
 
@@ -276,7 +315,7 @@ header {
 
 .referral-rules ul li:before {
   content: "•";
-  color: #cc0000;
+  color: #E50914;
   position: absolute;
   right: 0;
 }
@@ -286,8 +325,8 @@ header {
   padding: 8px 20px;
   border: none;
   border-radius: 25px;
-  background: linear-gradient(90deg, #cc0000, #990000);
-  color: #fff;
+  background: #D4A44B;
+  color: #000000;
   font-size: 12px;
   cursor: pointer;
   transition: transform 0.3s, box-shadow 0.3s;
@@ -295,21 +334,21 @@ header {
 
 .referral-rules button:hover {
   transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(204, 0, 0, 0.5);
+  box-shadow: 0 4px 12px rgba(212, 164, 75, 0.5);
 }
 
 .referral-confirmation {
   display: none;
   padding: 20px;
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(51, 0, 0, 0.7));
-  border-radius: 20px;
+  background: rgba(107, 79, 39, 0.7);
+  border-radius: 15px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
   text-align: center;
 }
 
 .referral-confirmation h2 {
   font-size: 18px;
-  color: #cc0000;
+  color: #E50914;
   margin-bottom: 15px;
 }
 
@@ -326,7 +365,7 @@ header {
 
 .link-container {
   padding: 10px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(212, 164, 75, 0.2);
   border-radius: 10px;
   margin-bottom: 10px;
 }
@@ -371,7 +410,7 @@ header {
   text-align: center;
   font-weight: bold;
   font-size: 14px;
-  color: #cc0000;
+  color: #D4A44B;
   cursor: pointer;
   position: fixed;
   bottom: 80px;
@@ -382,17 +421,18 @@ header {
 .guidelines-section {
   display: none;
   padding: 20px;
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(51, 0, 0, 0.7));
-  border-radius: 20px;
+  background: rgba(107, 79, 39, 0.7);
+  border-radius: 15px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
   text-align: center;
   max-height: 70vh;
   overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .guidelines-section h2 {
   font-size: 18px;
-  color: #cc0000;
+  color: #E50914;
   margin-bottom: 15px;
 }
 
@@ -418,7 +458,7 @@ header {
 
 .guidelines-section ul li:before {
   content: "•";
-  color: #cc0000;
+  color: #E50914;
   position: absolute;
   right: 0;
 }
@@ -428,8 +468,8 @@ header {
   padding: 8px 20px;
   border: none;
   border-radius: 25px;
-  background: linear-gradient(90deg, #cc0000, #990000);
-  color: #fff;
+  background: #D4A44B;
+  color: #000000;
   font-size: 12px;
   cursor: pointer;
   transition: transform 0.3s, box-shadow 0.3s;
@@ -437,21 +477,21 @@ header {
 
 .guidelines-section button:hover {
   transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(204, 0, 0, 0.5);
+  box-shadow: 0 4px 12px rgba(212, 164, 75, 0.5);
 }
 
 .profile-section {
   display: none;
   text-align: center;
   padding: 20px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
+  background: rgba(107, 79, 39, 0.5);
+  border-radius: 15px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
 .profile-section h2 {
   font-size: 18px;
-  color: #cc0000;
+  color: #E50914;
   animation: breathe 4s infinite ease-in-out;
 }
 
@@ -469,8 +509,6 @@ header {
   top: 10px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(255, 0, 0, 0.2);
-  color: #FF0000;
   padding: 5px 15px;
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
@@ -489,9 +527,9 @@ header {
   animation: slideInOut 1s ease-out forwards;
 }
 
-.copy {
-  background: rgba(0, 0, 0, 0.2);
-  color: #000000;
+.notification.confirm {
+  background: rgba(0, 255, 0, 0.2);
+  color: #00FF00;
 }
 
 @keyframes slideInOut {
@@ -500,17 +538,12 @@ header {
   100% { transform: translateX(-50%) translateX(150px); opacity: 0; }
 }
 
-.confirm {
-  background: rgba(0, 255, 0, 0.2);
-  color: #00FF00;
-}
-
 .menu-bar {
   position: fixed;
   bottom: 20px;
   width: 90%;
   left: 5%;
-  background: #4A4A4A;
+  background: #6B4F27;
   display: flex;
   justify-content: space-around;
   padding: 10px 0;
@@ -524,7 +557,7 @@ header {
   flex-direction: column;
   align-items: center;
   width: 33.33%;
-  color: #D3D3D3;
+  color: #D4A44B;
   font-size: 10px;
   cursor: pointer;
   transition: transform 0.3s;
@@ -559,4 +592,8 @@ header {
 @keyframes slideUp {
   from { transform: translateY(0); opacity: 1; }
   to { transform: translateY(-10px); opacity: 0; }
+}
+
+::-webkit-scrollbar {
+  width: 0; /* حذف خط سفید اسکرول */
 }
