@@ -10,10 +10,10 @@ function loadData() {
       document.querySelector('.referral-welcome p:nth-child(2)').textContent = `سلام ${userId} عزیز، به بخش جذاب کسب درآمد با رفرال خوش اومدی! 💰`;
       document.querySelector('.guidelines-section p:nth-child(2)').textContent = `سلام ${userId} عزیز، به بخش جذاب کسب درآمد با رفرال خوش اومدی! 💰`;
       document.getElementById('user-id').textContent = `ID: ${userId}`;
-      document.querySelector('.profile-info p:nth-child(3)').textContent = `<strong>نام:</strong> ${data.firstName || '[نام کاربر]'}`;
-      document.querySelector('.profile-info p:nth-child(4)').textContent = `<strong>نام خانوادگی:</strong> ${data.lastName || '[نام خانوادگی]'}`;
-      document.querySelector('.profile-info p:nth-child(5)').textContent = `<strong>شماره تلفن:</strong> ${data.phone || '[شماره تلفن]'}`;
-      document.querySelector('.profile-info p:nth-child(6)').textContent = `<strong>ایمیل:</strong> ${data.email || '[ایمیل]'}`;
+      document.querySelector('.user-card p:nth-child(2)').textContent = `<strong>نام:</strong> ${data.firstName || '[نام کاربر]'}`;
+      document.querySelector('.user-card p:nth-child(3)').textContent = `<strong>نام خانوادگی:</strong> ${data.lastName || '[نام خانوادگی]'}`;
+      document.querySelector('.user-card p:nth-child(4)').textContent = `<strong>شماره تلفن:</strong> ${data.phone || '[شماره تلفن]'}`;
+      document.querySelector('.user-card p:nth-child(5)').textContent = `<strong>ایمیل:</strong> ${data.email || '[ایمیل]'}`;
 
       const tronValue = data.tronBalance * data.tronPrice;
       const totalAmount = tronValue + data.tomanBalance;

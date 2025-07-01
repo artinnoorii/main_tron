@@ -21,8 +21,8 @@ body.day-mode {
 }
 
 body.day-mode .background {
-  background: linear-gradient(45deg, #F5F5F5, #F1C76D);
-  box-shadow: inset 0 0 200px #D4A44B;
+  background: linear-gradient(45deg, #F5F5F5, #D4A44B);
+  box-shadow: inset 0 0 200px #F1C76D;
 }
 
 body.day-mode .logo {
@@ -135,22 +135,7 @@ header {
 }
 
 .profile-icon {
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.large-icon {
-  width: 60px;
-  height: auto;
-}
-
-.user-id {
-  text-align: center;
-  color: #808080;
-  font-size: 14px;
-  margin-top: 5px;
+  display: none;
 }
 
 .logo {
@@ -554,21 +539,51 @@ header {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
-.profile-info {
-  margin-top: 20px;
+.profile-icon {
+  margin-bottom: 20px;
 }
 
-.profile-info h2 {
-  font-size: 16px;
-  color: #cc0000;
+.large-icon {
+  width: 60px;
+  height: auto;
+}
+
+.user-card {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.user-id {
+  color: #808080;
+  font-size: 14px;
   margin-bottom: 10px;
+}
+
+.user-card p {
+  font-size: 12px;
+  margin: 5px 0;
+  color: #D3D3D3;
+}
+
+.user-card hr {
+  border: 0;
+  height: 1px;
+  background: #808080;
+  margin: 10px 0;
 }
 
 .theme-switch {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  margin-bottom: 20px;
+}
+
+.theme-switch h2 {
+  font-size: 16px;
+  color: #cc0000;
+  margin-bottom: 10px;
 }
 
 .switch-container {
@@ -603,19 +618,6 @@ body.day-mode .switch {
 
 body.day-mode .switch-button {
   transform: translateX(30px);
-}
-
-hr {
-  border: 0;
-  height: 1px;
-  background: #808080;
-  margin: 10px 0;
-}
-
-.profile-info p {
-  font-size: 12px;
-  margin: 5px 0;
-  color: #D3D3D3;
 }
 
 .profile-section h2 {
