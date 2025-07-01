@@ -30,43 +30,75 @@ body.day-mode .logo {
 }
 
 body.day-mode .total-balance {
-  color: #D4A44B;
+  color: #333;
 }
 
 body.day-mode .currency-unit {
-  color: #D4A44B;
+  color: #333;
 }
 
 body.day-mode .tron-info {
   background: rgba(241, 199, 109, 0.2);
+  color: #333;
+}
+
+body.day-mode .tron-info h2 {
+  color: #6B4F27;
 }
 
 body.day-mode .crypto-item {
   background: rgba(241, 199, 109, 0.1);
+  color: #333;
 }
 
 body.day-mode .crypto-details-hidden {
   background: rgba(241, 199, 109, 0.2);
+  color: #333;
 }
 
 body.day-mode .referral-welcome {
   background: rgba(107, 79, 39, 0.2);
+  color: #333;
+}
+
+body.day-mode .referral-welcome h2 {
+  color: #6B4F27;
 }
 
 body.day-mode .referral-rules-container {
   background: rgba(107, 79, 39, 0.2);
+  color: #333;
+}
+
+body.day-mode .referral-rules-container h2 {
+  color: #6B4F27;
 }
 
 body.day-mode .referral-confirmation {
   background: rgba(107, 79, 39, 0.2);
+  color: #333;
+}
+
+body.day-mode .referral-confirmation h2 {
+  color: #6B4F27;
 }
 
 body.day-mode .guidelines-section {
   background: rgba(107, 79, 39, 0.2);
+  color: #333;
+}
+
+body.day-mode .guidelines-section h2 {
+  color: #6B4F27;
 }
 
 body.day-mode .profile-section {
   background: rgba(107, 79, 39, 0.2);
+  color: #333;
+}
+
+body.day-mode .profile-section h2 {
+  color: #6B4F27;
 }
 
 body.day-mode .menu-bar {
@@ -95,6 +127,26 @@ body.day-mode .notification.confirm {
   color: #008000;
 }
 
+body.day-mode .user-id {
+  color: #6B4F27;
+}
+
+body.day-mode .user-card p {
+  color: #333;
+}
+
+body.day-mode .price-change {
+  color: #333;
+}
+
+body.day-mode .change.green {
+  color: #006400;
+}
+
+body.day-mode .change.red {
+  color: #8B0000;
+}
+
 .background {
   position: fixed;
   top: 0;
@@ -105,6 +157,7 @@ body.day-mode .notification.confirm {
   z-index: -1;
   animation: gradientWave 20s infinite alternate, shadowPulse 12s infinite;
   box-shadow: inset 0 0 200px rgba(51, 0, 0, 0.5);
+  transition: background 0.5s, box-shadow 0.5s;
 }
 
 @keyframes gradientWave {
@@ -132,6 +185,11 @@ header {
   border-bottom-right-radius: 30px;
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
   position: relative;
+  transition: background 0.5s;
+}
+
+body.day-mode header {
+  background: rgba(212, 164, 75, 0.5);
 }
 
 .logo {
@@ -140,6 +198,7 @@ header {
   color: #cc0000;
   display: flex;
   align-items: center;
+  transition: color 0.5s;
 }
 
 .icon-crown {
@@ -151,11 +210,13 @@ header {
 .total-balance {
   font-size: 12px;
   color: #D3D3D3;
+  transition: color 0.5s;
 }
 
 .currency-unit {
   font-size: 10px;
   color: #D3D3D3;
+  transition: color 0.5s;
 }
 
 .main-section, .referral-section {
@@ -170,18 +231,21 @@ header {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+  transition: background 0.5s, color 0.5s;
 }
 
 .tron-info h2 {
   font-size: 14px;
   color: #cc0000;
   margin-bottom: 8px;
+  transition: color 0.5s;
 }
 
 .tron-info p {
   font-size: 10px;
   line-height: 1.4;
   color: #D3D3D3;
+  transition: color 0.5s;
 }
 
 .crypto-section {
@@ -198,7 +262,7 @@ header {
   background: rgba(255, 255, 255, 0.05);
   border-radius: 12px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s;
+  transition: transform 0.3s, background 0.5s, color 0.5s;
   position: relative;
   outline: none;
 }
@@ -217,6 +281,7 @@ header {
   flex-grow: 1;
   font-size: 12px;
   color: #D3D3D3;
+  transition: color 0.5s;
 }
 
 .crypto-amount {
@@ -233,6 +298,7 @@ header {
   position: absolute;
   bottom: 5px;
   left: 10px;
+  transition: color 0.5s;
 }
 
 .price-change #tron-price {
@@ -246,6 +312,7 @@ header {
 .change {
   font-size: 10px;
   margin-right: 8px;
+  transition: color 0.5s;
 }
 
 .change.green {
@@ -264,12 +331,14 @@ header {
   border-radius: 12px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   animation: slideDown 0.5s ease-in-out;
+  transition: background 0.5s, color 0.5s;
 }
 
 .crypto-details-hidden p {
   font-size: 10px;
   color: #D3D3D3;
   margin: 4px 0;
+  transition: color 0.5s;
 }
 
 .referral-section {
@@ -286,18 +355,21 @@ header {
   border-radius: 20px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
   text-align: center;
+  transition: background 0.5s, color 0.5s;
 }
 
 .referral-welcome h2 {
   font-size: 18px;
   color: #cc0000;
   margin-bottom: 15px;
+  transition: color 0.5s;
 }
 
 .referral-welcome p {
   font-size: 12px;
   margin-bottom: 10px;
   line-height: 1.6;
+  transition: color 0.5s;
 }
 
 .referral-welcome button {
@@ -309,7 +381,7 @@ header {
   color: #fff;
   font-size: 12px;
   cursor: pointer;
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition: transform 0.3s, box-shadow 0.3s, background 0.5s, color 0.5s;
 }
 
 .referral-welcome button:hover {
@@ -324,6 +396,7 @@ header {
   border-radius: 20px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
   text-align: center;
+  transition: background 0.5s, color 0.5s;
 }
 
 .referral-rules-container h2 {
@@ -331,18 +404,21 @@ header {
   color: #cc0000;
   margin-bottom: 15px;
   text-transform: uppercase;
+  transition: color 0.5s;
 }
 
 .referral-rules {
   padding: 15px;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 15px;
+  transition: background 0.5s, color 0.5s;
 }
 
 .referral-rules p {
   font-size: 12px;
   margin-bottom: 10px;
   line-height: 1.6;
+  transition: color 0.5s;
 }
 
 .referral-rules ul {
@@ -357,6 +433,7 @@ header {
   margin: 8px 0;
   position: relative;
   padding-right: 15px;
+  transition: color 0.5s;
 }
 
 .referral-rules ul li:before {
@@ -364,6 +441,7 @@ header {
   color: #cc0000;
   position: absolute;
   right: 0;
+  transition: color 0.5s;
 }
 
 .referral-rules button {
@@ -375,7 +453,7 @@ header {
   color: #fff;
   font-size: 12px;
   cursor: pointer;
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition: transform 0.3s, box-shadow 0.3s, background 0.5s, color 0.5s;
 }
 
 .referral-rules button:hover {
@@ -390,18 +468,21 @@ header {
   border-radius: 20px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
   text-align: center;
+  transition: background 0.5s, color 0.5s;
 }
 
 .referral-confirmation h2 {
   font-size: 18px;
   color: #cc0000;
   margin-bottom: 15px;
+  transition: color 0.5s;
 }
 
 .referral-confirmation p {
   font-size: 12px;
   margin-bottom: 10px;
   line-height: 1.6;
+  transition: color 0.5s;
 }
 
 .link-box {
@@ -414,12 +495,14 @@ header {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 10px;
   margin-bottom: 10px;
+  transition: background 0.5s, color 0.5s;
 }
 
 .link-container p {
   font-size: 12px;
   margin: 0;
   word-break: break-all;
+  transition: color 0.5s;
 }
 
 .copy-button {
@@ -427,6 +510,7 @@ header {
   background: #808080;
   border-radius: 10px;
   margin-bottom: 10px;
+  transition: background 0.5s, color 0.5s;
 }
 
 .copy-button button {
@@ -435,12 +519,14 @@ header {
   color: #000000;
   font-size: 12px;
   cursor: pointer;
+  transition: color 0.5s;
 }
 
 .share-button {
   padding: 10px;
   background: #808080;
   border-radius: 10px;
+  transition: background 0.5s, color 0.5s;
 }
 
 .share-button button {
@@ -449,6 +535,7 @@ header {
   color: #000000;
   font-size: 12px;
   cursor: pointer;
+  transition: color 0.5s;
 }
 
 #guidelines {
@@ -462,6 +549,11 @@ header {
   bottom: 80px;
   left: 50%;
   transform: translateX(-50%);
+  transition: color 0.5s;
+}
+
+body.day-mode #guidelines {
+  color: #6B4F27;
 }
 
 .guidelines-section {
@@ -474,18 +566,29 @@ header {
   max-height: 70vh;
   overflow-y: auto;
   overscroll-behavior: contain;
+  transition: background 0.5s, color 0.5s;
 }
 
 .guidelines-section h2 {
   font-size: 18px;
   color: #cc0000;
   margin-bottom: 15px;
+  transition: color 0.5s;
+}
+
+body.day-mode .guidelines-section h2 {
+  color: #6B4F27;
 }
 
 .guidelines-section p {
   font-size: 12px;
   margin-bottom: 10px;
   line-height: 1.6;
+  transition: color 0.5s;
+}
+
+body.day-mode .guidelines-section p {
+  color: #333;
 }
 
 .guidelines-section ul {
@@ -500,6 +603,11 @@ header {
   margin: 8px 0;
   position: relative;
   padding-right: 15px;
+  transition: color 0.5s;
+}
+
+body.day-mode .guidelines-section ul li {
+  color: #333;
 }
 
 .guidelines-section ul li:before {
@@ -507,6 +615,11 @@ header {
   color: #cc0000;
   position: absolute;
   right: 0;
+  transition: color 0.5s;
+}
+
+body.day-mode .guidelines-section ul li:before {
+  color: #6B4F27;
 }
 
 .guidelines-section button {
@@ -518,12 +631,21 @@ header {
   color: #fff;
   font-size: 12px;
   cursor: pointer;
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition: transform 0.3s, box-shadow 0.3s, background 0.5s, color 0.5s;
+}
+
+body.day-mode .guidelines-section button {
+  background: #D4A44B;
+  color: #000000;
 }
 
 .guidelines-section button:hover {
   transform: scale(1.05);
   box-shadow: 0 4px 12px rgba(204, 0, 0, 0.5);
+}
+
+body.day-mode .guidelines-section button:hover {
+  box-shadow: 0 4px 12px rgba(212, 164, 75, 0.5);
 }
 
 .profile-section {
@@ -533,6 +655,12 @@ header {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 20px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  transition: background 0.5s, color 0.5s;
+}
+
+body.day-mode .profile-section {
+  background: rgba(107, 79, 39, 0.2);
+  color: #333;
 }
 
 .profile-icon {
@@ -550,6 +678,12 @@ header {
   border-radius: 15px;
   margin-bottom: 20px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: background 0.5s, color 0.5s;
+}
+
+body.day-mode .user-card {
+  background: rgba(241, 199, 109, 0.2);
+  color: #333;
 }
 
 .user-id {
@@ -557,6 +691,11 @@ header {
   font-size: 14px;
   margin-bottom: 10px;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  transition: color 0.5s;
+}
+
+body.day-mode .user-id {
+  color: #6B4F27;
 }
 
 .user-card p {
@@ -565,6 +704,11 @@ header {
   color: #D3D3D3;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
   line-height: 1.3;
+  transition: color 0.5s;
+}
+
+body.day-mode .user-card p {
+  color: #333;
 }
 
 .user-card hr {
@@ -572,6 +716,11 @@ header {
   height: 1px;
   background: #808080;
   margin: 10px 0;
+  transition: background 0.5s;
+}
+
+body.day-mode .user-card hr {
+  background: #6B4F27;
 }
 
 .theme-switch {
@@ -584,6 +733,11 @@ header {
   font-size: 14px;
   color: #cc0000;
   margin-bottom: 10px;
+  transition: color 0.5s;
+}
+
+body.day-mode .theme-switch h2 {
+  color: #6B4F27;
 }
 
 .switch-container {
@@ -599,6 +753,11 @@ header {
   background: #808080;
   border-radius: 15px;
   cursor: pointer;
+  transition: background 0.5s;
+}
+
+body.day-mode .switch {
+  background: #D4A44B;
 }
 
 .switch-button {
@@ -612,10 +771,6 @@ header {
   transition: transform 0.3s;
 }
 
-body.day-mode .switch {
-  background: #D4A44B;
-}
-
 body.day-mode .switch-button {
   transform: translateX(30px);
 }
@@ -624,6 +779,11 @@ body.day-mode .switch-button {
   font-size: 18px;
   color: #cc0000;
   animation: breathe 4s infinite ease-in-out;
+  transition: color 0.5s;
+}
+
+body.day-mode .profile-section h2 {
+  color: #6B4F27;
 }
 
 #thank-you {
@@ -632,6 +792,11 @@ body.day-mode .switch-button {
   font-size: 12px;
   color: #D3D3D3;
   padding: 10px;
+  transition: color 0.5s;
+}
+
+body.day-mode #thank-you {
+  color: #333;
 }
 
 .notification {
@@ -646,7 +811,11 @@ body.day-mode .switch-button {
   z-index: 1000;
   cursor: pointer;
   font-size: 12px;
-  transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+  transition: transform 0.5s ease-out, opacity 0.5s ease-out, background 0.5s, color 0.5s;
+}
+
+body.day-mode .notification {
+  color: #333;
 }
 
 .notification.dragging {
@@ -661,6 +830,11 @@ body.day-mode .switch-button {
 .notification.confirm {
   background: rgba(0, 255, 0, 0.2);
   color: #00FF00;
+}
+
+body.day-mode .notification.confirm {
+  background: rgba(0, 128, 0, 0.2);
+  color: #006400;
 }
 
 @keyframes slideInOut {
@@ -681,6 +855,11 @@ body.day-mode .switch-button {
   border-radius: 15px;
   box-shadow: 0 -5px 10px rgba(0, 0, 0, 0.3);
   z-index: 1000;
+  transition: background 0.5s, color 0.5s;
+}
+
+body.day-mode .menu-bar {
+  background: #D4A44B;
 }
 
 .menu-item {
@@ -691,7 +870,11 @@ body.day-mode .switch-button {
   color: #D3D3D3;
   font-size: 10px;
   cursor: pointer;
-  transition: transform 0.3s;
+  transition: transform 0.3s, color 0.5s;
+}
+
+body.day-mode .menu-item {
+  color: #6B4F27;
 }
 
 .menu-item img {
