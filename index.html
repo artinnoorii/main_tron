@@ -153,27 +153,29 @@
   </section>
 
   <section class="edit-profile-section" id="edit-profile-section" style="display: none;">
-    <h2>ویرایش مشخصات</h2>
-    <form id="edit-profile-form">
-      <div class="form-group">
-        <label>نام شما چیست؟</label>
-        <input type="text" id="firstName" placeholder="مثال: علی">
-      </div>
-      <div class="form-group">
-        <label>نام خانوادگی شما چیست؟</label>
-        <input type="text" id="lastName" placeholder="مثال: احمدی">
-      </div>
-      <div class="form-group">
-        <label>شماره تلفن شما چیست؟</label>
-        <input type="text" id="phone" placeholder="مثال: 09123456789">
-      </div>
-      <div class="form-group">
-        <label>ایمیل شما چیست؟</label>
-        <input type="email" id="email" placeholder="مثال: ali@example.com">
-      </div>
-      <button type="submit" class="confirm-btn">تأیید مشخصات</button>
-    </form>
-    <button class="back-btn" onclick="hideEditProfileForm()">بازگشت</button>
+    <div class="edit-profile-container">
+      <h2>به‌روزرسانی مشخصات شما</h2>
+      <form id="edit-profile-form">
+        <div class="form-group">
+          <label>لطفاً نام خود را وارد کنید</label>
+          <input type="text" id="firstName" placeholder="مثال: علی">
+        </div>
+        <div class="form-group">
+          <label>لطفاً نام خانوادگی خود را وارد کنید</label>
+          <input type="text" id="lastName" placeholder="مثال: احمدی">
+        </div>
+        <div class="form-group">
+          <label>لطفاً شماره تلفن خود را وارد کنید</label>
+          <input type="text" id="phone" placeholder="مثال: 09123456789">
+        </div>
+        <div class="form-group">
+          <label>لطفاً ایمیل خود را وارد کنید</label>
+          <input type="email" id="email" placeholder="مثال: ali@example.com">
+        </div>
+        <button type="submit" class="confirm-btn">تأیید و ذخیره</button>
+      </form>
+      <button class="back-btn" onclick="hideEditProfileForm()">بازگشت</button>
+    </div>
   </section>
 
   <script src="script.js"></script>

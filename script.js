@@ -10,10 +10,10 @@ function loadData() {
       document.querySelector('.referral-welcome p:nth-child(2)').textContent = `سلام ${userId} عزیز، به بخش جذاب کسب درآمد با رفرال خوش اومدی! 💰`;
       document.querySelector('.guidelines-section p:nth-child(2)').textContent = `سلام ${userId} عزیز، به بخش جذاب کسب درآمد با رفرال خوش اومدی! 💰`;
       document.getElementById('user-id').textContent = `ID: ${userId}`;
-      document.querySelector('.user-card p:nth-child(2)').textContent = `<strong>نام:</strong> ${data.firstName || '[نام کاربر]'}`;
-      document.querySelector('.user-card p:nth-child(3)').textContent = `<strong>نام خانوادگی:</strong> ${data.lastName || '[نام خانوادگی]'}`;
-      document.querySelector('.user-card p:nth-child(4)').textContent = `<strong>شماره تلفن:</strong> ${data.phone || '[شماره تلفن]'}`;
-      document.querySelector('.user-card p:nth-child(5)').textContent = `<strong>ایمیل:</strong> ${data.email || '[ایمیل]'}`;
+      document.querySelector('.user-card p:nth-child(2)').textContent = `<strong>نام:</strong> ${localStorage.getItem('firstName') || '[نام کاربر]'}`;
+      document.querySelector('.user-card p:nth-child(3)').textContent = `<strong>نام خانوادگی:</strong> ${localStorage.getItem('lastName') || '[نام خانوادگی]'}`;
+      document.querySelector('.user-card p:nth-child(4)').textContent = `<strong>شماره تلفن:</strong> ${localStorage.getItem('phone') || '[شماره تلفن]'}`;
+      document.querySelector('.user-card p:nth-child(5)').textContent = `<strong>ایمیل:</strong> ${localStorage.getItem('email') || '[ایمیل]'}`;
 
       const tronValue = data.tronBalance * data.tronPrice;
       const totalAmount = tronValue + data.tomanBalance;
@@ -185,7 +185,8 @@ function showEditProfileForm() {
 }
 
 function hideEditProfileForm() {
-  document.getElementById('edit-profile-section').style.display = 'none';
+  document.getElementById('edit-profile-section').style.animation = 'fadeOut 0.3s ease-out';
+  setTimeout(() => document.getElementById('edit-profile-section').style.display = 'none', 300);
 }
 
 document.getElementById('edit-profile-form').addEventListener('submit', function(e) {
