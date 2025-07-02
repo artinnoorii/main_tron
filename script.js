@@ -13,7 +13,7 @@ function setupScrollAnimation() {
   }, { threshold: 0.1 });
 
   document.querySelectorAll('.tron-info, .crypto-item, .crypto-details-hidden, .referral-welcome, .referral-rules-container, .referral-confirmation, .link-container, .copy-button, .share-button, #guidelines, .guidelines-section, .profile-section, .menu-bar, .notification').forEach(element => {
-    observer.observe(element);
+    if (element) observer.observe(element); // بررسی وجود عنصر
   });
 }
 
@@ -211,6 +211,15 @@ function declineReferral() {
 
 function closeGuidelines() {
   document.querySelector('.guidelines-section').style.display = 'none';
+}
+
+function showEditProfileForm() {
+  window.location.href = 'edit-profile.html'; // صفحه جدید برای فرم
+}
+
+function hideEditProfileForm() {
+  document.getElementById('edit-profile-section').style.animation = 'fadeOut 0.3s ease-out';
+  setTimeout(() => document.getElementById('edit-profile-section').style.display = 'none', 300);
 }
 
 // بارگذاری اولیه داده‌ها
