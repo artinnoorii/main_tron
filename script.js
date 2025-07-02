@@ -1,6 +1,22 @@
 // تنظیم ورودی ID کاربر (برنامه‌نویس باید این مقدار رو از API ربات بگیره)
 let userId = '12345'; // نمونه، باید از API جایگزین بشه
 
+// انیمیشن کشیده شدن صفحه
+function setupScrollAnimation() {
+  const observer = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.tron-info, .crypto-item, .crypto-details-hidden, .referral-welcome, .referral-rules-container, .referral-confirmation, .link-container, .copy-button, .share-button, #guidelines, .guidelines-section, .profile-section, .menu-bar, .notification').forEach(element => {
+    observer.observe(element);
+  });
+}
+
 // بارگذاری داده‌ها از API ربات
 function loadData() {
   fetch('/api/user-data')
@@ -11,18 +27,20 @@ function loadData() {
       document.querySelector('.guidelines-section p:nth-child(2)').textContent = `سلام ${userId} عزیز، به بخش جذاب کسب درآمد با رفرال خوش اومدی! 💰`;
       document.getElementById('user-id').textContent = `ID: ${userId}`;
       const userCard = document.getElementById('user-card');
-      const editBtn = userCard.querySelector('.edit-profile-btn');
+      const editBtn = document.querySelector('.edit-profile-btn');
       const userInfo = userCard.querySelectorAll('p');
       const firstName = localStorage.getItem('firstName');
       const lastName = localStorage.getItem('lastName');
+      const nationalId = localStorage.getItem('nationalId');
       const phone = localStorage.getItem('phone');
       const email = localStorage.getItem('email');
 
-      if (firstName && lastName && phone && email) {
-        userInfo[1].textContent = `<strong>نام:</strong> ${firstName}`;
-        userInfo[2].textContent = `<strong>نام خانوادگی:</strong> ${lastName}`;
+      if (firstName && lastName && nationalId && phone) {
+        userInfo[0].textContent = `<strong>نام:</strong> ${firstName}`;
+        userInfo[1].textContent = `<strong>نام خانوادگی:</strong> ${lastName}`;
+        userInfo[2].textContent = `<strong>کد ملی:</strong> ${nationalId}`;
         userInfo[3].textContent = `<strong>شماره تلفن:</strong> ${phone}`;
-        userInfo[4].textContent = `<strong>ایمیل:</strong> ${email}`;
+        userInfo[4].textContent = `<strong>ایمیل:</strong> ${email || 'ندارد'}`;
         userInfo.forEach(p => p.style.display = 'block');
         editBtn.style.display = 'none';
       } else {
@@ -195,36 +213,31 @@ function closeGuidelines() {
   document.querySelector('.guidelines-section').style.display = 'none';
 }
 
-function showEditProfileForm() {
-  document.getElementById('edit-profile-section').style.display = 'block';
-}
-
-function hideEditProfileForm() {
-  document.getElementById('edit-profile-section').style.animation = 'fadeOut 0.3s ease-out';
-  setTimeout(() => document.getElementById('edit-profile-section').style.display = 'none', 300);
-}
-
-document.getElementById('edit-profile-form').addEventListener('submit', function(e) {
-  e.preventDefault();
-  const firstName = document.getElementById('firstName').value;
-  const lastName = document.getElementById('lastName').value;
-  const phone = document.getElementById('phone').value;
-  const email = document.getElementById('email').value;
-
-  if (firstName && lastName && phone && email) {
-    localStorage.setItem('firstName', firstName);
-    localStorage.setItem('lastName', lastName);
-    localStorage.setItem('phone', phone);
-    localStorage.setItem('email', email);
-
-    loadData(); // به‌روزرسانی اطلاعات پروفایل
-    hideEditProfileForm();
-    showNotification('مشخصات با موفقیت آپدیت شد!', false);
-  } else {
-    showNotification('لطفاً همه فیلدها را پر کنید!', false);
-  }
-});
-
 // بارگذاری اولیه داده‌ها
 loadData();
 setInterval(loadData, 10000); // به‌روزرسانی هر 10 ثانیه
+
+// اجرای انیمیشن کشیده شدن صفحه بعد از بارگذاری
+document.addEventListener('DOMContentLoaded', setupScrollAnimation);
+
+// مدیریت فرم ویرایش پروفایل توی صفحه جدید
+document.getElementById('edit-profile-form')?.addEventListener('submit', function(e) {
+  e.preventDefault();
+  const firstName = document.getElementById('firstName').value;
+  const lastName = document.getElementById('lastName').value;
+  const nationalId = document.getElementById('nationalId').value;
+  const phone = document.getElementById('phone').value;
+  const email = document.getElementById('email').value;
+
+  if (firstName && lastName && nationalId && phone) {
+    localStorage.setItem('firstName', firstName);
+    localStorage.setItem('lastName', lastName);
+    localStorage.setItem('nationalId', nationalId);
+    localStorage.setItem('phone', phone);
+    localStorage.setItem('email', email || '');
+    window.location.href = 'index.html'; // بازگشت به صفحه اصلی بعد از تأیید
+    setTimeout(() => showNotification('مشخصات با موفقیت ثبت شد!', false), 500);
+  } else {
+    showNotification('لطفاً فیلدهای اجباری را پر کنید!', false);
+  }
+});
