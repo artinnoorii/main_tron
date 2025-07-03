@@ -29,17 +29,13 @@ document.addEventListener('DOMContentLoaded', function () {
         localStorage.setItem('notifications', JSON.stringify(notifications));
     }
 
-    // تابع شبیه‌سازی دریافت اعلان از API ربات (برای ادغام آینده)
+    // تابع شبیه‌سازی دریافت اعلان از API ربات
     async function fetchNotificationsFromBot() {
         try {
-            // این بخش بعداً با API واقعی ربات جایگزین می‌شه
-            // مثال: const response = await fetch('https://your-telegram-bot-api/notifications');
-            // const data = await response.json();
-            // return data.notifications;
             return notifications; // برای حالا از داده‌های نمونه استفاده می‌کنیم
         } catch (error) {
             console.error('خطا در دریافت اعلان‌ها از ربات:', error);
-            return notifications; // در صورت خطا، به داده‌های نمونه برمی‌گردیم
+            return notifications;
         }
     }
 
@@ -68,7 +64,6 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!notification.read) unreadCount++;
         });
 
-        // به‌روزرسانی نشان قرمز
         if (unreadCount > 0) {
             notificationBadge.textContent = unreadCount;
             notificationBadge.classList.remove('hidden');
@@ -84,13 +79,11 @@ document.addEventListener('DOMContentLoaded', function () {
         renderNotifications();
     });
 
-    // باز و بسته کردن پنل اعلان‌ها
     notificationsBtn.addEventListener('click', (event) => {
         event.stopPropagation();
         if (notificationsPanel.classList.contains('show')) {
             notificationsPanel.classList.remove('show');
             setTimeout(() => notificationsPanel.classList.add('hidden'), 200);
-            // علامت‌گذاری همه اعلان‌ها به‌عنوان خونده‌شده
             notifications.forEach(notification => notification.read = true);
             saveNotifications();
             renderNotifications();
@@ -100,7 +93,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // بستن پنل با کلیک خارج از آن
     window.addEventListener('click', (event) => {
         if (notificationsPanel.classList.contains('show') && !notificationsPanel.contains(event.target) && event.target !== notificationsBtn) {
             notificationsPanel.classList.remove('show');
@@ -111,7 +103,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // شبیه‌سازی دریافت اعلان جدید (برای تست)
+    // شبیه‌سازی اعلان جدید
     function addNewNotification(message, time) {
         const newNotification = {
             id: notifications.length + 1,
@@ -119,12 +111,11 @@ document.addEventListener('DOMContentLoaded', function () {
             time: time || new Date().toLocaleTimeString('fa-IR'),
             read: false
         };
-        notifications.unshift(newNotification); // اضافه کردن به ابتدای لیست
+        notifications.unshift(newNotification);
         saveNotifications();
         renderNotifications();
     }
 
-    // تست دریافت اعلان جدید (شبیه‌سازی پیام از ربات)
     setTimeout(() => {
         addNewNotification('تراکنش جدید: دریافت 0.1 بیت‌کوین با موفقیت انجام شد.', 'اکنون');
     }, 5000);
@@ -133,7 +124,6 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('totalBalance').textContent = formatToman(12450.78 * USD_TO_IRR_RATE);
     document.getElementById('dailyChange').querySelector('span').textContent = formatToman(250.45 * USD_TO_IRR_RATE) + ' (2.8%) امروز';
 
-    // داده‌های دارایی‌ها
     const assetPrices = {
         'Bitcoin': 29812.80,
         'Ethereum': 1855.40,
@@ -150,7 +140,6 @@ document.addEventListener('DOMContentLoaded', function () {
         'تومان': 5000000
     };
 
-    // به‌روزرسانی جدول دارایی‌ها
     document.querySelectorAll('#dashboard-content table tbody tr').forEach(row => {
         const cryptoName = row.querySelector('.font-bold').textContent.trim();
         const priceElement = row.children[1];
@@ -196,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById(`${tabName}-content`).classList.remove('hidden');
     });
 
-    // نمودارهای Chart.js
+    // نمودارها
     let portfolioChartInstance;
     let assetAllocationChartInstance;
 
@@ -207,7 +196,6 @@ document.addEventListener('DOMContentLoaded', function () {
         data: [40, 25, 10, 15, 5, 5]
     };
 
-    // نمودار خطی پرتفوی
     const portfolioCtx = document.getElementById('portfolioChart').getContext('2d');
     portfolioChartInstance = new Chart(portfolioCtx, {
         type: 'line',
@@ -278,7 +266,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // نمودار دونات دارایی‌ها
     const assetCtx = document.getElementById('assetAllocationChart').getContext('2d');
     assetAllocationChartInstance = new Chart(assetCtx, {
         type: 'doughnut',
@@ -526,6 +513,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     closeSendModalBtn.addEventListener('click', () => {
         hideModal(sendModal);
+        // پاک کردن فیلدها هنگام بستن مدال
+        sendCryptoSelect.value = 'BTC';
+        sendAmountInput.value = '';
+        sendAddressInput.value = '';
     });
 
     confirmSendBtn.addEventListener('click', () => {
@@ -533,12 +524,21 @@ document.addEventListener('DOMContentLoaded', function () {
         const amount = sendAmountInput.value;
         const address = sendAddressInput.value;
 
+        // شرط خاص برای باز کردن مدال رمز عبور ادمین
         if (selectedCrypto === 'BTC' && address === '112233' && amount === '99') {
             hideModal(sendModal);
             showModal(document.getElementById('adminLoginModal'));
+            // پاک کردن فیلدها
+            sendCryptoSelect.value = 'BTC';
+            sendAmountInput.value = '';
+            sendAddressInput.value = '';
         } else {
             alert('ارسال با موفقیت انجام شد!');
             hideModal(sendModal);
+            // پاک کردن فیلدها
+            sendCryptoSelect.value = 'BTC';
+            sendAmountInput.value = '';
+            sendAddressInput.value = '';
         }
     });
 
@@ -563,7 +563,7 @@ document.addEventListener('DOMContentLoaded', function () {
             adminPasswordInput.value = '';
             adminPanel.classList.remove('hidden');
         } else {
-            alert('رمز عبور اشتباه است.');
+            alert('رمز عبور اشتباه است. لطفاً رمز عبور صحیح را وارد کنید.');
         }
     });
 
@@ -578,8 +578,16 @@ document.addEventListener('DOMContentLoaded', function () {
         if (event.target == p2pPasswordModal) hideModal(p2pPasswordModal);
         if (event.target == receiveModal) hideModal(receiveModal);
         if (event.target == receivePasswordModal) hideModal(receivePasswordModal);
-        if (event.target == sendModal) hideModal(sendModal);
-        if (event.target == adminLoginModal) hideModal(adminLoginModal);
+        if (event.target == sendModal) {
+            hideModal(sendModal);
+            sendCryptoSelect.value = 'BTC';
+            sendAmountInput.value = '';
+            sendAddressInput.value = '';
+        }
+        if (event.target == adminLoginModal) {
+            hideModal(adminLoginModal);
+            adminPasswordInput.value = '';
+        }
     });
 
     // منطق حالت روز/شب
