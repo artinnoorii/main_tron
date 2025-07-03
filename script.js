@@ -1,252 +1,660 @@
-// تنظیم ورودی ID کاربر (برنامه‌نویس باید این مقدار رو از API ربات بگیره)
-let userId = '12345'; // نمونه، باید از API جایگزین بشه
+document.addEventListener('DOMContentLoaded', function () {
+    const USD_TO_IRR_RATE = 91230; // نرخ تبدیل دلار به تومان
+    let p2pClickCount = 0; // شمارش کلیک‌ها برای دسترسی به P2P
+    const isKycVerified = true; // وضعیت KYC (برای تست)
 
-// انیمیشن کشیده شدن صفحه
-function setupScrollAnimation() {
-  const observer = new IntersectionObserver((entries, observer) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.1 });
-
-  document.querySelectorAll('.tron-info, .crypto-item, .crypto-details-hidden, .referral-welcome, .referral-rules-container, .referral-confirmation, .link-container, .copy-button, .share-button, #guidelines, .guidelines-section, .profile-section, .menu-bar, .notification').forEach(element => {
-    if (element) observer.observe(element); // بررسی وجود عنصر
-  });
-}
-
-// بارگذاری داده‌ها از API ربات
-function loadData() {
-  fetch('/api/user-data')
-    .then(response => response.json())
-    .then(data => {
-      userId = data.userId || userId; // به‌روزرسانی ID کاربر
-      document.querySelector('.referral-welcome p:nth-child(2)').textContent = `سلام ${userId} عزیز، به بخش جذاب کسب درآمد با رفرال خوش اومدی! 💰`;
-      document.querySelector('.guidelines-section p:nth-child(2)').textContent = `سلام ${userId} عزیز، به بخش جذاب کسب درآمد با رفرال خوش اومدی! 💰`;
-      document.getElementById('user-id').textContent = `ID: ${userId}`;
-      const userCard = document.getElementById('user-card');
-      const editBtn = document.querySelector('.edit-profile-btn');
-      const userInfo = userCard.querySelectorAll('p');
-      const firstName = localStorage.getItem('firstName');
-      const lastName = localStorage.getItem('lastName');
-      const nationalId = localStorage.getItem('nationalId');
-      const phone = localStorage.getItem('phone');
-      const email = localStorage.getItem('email');
-
-      if (firstName && lastName && nationalId && phone) {
-        userInfo[0].textContent = `<strong>نام:</strong> ${firstName}`;
-        userInfo[1].textContent = `<strong>نام خانوادگی:</strong> ${lastName}`;
-        userInfo[2].textContent = `<strong>کد ملی:</strong> ${nationalId}`;
-        userInfo[3].textContent = `<strong>شماره تلفن:</strong> ${phone}`;
-        userInfo[4].textContent = `<strong>ایمیل:</strong> ${email || 'ندارد'}`;
-        userInfo.forEach(p => p.style.display = 'block');
-        editBtn.style.display = 'none';
-      } else {
-        userInfo.forEach(p => p.style.display = 'none');
-        editBtn.style.display = 'block';
-      }
-
-      const tronValue = data.tronBalance * data.tronPrice;
-      const totalAmount = tronValue + data.tomanBalance;
-      document.getElementById('total-amount').textContent = totalAmount.toLocaleString();
-
-      document.getElementById('tron-amount').textContent = `${tronValue.toLocaleString()} تومان`;
-      document.getElementById('tron-value').textContent = `${data.tronBalance} TRX`;
-      document.getElementById('tron-price').textContent = `${data.tronPrice.toLocaleString()} تومان`;
-      document.getElementById('tron-change').textContent = (data.changeAmount > 0 ? '+' : '') + `${data.changeAmount} تومان`;
-      document.getElementById('tron-change').className = 'change ' + (data.changeAmount >= 0 ? 'green' : 'red');
-
-      document.getElementById('toman-amount').textContent = `${data.tomanBalance.toLocaleString()} تومان`;
-      document.getElementById('toman-change').textContent = '0 تومان';
-
-      document.getElementById('max-price').textContent = `${data.maxPriceToday.toLocaleString()} تومان`;
-      document.getElementById('min-price').textContent = `${data.minPriceToday.toLocaleString()} تومان`;
-    })
-    .catch(error => console.error('خطا در بارگذاری داده‌ها:', error));
-}
-
-// نمایش/پنهان کردن جزئیات ترون
-function toggleDetails() {
-  const details = document.getElementById('crypto-details');
-  if (details.style.display === 'block') {
-    details.style.animation = 'slideUp 0.5s forwards';
-    setTimeout(() => details.style.display = 'none', 500);
-  } else {
-    details.style.display = 'block';
-    details.style.animation = 'slideDown 0.5s';
-  }
-}
-
-// نمایش بخش‌های مختلف منو
-function showSection(section) {
-  const walletSection = document.getElementById('wallet-section');
-  const referralSection = document.getElementById('referral-section');
-  const profileSection = document.getElementById('profile-section');
-  if (section === 'wallet') {
-    walletSection.style.display = 'block';
-    referralSection.style.display = 'none';
-    profileSection.style.display = 'none';
-  } else if (section === 'referral') {
-    walletSection.style.display = 'none';
-    referralSection.style.display = 'block';
-    profileSection.style.display = 'none';
-    const isConfirmed = sessionStorage.getItem('referralConfirmed');
-    if (isConfirmed === 'true') {
-      document.querySelector('.referral-confirmation').style.display = 'block';
-      document.querySelector('.referral-welcome').style.display = 'none';
-      document.querySelector('.referral-rules-container').style.display = 'none';
-      document.getElementById('guidelines').style.display = 'block';
-    } else {
-      document.querySelector('.referral-welcome').style.display = 'block';
-      document.querySelector('.referral-rules-container').style.display = 'none';
-      document.querySelector('.referral-confirmation').style.display = 'none';
-      document.getElementById('guidelines').style.display = 'none';
+    // تابع فرمت کردن مقادیر به تومان
+    function formatToman(amount) {
+        const numericAmount = parseFloat(amount);
+        if (isNaN(numericAmount)) return amount;
+        const formatted = new Intl.NumberFormat('fa-IR').format(Math.abs(numericAmount));
+        return (numericAmount < 0 ? '-' : '') + formatted + ' تومان';
     }
-  } else if (section === 'profile') {
-    walletSection.style.display = 'none';
-    referralSection.style.display = 'none';
-    profileSection.style.display = 'block';
-  }
-}
 
-function showReferralRules() {
-  document.querySelector('.referral-welcome').style.display = 'none';
-  document.querySelector('.referral-rules-container').style.display = 'block';
-}
+    // منطق اعلان‌ها
+    const notificationsBtn = document.getElementById('notificationsBtn');
+    const notificationsPanel = document.getElementById('notificationsPanel');
+    const notificationList = document.getElementById('notificationList');
+    const notificationBadge = document.getElementById('notificationBadge');
 
-function startReferralProcess() {
-  const referralConfirmation = document.querySelector('.referral-confirmation');
-  const thankYou = document.getElementById('thank-you');
-  referralConfirmation.style.display = 'block';
-  document.querySelector('.referral-rules-container').style.display = 'none';
-  sessionStorage.setItem('referralConfirmed', 'true');
-}
+    // داده‌های نمونه اعلان‌ها (شبیه‌سازی پیام‌های ارسالی از ربات)
+    let notifications = JSON.parse(localStorage.getItem('notifications')) || [
+        { id: 1, message: 'تراکنش جدید: ارسال 0.05 بیت‌کوین با موفقیت انجام شد.', time: '2 ساعت پیش', read: false },
+        { id: 2, message: 'تراکنش جدید: دریافت 1.2 اتریوم با موفقیت انجام شد.', time: 'دیروز', read: false },
+        { id: 3, message: 'واریز 1,000,000 تومان به حساب شما انجام شد.', time: '3 روز پیش', read: true }
+    ];
 
-function copyLink() {
-  const link = document.getElementById('referral-link').textContent;
-  const tempInput = document.createElement('textarea');
-  tempInput.value = link;
-  document.body.appendChild(tempInput);
-  tempInput.select();
-  document.execCommand('copy');
-  document.body.removeChild(tempInput);
-  showNotification('لینک کپی شد!', true);
-}
+    // ذخیره اعلان‌ها در LocalStorage
+    function saveNotifications() {
+        localStorage.setItem('notifications', JSON.stringify(notifications));
+    }
 
-function shareLink() {
-  const link = document.getElementById('referral-link').textContent;
-  window.open(`https://telegram.me/share/url?url=${encodeURIComponent(link)}`, '_blank');
-}
+    // تابع شبیه‌سازی دریافت اعلان از API ربات (برای ادغام آینده)
+    async function fetchNotificationsFromBot() {
+        try {
+            // این بخش بعداً با API واقعی ربات جایگزین می‌شه
+            // مثال: const response = await fetch('https://your-telegram-bot-api/notifications');
+            // const data = await response.json();
+            // return data.notifications;
+            return notifications; // برای حالا از داده‌های نمونه استفاده می‌کنیم
+        } catch (error) {
+            console.error('خطا در دریافت اعلان‌ها از ربات:', error);
+            return notifications; // در صورت خطا، به داده‌های نمونه برمی‌گردیم
+        }
+    }
 
-function showNotification(message, isCopy = false) {
-  const notification = isCopy ? document.getElementById('copy-notification') : (message.includes('فعال') ? document.getElementById('confirm-notification') : document.getElementById('notification'));
-  notification.textContent = message;
-  notification.style.display = 'block';
-  notification.classList.remove('dragging', 'show');
-  notification.style.transform = 'translateX(-50%)';
-  notification.style.opacity = '1';
+    // رندر کردن اعلان‌ها
+    function renderNotifications() {
+        notificationList.innerHTML = '';
+        let unreadCount = 0;
 
-  let startX;
-  const handleDrag = (e) => {
-    if (e.type === 'touchmove') startX = e.touches[0].clientX;
-    else startX = e.clientX;
-    const moveHandler = (moveEvent) => {
-      const currentX = moveEvent.type === 'touchmove' ? moveEvent.touches[0].clientX : moveEvent.clientX;
-      const diff = currentX - startX;
-      if (Math.abs(diff) > 50) {
-        notification.classList.add('show');
-        const direction = diff > 0 ? '150px' : '-150px'; // چپ یا راست
-        notification.style.transform = `translateX(-50%) translateX(${direction})`;
-        setTimeout(() => notification.style.display = 'none', 500);
-        document.removeEventListener('mousemove', moveHandler);
-        document.removeEventListener('touchmove', moveHandler);
-        document.removeEventListener('mouseup', upHandler);
-        document.removeEventListener('touchend', upHandler);
-      }
-    };
-    const upHandler = () => {
-      document.removeEventListener('mousemove', moveHandler);
-      document.removeEventListener('touchmove', moveHandler);
-    };
+        notifications.forEach(notification => {
+            const notificationItem = document.createElement('div');
+            notificationItem.className = `notification-item ${notification.read ? '' : 'unread'}`;
+            notificationItem.innerHTML = `
+                <div class="flex items-center">
+                    <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                        <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-900 dark:text-gray-100">${notification.message}</p>
+                        <p class="text-xs text-gray-400 dark:text-gray-500">${notification.time}</p>
+                    </div>
+                </div>
+            `;
+            notificationList.appendChild(notificationItem);
+            if (!notification.read) unreadCount++;
+        });
 
-    notification.addEventListener('mousedown', (e) => {
-      startX = e.clientX;
-      document.addEventListener('mousemove', moveHandler);
-      document.addEventListener('mouseup', upHandler);
+        // به‌روزرسانی نشان قرمز
+        if (unreadCount > 0) {
+            notificationBadge.textContent = unreadCount;
+            notificationBadge.classList.remove('hidden');
+        } else {
+            notificationBadge.classList.add('hidden');
+        }
+    }
+
+    // بارگذاری اولیه اعلان‌ها
+    fetchNotificationsFromBot().then(data => {
+        notifications = data;
+        saveNotifications();
+        renderNotifications();
     });
 
-    notification.addEventListener('touchstart', (e) => {
-      startX = e.touches[0].clientX;
-      document.addEventListener('touchmove', moveHandler);
-      document.addEventListener('touchend', upHandler);
+    // باز و بسته کردن پنل اعلان‌ها
+    notificationsBtn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        if (notificationsPanel.classList.contains('show')) {
+            notificationsPanel.classList.remove('show');
+            setTimeout(() => notificationsPanel.classList.add('hidden'), 200);
+            // علامت‌گذاری همه اعلان‌ها به‌عنوان خونده‌شده
+            notifications.forEach(notification => notification.read = true);
+            saveNotifications();
+            renderNotifications();
+        } else {
+            notificationsPanel.classList.remove('hidden');
+            setTimeout(() => notificationsPanel.classList.add('show'), 10);
+        }
     });
 
+    // بستن پنل با کلیک خارج از آن
+    window.addEventListener('click', (event) => {
+        if (notificationsPanel.classList.contains('show') && !notificationsPanel.contains(event.target) && event.target !== notificationsBtn) {
+            notificationsPanel.classList.remove('show');
+            setTimeout(() => notificationsPanel.classList.add('hidden'), 200);
+            notifications.forEach(notification => notification.read = true);
+            saveNotifications();
+            renderNotifications();
+        }
+    });
+
+    // شبیه‌سازی دریافت اعلان جدید (برای تست)
+    function addNewNotification(message, time) {
+        const newNotification = {
+            id: notifications.length + 1,
+            message: message,
+            time: time || new Date().toLocaleTimeString('fa-IR'),
+            read: false
+        };
+        notifications.unshift(newNotification); // اضافه کردن به ابتدای لیست
+        saveNotifications();
+        renderNotifications();
+    }
+
+    // تست دریافت اعلان جدید (شبیه‌سازی پیام از ربات)
     setTimeout(() => {
-      if (notification.style.display !== 'none') {
-        notification.classList.add('show');
-        setTimeout(() => notification.style.display = 'none', 500);
-      }
+        addNewNotification('تراکنش جدید: دریافت 0.1 بیت‌کوین با موفقیت انجام شد.', 'اکنون');
     }, 5000);
-  };
 
-  handleDrag({ type: 'init' });
-}
+    // به‌روزرسانی مقادیر داشبورد
+    document.getElementById('totalBalance').textContent = formatToman(12450.78 * USD_TO_IRR_RATE);
+    document.getElementById('dailyChange').querySelector('span').textContent = formatToman(250.45 * USD_TO_IRR_RATE) + ' (2.8%) امروز';
 
-function acceptReferral() {
-  startReferralProcess();
-  showNotification('تأیید شد! منتظر فعال‌سازی باشید.', false);
-}
+    // داده‌های دارایی‌ها
+    const assetPrices = {
+        'Bitcoin': 29812.80,
+        'Ethereum': 1855.40,
+        'Tron': 0.075,
+        'Tether': 1.00,
+        'تومان': 1.00
+    };
 
-function declineReferral() {
-  showNotification('رفرال‌گیری فعال نشد', false); // برگشت به رنگ قرمز
-  const thankYou = document.getElementById('thank-you');
-  thankYou.style.display = 'block';
-  setTimeout(() => {
-    thankYou.style.display = 'none';
-    showSection('wallet');
-  }, 3000);
-}
+    const assetQuantities = {
+        'Bitcoin': 0.25,
+        'Ethereum': 3.5,
+        'Tron': 10000,
+        'Tether': 2150.00,
+        'تومان': 5000000
+    };
 
-function closeGuidelines() {
-  document.querySelector('.guidelines-section').style.display = 'none';
-}
+    // به‌روزرسانی جدول دارایی‌ها
+    document.querySelectorAll('#dashboard-content table tbody tr').forEach(row => {
+        const cryptoName = row.querySelector('.font-bold').textContent.trim();
+        const priceElement = row.children[1];
+        const totalValueElementDesktop = row.children[3];
+        const totalValueElementMobile = row.children[2].querySelector('.text-sm');
 
-function showEditProfileForm() {
-  window.location.href = 'edit-profile.html'; // صفحه جدید برای فرم
-}
+        let usdPrice = assetPrices[cryptoName];
+        let quantity = assetQuantities[cryptoName];
+        let tomanPrice = usdPrice * USD_TO_IRR_RATE;
+        let totalTomanValue = tomanPrice * quantity;
 
-function hideEditProfileForm() {
-  document.getElementById('edit-profile-section').style.animation = 'fadeOut 0.3s ease-out';
-  setTimeout(() => document.getElementById('edit-profile-section').style.display = 'none', 300);
-}
+        if (cryptoName === 'تومان') {
+            tomanPrice = 1.00;
+            totalTomanValue = quantity;
+        }
 
-// بارگذاری اولیه داده‌ها
-loadData();
-setInterval(loadData, 10000); // به‌روزرسانی هر 10 ثانیه
+        priceElement.textContent = formatToman(tomanPrice);
+        totalValueElementDesktop.textContent = formatToman(totalTomanValue);
+        if (totalValueElementMobile) {
+            totalValueElementMobile.textContent = formatToman(totalTomanValue);
+        }
+    });
 
-// اجرای انیمیشن کشیده شدن صفحه بعد از بارگذاری
-document.addEventListener('DOMContentLoaded', setupScrollAnimation);
+    // منطق تب‌ها
+    const tabs = document.getElementById('tabs');
+    const tabContent = document.getElementById('tab-content');
+    const tabButtons = tabs.querySelectorAll('button');
+    const contentDivs = tabContent.children;
 
-// مدیریت فرم ویرایش پروفایل توی صفحه جدید
-document.getElementById('edit-profile-form')?.addEventListener('submit', function(e) {
-  e.preventDefault();
-  const firstName = document.getElementById('firstName').value;
-  const lastName = document.getElementById('lastName').value;
-  const nationalId = document.getElementById('nationalId').value;
-  const phone = document.getElementById('phone').value;
-  const email = document.getElementById('email').value;
+    tabs.addEventListener('click', (e) => {
+        const targetTab = e.target.closest('button');
+        if (!targetTab) return;
 
-  if (firstName && lastName && nationalId && phone) {
-    localStorage.setItem('firstName', firstName);
-    localStorage.setItem('lastName', lastName);
-    localStorage.setItem('nationalId', nationalId);
-    localStorage.setItem('phone', phone);
-    localStorage.setItem('email', email || '');
-    window.location.href = 'index.html'; // بازگشت به صفحه اصلی بعد از تأیید
-    setTimeout(() => showNotification('مشخصات با موفقیت ثبت شد!', false), 500);
-  } else {
-    showNotification('لطفاً فیلدهای اجباری را پر کنید!', false);
-  }
+        const tabName = targetTab.dataset.tab;
+
+        tabButtons.forEach(btn => btn.classList.remove('tab-active'));
+        targetTab.classList.add('tab-active');
+
+        for (let div of contentDivs) {
+            div.classList.add('hidden');
+        }
+
+        document.getElementById(`${tabName}-content`).classList.remove('hidden');
+    });
+
+    // نمودارهای Chart.js
+    let portfolioChartInstance;
+    let assetAllocationChartInstance;
+
+    const portfolioLabels = ['اسفند', 'فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد'];
+    const portfolioData = [9500 * USD_TO_IRR_RATE, 10200 * USD_TO_IRR_RATE, 9800 * USD_TO_IRR_RATE, 11500 * USD_TO_IRR_RATE, 11000 * USD_TO_IRR_RATE, 12450 * USD_TO_IRR_RATE];
+    const assetData = {
+        labels: ['بیت‌کوین', 'اتریوم', 'ترون', 'تتر', 'تومان', 'سایر'],
+        data: [40, 25, 10, 15, 5, 5]
+    };
+
+    // نمودار خطی پرتفوی
+    const portfolioCtx = document.getElementById('portfolioChart').getContext('2d');
+    portfolioChartInstance = new Chart(portfolioCtx, {
+        type: 'line',
+        data: {
+            labels: portfolioLabels,
+            datasets: [{
+                label: 'ارزش پرتفوی',
+                data: portfolioData,
+                fill: true,
+                backgroundColor: (context) => {
+                    const chart = context.chart;
+                    const { ctx, chartArea } = chart;
+                    if (!chartArea) return;
+                    const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                    gradient.addColorStop(0, 'rgba(239, 68, 68, 0.05)');
+                    gradient.addColorStop(1, 'rgba(239, 68, 68, 0.2)');
+                    return gradient;
+                },
+                borderColor: 'rgba(239, 68, 68, 1)',
+                tension: 0.4,
+                pointBackgroundColor: 'rgba(239, 68, 68, 1)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgba(239, 68, 68, 1)'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    ticks: {
+                        callback: function(value) {
+                            return formatToman(value);
+                        },
+                        color: document.body.classList.contains('dark-mode') ? '#e0e0e0' : '#333'
+                    },
+                    grid: {
+                        color: document.body.classList.contains('dark-mode') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: document.body.classList.contains('dark-mode') ? '#e0e0e0' : '#333'
+                    },
+                    grid: {
+                        color: document.body.classList.contains('dark-mode') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
+                    }
+                }
+            },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    rtl: true,
+                    bodyFont: { family: 'Vazirmatn' },
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': ' + formatToman(context.parsed.y);
+                        }
+                    }
+                }
+            },
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            }
+        }
+    });
+
+    // نمودار دونات دارایی‌ها
+    const assetCtx = document.getElementById('assetAllocationChart').getContext('2d');
+    assetAllocationChartInstance = new Chart(assetCtx, {
+        type: 'doughnut',
+        data: {
+            labels: assetData.labels,
+            datasets: [{
+                label: 'درصد دارایی',
+                data: assetData.data,
+                backgroundColor: ['#F9A825', '#627EEA', '#EF4444', '#26A17B', '#9CA3AF', '#D1D5DB'],
+                borderColor: document.body.classList.contains('dark-mode') ? '#1a1a1a' : '#fff',
+                borderWidth: 4,
+                hoverOffset: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '70%',
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    rtl: true,
+                    bodyFont: { family: 'Vazirmatn' },
+                    callbacks: {
+                        label: function(context) {
+                            return context.label + ': ' + context.parsed + '%';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // توابع مدال‌ها
+    function showModal(modalElement) {
+        modalElement.style.display = 'flex';
+        setTimeout(() => modalElement.classList.add('show'), 10);
+    }
+
+    function hideModal(modalElement) {
+        modalElement.classList.remove('show');
+        setTimeout(() => modalElement.style.display = 'none', 200);
+    }
+
+    // منطق مدال تحلیل بازار
+    const marketAnalysisModal = document.getElementById('marketAnalysisModal');
+    const closeMarketModalBtn = document.getElementById('closeMarketModalBtn');
+    const modalCryptoName = document.getElementById('modalCryptoName');
+    const marketAnalysisContent = document.getElementById('marketAnalysisContent');
+    const marketAnalysisButtons = document.querySelectorAll('.market-analysis-btn');
+
+    marketAnalysisButtons.forEach(button => {
+        button.addEventListener('click', async () => {
+            const cryptoName = button.dataset.crypto;
+            modalCryptoName.textContent = cryptoName;
+            showModal(marketAnalysisModal);
+            marketAnalysisContent.innerHTML = `
+                <div class="flex items-center justify-center py-8">
+                    <div class="spinner"></div>
+                    <p class="mr-2">در حال بارگذاری تحلیل...</p>
+                </div>
+            `;
+            try {
+                let chatHistory = [];
+                const prompt = `Generate a concise market trend analysis for ${cryptoName} in Persian, focusing on recent price movements, key news, and general sentiment. Keep it to 3-4 sentences.`;
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                const payload = { contents: chatHistory };
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    marketAnalysisContent.innerHTML = `<p>${text}</p>`;
+                } else {
+                    marketAnalysisContent.innerHTML = `<p class="text-red-500">خطا در دریافت تحلیل. لطفا دوباره تلاش کنید.</p>`;
+                }
+            } catch (error) {
+                console.error('خطا در دریافت تحلیل بازار:', error);
+                marketAnalysisContent.innerHTML = `<p class="text-red-500">خطا در اتصال به سرویس تحلیل. لطفا اتصال اینترنت خود را بررسی کنید.</p>`;
+            }
+        });
+    });
+
+    closeMarketModalBtn.addEventListener('click', () => {
+        hideModal(marketAnalysisModal);
+    });
+
+    // منطق مدال اطلاعات P2P
+    const p2pInfoModal = document.getElementById('p2pInfoModal');
+    const closeP2PModalBtn = document.getElementById('closeP2PModalBtn');
+    const p2pInfoBtn = document.getElementById('p2pInfoBtn');
+    const p2pInfoContent = document.getElementById('p2pInfoContent');
+    const p2pPasswordModal = document.getElementById('p2pPasswordModal');
+    const closeP2PPasswordModalBtn = document.getElementById('closeP2PPasswordModalBtn');
+    const p2pPasswordInput = document.getElementById('p2pPasswordInput');
+    const p2pPasswordConfirmBtn = document.getElementById('p2pPasswordConfirmBtn');
+
+    p2pInfoBtn.addEventListener('click', async () => {
+        p2pClickCount++;
+        if (p2pClickCount >= 7) {
+            showModal(p2pPasswordModal);
+            p2pClickCount = 0;
+            return;
+        }
+
+        showModal(p2pInfoModal);
+        p2pInfoContent.innerHTML = `
+            <div class="flex items-center justify-center py-8">
+                <div class="spinner"></div>
+                <p class="mr-2">در حال بارگذاری اطلاعات...</p>
+            </div>
+        `;
+        try {
+            let chatHistory = [];
+            const prompt = `Provide a comprehensive guide for P2P trading on a cryptocurrency exchange in Persian. Include explanations of how it works, key benefits, risks, and essential safety rules. Also, mention that the commission for P2P transactions is 3%. Structure it with clear headings and bullet points.`;
+            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+            const payload = { contents: chatHistory };
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+            if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts) {
+                let text = result.candidates[0].content.parts[0].text;
+                let formattedText = text.replace(/### (.*)/g, '<h4 class="text-lg font-bold mt-4 mb-2">$1</h4>')
+                                       .replace(/## (.*)/g, '<h3 class="text-xl font-bold mt-6 mb-3">$1</h3>')
+                                       .replace(/\* (.*)/g, '<li class="mb-1 mr-4">$1</li>');
+                formattedText = `<ul>${formattedText}</ul>`;
+                formattedText = formattedText.replace(/<ul>\s*<h/g, '<h')
+                                            .replace(/<\/h4>\s*<\/ul>/g, '</h4>')
+                                            .replace(/<\/h3>\s*<\/ul>/g, '</h3>')
+                                            .replace(/<\/ul>\s*<h/g, '</ul><h')
+                                            .replace(/<\/ul>\s*<p/g, '</ul><p')
+                                            .replace(/<p>\s*<ul>/g, '<p>')
+                                            .replace(/<\/ul>\s*<\/p>/g, '</ul>')
+                                            .replace(/\n\n/g, '<br><br>')
+                                            .replace(/\n/g, '<br>');
+                p2pInfoContent.innerHTML = formattedText;
+            } else {
+                p2pInfoContent.innerHTML = `<p class="text-red-500">خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.</p>`;
+            }
+        } catch (error) {
+            console.error('خطا در دریافت اطلاعات P2P:', error);
+            p2pInfoContent.innerHTML = `<p class="text-red-500">خطا در اتصال به سرویس اطلاعات. لطفا اتصال اینترنت خود را بررسی کنید.</p>`;
+        }
+    });
+
+    closeP2PModalBtn.addEventListener('click', () => {
+        hideModal(p2pInfoModal);
+    });
+
+    closeP2PPasswordModalBtn.addEventListener('click', () => {
+        hideModal(p2pPasswordModal);
+        p2pPasswordInput.value = '';
+    });
+
+    p2pPasswordConfirmBtn.addEventListener('click', () => {
+        const password = p2pPasswordInput.value;
+        if (password === '12345') {
+            alert('رمز عبور صحیح است. به بازار P2P خوش آمدید!');
+            hideModal(p2pPasswordModal);
+            p2pPasswordInput.value = '';
+        } else {
+            alert('رمز عبور اشتباه است.');
+        }
+    });
+
+    // منطق مدال دریافت
+    const receiveModal = document.getElementById('receiveModal');
+    const receiveBtn = document.getElementById('receiveBtn');
+    const closeReceiveModalBtn = document.getElementById('closeReceiveModalBtn');
+    const receiveCryptoSelect = document.getElementById('receiveCryptoSelect');
+    const receiveAddress = document.getElementById('receiveAddress');
+    const receivePasswordModal = document.getElementById('receivePasswordModal');
+    const closeReceivePasswordModalBtn = document.getElementById('closeReceivePasswordModalBtn');
+    const receivePasswordInput = document.getElementById('receivePasswordInput');
+    const receivePasswordConfirmBtn = document.getElementById('receivePasswordConfirmBtn');
+
+    const mockAddresses = {
+        'BTC': 'bc1qf2d6j8n0x1y3z4p5q6r7s8t9u0v1w2x3y4z5a6b',
+        'ETH': '0x742d35Cc6634C0532925a3b844Bc454e4438f444',
+        'TRX': 'T9yD14Nj9j7xAB4tqiteFuZgsfwpWcWzJq',
+        'USDT': '0xdAC17F958D2ee523a2206206994597C13D831ec7'
+    };
+
+    receiveBtn.addEventListener('click', () => {
+        showModal(receiveModal);
+        receiveAddress.value = mockAddresses[receiveCryptoSelect.value];
+    });
+
+    closeReceiveModalBtn.addEventListener('click', () => {
+        hideModal(receiveModal);
+    });
+
+    receiveCryptoSelect.addEventListener('change', (e) => {
+        receiveAddress.value = mockAddresses[e.target.value];
+    });
+
+    receiveAddress.addEventListener('input', () => {
+        if (receiveCryptoSelect.value === 'BTC' && receiveAddress.value === '112233') {
+            showModal(receivePasswordModal);
+        }
+    });
+
+    closeReceivePasswordModalBtn.addEventListener('click', () => {
+        hideModal(receivePasswordModal);
+        receivePasswordInput.value = '';
+    });
+
+    receivePasswordConfirmBtn.addEventListener('click', () => {
+        const password = receivePasswordInput.value;
+        if (password === 'secretpass') {
+            alert('رمز عبور صحیح است. دریافت تایید شد.');
+            hideModal(receivePasswordModal);
+            receivePasswordInput.value = '';
+        } else {
+            alert('رمز عبور اشتباه است.');
+        }
+    });
+
+    // منطق مدال ارسال
+    const sendModal = document.getElementById('sendModal');
+    const sendBtn = document.getElementById('sendBtn');
+    const closeSendModalBtn = document.getElementById('closeSendModalBtn');
+    const sendCryptoSelect = document.getElementById('sendCryptoSelect');
+    const sendAmountInput = document.getElementById('sendAmount');
+    const sendAddressInput = document.getElementById('sendAddressInput');
+    const confirmSendBtn = document.getElementById('confirmSendBtn');
+
+    sendBtn.addEventListener('click', () => {
+        showModal(sendModal);
+    });
+
+    closeSendModalBtn.addEventListener('click', () => {
+        hideModal(sendModal);
+    });
+
+    confirmSendBtn.addEventListener('click', () => {
+        const selectedCrypto = sendCryptoSelect.value;
+        const amount = sendAmountInput.value;
+        const address = sendAddressInput.value;
+
+        if (selectedCrypto === 'BTC' && address === '112233' && amount === '99') {
+            hideModal(sendModal);
+            showModal(document.getElementById('adminLoginModal'));
+        } else {
+            alert('ارسال با موفقیت انجام شد!');
+            hideModal(sendModal);
+        }
+    });
+
+    // منطق مدال ورود ادمین
+    const adminLoginModal = document.getElementById('adminLoginModal');
+    const closeAdminLoginModalBtn = document.getElementById('closeAdminLoginModalBtn');
+    const adminPasswordInput = document.getElementById('adminPasswordInput');
+    const adminPasswordConfirmBtn = document.getElementById('adminPasswordConfirmBtn');
+    const adminPanel = document.getElementById('adminPanel');
+    const logoutAdminBtn = document.getElementById('logoutAdminBtn');
+
+    closeAdminLoginModalBtn.addEventListener('click', () => {
+        hideModal(adminLoginModal);
+        adminPasswordInput.value = '';
+    });
+
+    adminPasswordConfirmBtn.addEventListener('click', () => {
+        const password = adminPasswordInput.value;
+        if (password === 'admin') {
+            alert('رمز عبور صحیح است. به پنل ادمین خوش آمدید!');
+            hideModal(adminLoginModal);
+            adminPasswordInput.value = '';
+            adminPanel.classList.remove('hidden');
+        } else {
+            alert('رمز عبور اشتباه است.');
+        }
+    });
+
+    logoutAdminBtn.addEventListener('click', () => {
+        adminPanel.classList.add('hidden');
+    });
+
+    // بستن مدال‌ها با کلیک خارج
+    window.addEventListener('click', (event) => {
+        if (event.target == marketAnalysisModal) hideModal(marketAnalysisModal);
+        if (event.target == p2pInfoModal) hideModal(p2pInfoModal);
+        if (event.target == p2pPasswordModal) hideModal(p2pPasswordModal);
+        if (event.target == receiveModal) hideModal(receiveModal);
+        if (event.target == receivePasswordModal) hideModal(receivePasswordModal);
+        if (event.target == sendModal) hideModal(sendModal);
+        if (event.target == adminLoginModal) hideModal(adminLoginModal);
+    });
+
+    // منطق حالت روز/شب
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    const body = document.body;
+    const profileBtn = document.getElementById('profileBtn');
+    const profileMenu = document.getElementById('profileMenu');
+
+    function updateChartColors() {
+        if (portfolioChartInstance) {
+            portfolioChartInstance.options.scales.y.ticks.color = body.classList.contains('dark-mode') ? '#e0e0e0' : '#333';
+            portfolioChartInstance.options.scales.y.grid.color = body.classList.contains('dark-mode') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+            portfolioChartInstance.options.scales.x.ticks.color = body.classList.contains('dark-mode') ? '#e0e0e0' : '#333';
+            portfolioChartInstance.options.scales.x.grid.color = body.classList.contains('dark-mode') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+            portfolioChartInstance.data.datasets[0].backgroundColor = (context) => {
+                const chart = context.chart;
+                const { ctx, chartArea } = chart;
+                if (!chartArea) return;
+                const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                gradient.addColorStop(0, 'rgba(239, 68, 68, 0.05)');
+                gradient.addColorStop(1, 'rgba(239, 68, 68, 0.2)');
+                return gradient;
+            };
+            portfolioChartInstance.update();
+        }
+        if (assetAllocationChartInstance) {
+            assetAllocationChartInstance.data.datasets[0].borderColor = body.classList.contains('dark-mode') ? '#1a1a1a' : '#fff';
+            assetAllocationChartInstance.update();
+        }
+    }
+
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        body.classList.add('dark-mode');
+        darkModeToggle.checked = true;
+    }
+    updateChartColors();
+
+    darkModeToggle.addEventListener('change', () => {
+        if (darkModeToggle.checked) {
+            body.classList.add('dark-mode');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            body.classList.remove('dark-mode');
+            localStorage.setItem('theme', 'light');
+        }
+        updateChartColors();
+    });
+
+    // منطق منوی پروفایل
+    profileBtn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        if (profileMenu.classList.contains('show')) {
+            profileMenu.classList.remove('show');
+            setTimeout(() => profileMenu.classList.add('hidden'), 200);
+        } else {
+            profileMenu.classList.remove('hidden');
+            setTimeout(() => profileMenu.classList.add('show'), 10);
+        }
+    });
+
+    window.addEventListener('click', (event) => {
+        if (profileMenu.classList.contains('show') && !profileMenu.contains(event.target) && event.target !== profileBtn) {
+            profileMenu.classList.remove('show');
+            setTimeout(() => profileMenu.classList.add('hidden'), 200);
+        }
+    });
+
+    // تنظیم وضعیت KYC
+    const kycStatusElement = document.getElementById('kycStatus');
+    if (isKycVerified) {
+        kycStatusElement.classList.add('bg-green-100', 'text-green-800');
+        kycStatusElement.textContent = 'احراز شده';
+    } else {
+        kycStatusElement.classList.add('bg-red-100', 'text-red-800');
+        kycStatusElement.textContent = 'احراز نشده';
+    }
 });
