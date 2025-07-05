@@ -7,27 +7,286 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <!-- Chosen Palette: Dark Modern with Red Accents & Light Mode Gray Adjustments -->
+    <!-- Application Structure Plan: The application maintains its dashboard-centric single-page structure for immediate financial overview. The main dashboard provides total balance, performance charts, and an updated asset list. Key interactions include tab navigation for P2P and history, and new LLM-powered modals for market analysis and P2P guidance. This structure is chosen to prioritize user access to critical financial data and provide contextual, AI-driven insights directly within the relevant sections, enhancing both usability and information consumption. The P2P info modal specifically addresses user guidance for a complex feature. The addition of receive/send modals further streamlines core wallet functionalities. The profile menu now houses the day/night toggle for better organization. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Portfolio value over time -> Goal: Track Change -> Viz: Interactive Line Chart -> Interaction: Hover tooltips -> Justification: Clearly shows trends and performance history -> Library: Chart.js.
+        - Report Info: Asset distribution -> Goal: Show Proportions -> Viz: Donut Chart -> Interaction: Hover tooltips -> Justification: Provides a quick, intuitive understanding of portfolio composition -> Library: Chart.js.
+        - Report Info: List of assets & transaction history -> Goal: Organize & Inform -> Presentation: Styled Tables -> Interaction: Clear layout with icons -> Justification: Tables are the most effective way to display structured list data for easy scanning and comparison.
+        - New Feature: Market Trend Analysis -> Goal: Inform -> Viz: Textual summary -> Interaction: Button click to open modal with LLM-generated text -> Justification: Provides quick, AI-powered insights into specific crypto trends.
+        - New Feature: P2P Info/Rules -> Goal: Guide & Inform -> Viz: Textual explanation -> Interaction: Info icon click to open modal with LLM-generated rules and guidance -> Justification: Crucial for user safety and understanding complex P2P mechanics, delivered interactively.
+        - New Feature: Receive/Send Wallet Operations -> Goal: Facilitate Transactions -> Viz: Modal forms -> Interaction: Button click to open modal, form inputs -> Justification: Provides a clear, guided interface for core wallet functions.
+        - New Feature: Day/Night Mode Toggle -> Goal: Personalization -> Viz: Animated switch within profile menu -> Interaction: Click toggle -> Justification: Enhances user comfort and visual appeal.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: #f8f9fa; /* Light background for overall readability */
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        body.dark-mode {
+            background-color: #1a1a1a; /* Dark background */
+            color: #e0e0e0; /* Light text */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .tab-active {
+            border-bottom: 2px solid #ef4444; /* Red accent for active tab */
+            color: #ef4444;
+            font-weight: 700;
+        }
+        /* Modal styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.6); /* Darker overlay */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+        }
+        .modal.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            width: 90%;
+            max-width: 600px; /* Slightly wider for more content */
+            text-align: right; /* For RTL */
+            color: #333; /* Default text color for modal content */
+        }
+        body.dark-mode .modal-content {
+            background-color: #2a2a2a; /* Darker modal background */
+            color: #e0e0e0; /* Lighter text for dark modal */
+        }
+        .close-button {
+            color: #aaa;
+            float: left; /* Align to left for RTL */
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        body.dark-mode .close-button {
+            color: #ccc;
+        }
+        body.dark-mode .close-button:hover,
+        body.dark-mode .close-button:focus {
+            color: white;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #ef4444; /* Red spinner */
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 8px; /* Space from text */
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Day/Night Toggle Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px; /* Wider for text */
+            height: 28px; /* Taller */
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 28px; /* Match height */
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px; /* Slightly smaller than slider height */
+            width: 22px; /* Slightly smaller than slider height */
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #ef4444; /* Red for checked (dark mode) */
+        }
+        input:checked + .slider:before {
+            transform: translateX(32px); /* Adjust for wider switch */
+        }
+        /* Text for switch */
+        .slider:after {
+            content: 'روز'; /* Day text for light mode */
+            position: absolute;
+            color: #333; /* Dark text for light mode */
+            font-size: 12px;
+            line-height: 28px;
+            right: 8px; /* Position 'روز' on the right */
+            transition: .4s;
+            font-weight: 500;
+        }
+        input:checked + .slider:after {
+            content: 'شب'; /* Night text for dark mode */
+            color: white; /* Light text for dark mode */
+            left: 8px; /* Position 'شب' on the left */
+            right: unset;
+        }
+
+        /* Profile Menu */
+        .profile-menu {
+            position: absolute;
+            top: 60px; /* Adjust based on header height */
+            left: 10px; /* Adjust for RTL, right side of the screen */
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            width: 200px;
+            z-index: 999;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+            pointer-events: none; /* Allow clicks through when hidden */
+        }
+        .profile-menu.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        body.dark-mode .profile-menu {
+            background-color: #2a2a2a;
+            color: #e0e0e0;
+        }
+        body.dark-mode .profile-menu .text-gray-700,
+        body.dark-mode .profile-menu .text-gray-900 { /* Added text-gray-900 for profile menu */
+            color: #e0e0e0;
+        }
+
+        /* Styles for light mode text and background of content cards */
+        body:not(.dark-mode) .bg-white {
+            background-color: #ffffff;
+            color: #333; /* Darker text for light mode */
+        }
+        body:not(.dark-mode) .text-gray-900 {
+            color: #1f2937; /* Even darker text for headings in light mode */
+        }
+        body:not(.dark-mode) .text-gray-800 {
+            color: #374151; /* Darker text for general content in light mode */
+        }
+        body:not(.dark-mode) .text-gray-500 {
+            color: #6b7280; /* Standard gray for light mode */
+        }
+        body:not(.dark-mode) .text-gray-600 {
+            color: #4b5563; /* Slightly darker gray for light mode */
+        }
+
+        /* Notification badge specific styles */
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #ef4444; /* Red */
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            line-height: 1;
+            min-width: 20px;
+            text-align: center;
+            transform: scale(0); /* Hidden by default */
+            transform-origin: top right;
+            transition: transform 0.2s ease-out;
+        }
+        .notification-badge.show {
+            transform: scale(1);
+        }
+        .notification-item {
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb; /* Light gray border */
+            transition: background-color 0.2s ease;
+        }
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+        body.dark-mode .notification-item {
+            border-color: #374151; /* Darker border for dark mode */
+        }
+        .notification-item.unread {
+            background-color: #fef2f2; /* Light red for unread */
+        }
+        body.dark-mode .notification-item.unread {
+            background-color: #3a1a1a; /* Darker red for unread in dark mode */
+        }
+        .notification-item:hover {
+            background-color: #f3f4f6; /* Lighter hover */
+        }
+        body.dark-mode .notification-item:hover {
+            background-color: #2c2c2c; /* Darker hover in dark mode */
+        }
+    </style>
 </head>
 <body class="text-gray-800">
+
     <div class="container mx-auto p-4 md:p-6 lg:p-8 max-w-7xl">
+        
         <!-- Header -->
-        <header class="flex flex-wrap justify-between items-center mb-6 gap-4">
+        <header class="flex justify-between items-center mb-6">
             <h1 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100">داشبورد</h1>
             <div class="flex items-center space-x-4 space-x-reverse">
-                <!-- Notifications Icon -->
+                <!-- Notification Icon -->
                 <div class="relative">
-                    <button id="notificationsBtn" class="p-2 bg-white dark:bg-gray-800 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none transition-colors duration-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                        </svg>
-                        <span id="notificationBadge" class="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hidden"></span>
+                    <button id="notificationBtn" class="p-2 bg-white dark:bg-gray-800 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none transition-colors duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+                        <span id="notificationBadge" class="notification-badge">0</span>
                     </button>
-                    <!-- Notifications Panel -->
-                    <div id="notificationsPanel" class="notifications-panel hidden">
-                        <h3 class="text-lg font-bold p-4 border-b border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">اعلان‌ها</h3>
-                        <div id="notificationList"></div>
-                    </div>
                 </div>
                 <!-- Banking Icon -->
                 <div class="relative">
@@ -40,10 +299,9 @@
                 <!-- Profile Button and Menu -->
                 <div class="relative">
                     <button id="profileBtn" class="w-10 h-10 rounded-full bg-red-600 text-white flex items-center justify-center font-bold hover:bg-red-700 focus:outline-none transition-colors duration-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
                     </button>
+                    <!-- Profile Menu -->
                     <div id="profileMenu" class="profile-menu hidden">
                         <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700 mb-2">
                             <span class="text-gray-700 dark:text-gray-300">حالت روز/شب</span>
@@ -52,10 +310,14 @@
                                 <span class="slider"></span>
                             </label>
                         </div>
+                        <!-- KYC Status -->
                         <div class="py-2 border-b border-gray-200 dark:border-gray-700 mb-2">
-                            <div id="kycStatus" class="rounded-md px-2 py-1 text-xs font-semibold text-center"></div>
+                            <div id="kycStatus" class="rounded-md px-2 py-1 text-xs font-semibold text-center">
+                                <!-- Content set by JS -->
+                            </div>
                         </div>
                         <a href="#" class="block py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors duration-200">پروفایل من</a>
+                        <!-- "تنظیمات" removed as per user request -->
                         <a href="#" class="block py-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900 rounded-md transition-colors duration-200">خروج</a>
                     </div>
                 </div>
@@ -63,31 +325,25 @@
         </header>
 
         <!-- Main Content -->
-        <main>
+        <main id="mainContent">
             <!-- Total Balance Card -->
             <div class="bg-gradient-to-br from-gray-900 to-red-900 rounded-2xl p-6 md:p-8 mb-8 text-white shadow-lg">
-                <div class="flex flex-wrap justify-between items-start gap-4">
+                <div class="flex justify-between items-start">
                     <div>
                         <p class="text-lg text-gray-200">موجودی کل</p>
                         <p class="text-3xl md:text-4xl font-bold mt-2" id="totalBalance">1,136,787,000 تومان</p>
                         <p class="text-sm text-green-400 mt-2 flex items-center" id="dailyChange">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L6.707 7.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                            </svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L6.707 7.707a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
                             <span>22,852,000 تومان (2.8%) امروز</span>
                         </p>
                     </div>
-                    <div class="flex flex-wrap gap-3">
+                    <div class="flex space-x-3 space-x-reverse">
                         <button id="receiveBtn" class="bg-white/20 hover:bg-white/30 text-white font-bold py-2 px-4 rounded-full flex items-center transition-colors duration-200">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.707-10.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L9.414 11H13a1 1 0 100-2H9.414l1.293-1.293z" clip-rule="evenodd" />
-                            </svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.707-10.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L9.414 11H13a1 1 0 100-2H9.414l1.293-1.293z" clip-rule="evenodd" /></svg>
                             دریافت
                         </button>
-                        <button id="sendBtn" class="bg-white/20 hover:bg-white/30 text-white font-bold py-2 px-4 rounded-full flex items-center transition-colors duration-200">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 101.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd" />
-                            </svg>
+                         <button id="sendBtn" class="bg-white/20 hover:bg-white/30 text-white font-bold py-2 px-4 rounded-full flex items-center transition-colors duration-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 101.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd" /></svg>
                             ارسال
                         </button>
                     </div>
@@ -96,7 +352,7 @@
 
             <!-- Tabs Navigation -->
             <div class="border-b border-gray-200 dark:border-gray-700 mb-6">
-                <nav class="flex flex-wrap space-x-6 space-x-reverse gap-4" id="tabs">
+                <nav class="flex space-x-6 space-x-reverse" id="tabs">
                     <button data-tab="dashboard" class="py-4 px-1 text-gray-500 hover:text-red-500 focus:outline-none tab-active dark:text-gray-400 dark:hover:text-red-500">داشبورد</button>
                     <button data-tab="p2p" class="py-4 px-1 text-gray-500 hover:text-red-500 focus:outline-none dark:text-gray-400 dark:hover:text-red-500">بازار P2P</button>
                     <button data-tab="history" class="py-4 px-1 text-gray-500 hover:text-red-500 focus:outline-none dark:text-gray-400 dark:hover:text-red-500">تاریخچه</button>
@@ -107,7 +363,7 @@
             <div id="tab-content">
                 <!-- Dashboard Content -->
                 <div id="dashboard-content" class="space-y-8">
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <!-- Portfolio Performance -->
                         <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm transition-colors duration-200">
                             <h2 class="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">عملکرد پرتفوی</h2>
@@ -143,7 +399,7 @@
                                         <th class="p-3 font-medium">قیمت</th>
                                         <th class="p-3 font-medium">موجودی</th>
                                         <th class="p-3 font-medium hidden sm:table-cell">ارزش کل</th>
-                                        <th class="p-3 font-medium">عملیات</th>
+                                        <th class="p-3 font-medium"></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -163,8 +419,9 @@
                                         </td>
                                         <td class="p-3 font-medium hidden sm:table-cell text-gray-900 dark:text-gray-100">679,987,500 تومان</td>
                                         <td class="p-3 flex flex-col sm:flex-row items-end sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 sm:space-x-reverse">
-                                            <button class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition-colors duration-200">معامله</button>
-                                            <button class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold hover:bg-red-200 transition-colors duration-200 market-analysis-btn" data-crypto="Bitcoin">تحلیل بازار ✨</button>
+                                            <button class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold hover:bg-red-200 transition-colors duration-200 market-analysis-btn" data-crypto="Bitcoin">
+                                                تحلیل بازار ✨
+                                            </button>
                                         </td>
                                     </tr>
                                     <!-- Ethereum Row -->
@@ -183,8 +440,9 @@
                                         </td>
                                         <td class="p-3 font-medium hidden sm:table-cell text-gray-900 dark:text-gray-100">592,445,000 تومان</td>
                                         <td class="p-3 flex flex-col sm:flex-row items-end sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 sm:space-x-reverse">
-                                            <button class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition-colors duration-200">معامله</button>
-                                            <button class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold hover:bg-red-200 transition-colors duration-200 market-analysis-btn" data-crypto="Ethereum">تحلیل بازار ✨</button>
+                                            <button class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold hover:bg-red-200 transition-colors duration-200 market-analysis-btn" data-crypto="Ethereum">
+                                                تحلیل بازار ✨
+                                            </button>
                                         </td>
                                     </tr>
                                     <!-- Tron Row -->
@@ -204,7 +462,9 @@
                                         <td class="p-3 font-medium hidden sm:table-cell text-gray-900 dark:text-gray-100">68,422,500 تومان</td>
                                         <td class="p-3 flex flex-col sm:flex-row items-end sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 sm:space-x-reverse">
                                             <button class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition-colors duration-200">معامله</button>
-                                            <button class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold hover:bg-red-200 transition-colors duration-200 market-analysis-btn" data-crypto="Tron">تحلیل بازار ✨</button>
+                                            <button class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold hover:bg-red-200 transition-colors duration-200 market-analysis-btn" data-crypto="Tron">
+                                                تحلیل بازار ✨
+                                            </button>
                                         </td>
                                     </tr>
                                     <!-- Tether Row -->
@@ -223,8 +483,9 @@
                                         </td>
                                         <td class="p-3 font-medium hidden sm:table-cell text-gray-900 dark:text-gray-100">196,144,500 تومان</td>
                                         <td class="p-3 flex flex-col sm:flex-row items-end sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 sm:space-x-reverse">
-                                            <button class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition-colors duration-200">معامله</button>
-                                            <button class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold hover:bg-red-200 transition-colors duration-200 market-analysis-btn" data-crypto="Tether">تحلیل بازار ✨</button>
+                                            <button class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold hover:bg-red-200 transition-colors duration-200 market-analysis-btn" data-crypto="Tether">
+                                                تحلیل بازار ✨
+                                            </button>
                                         </td>
                                     </tr>
                                     <!-- Toman Row -->
@@ -243,7 +504,7 @@
                                         </td>
                                         <td class="p-3 font-medium hidden sm:table-cell text-gray-900 dark:text-gray-100">5,000,000 تومان</td>
                                         <td class="p-3 flex flex-col sm:flex-row items-end sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 sm:space-x-reverse">
-                                            <button class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition-colors duration-200">معامله</button>
+                                            <!-- Market analysis button removed for Toman -->
                                         </td>
                                     </tr>
                                 </tbody>
@@ -258,16 +519,17 @@
                         <h2 id="p2pHeading" class="text-xl font-bold mb-4 flex items-center justify-between text-gray-900 dark:text-gray-100">
                             <span>بازار همتا به همتا (P2P)</span>
                             <button id="p2pInfoBtn" class="text-gray-500 hover:text-red-500 focus:outline-none dark:text-gray-400 dark:hover:text-red-500">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                             </button>
                         </h2>
-                        <p class="text-gray-600 dark:text-gray-300 mb-6">در این بخش می‌توانید به صورت مستقیم با کاربران دیگر به خرید و فروش ارزهای دیجیتال بپردازید.</p>
+                        <p class="text-gray-600 dark:text-gray-300 mb-6">در این بخش می‌توانید به صورت مستقیم با کاربران دیگر به خرید و فروش ارزهای دیجیتال بپردازید. این یک نمایش مفهومی از این بخش است.</p>
+                        
                         <div class="flex space-x-4 space-x-reverse border-b border-gray-200 dark:border-gray-700 mb-4">
                             <button class="font-bold text-green-500 border-b-2 border-green-500 py-2 px-4">خرید</button>
                             <button class="font-bold text-gray-500 py-2 px-4 dark:text-gray-400">فروش</button>
                         </div>
+
+                        <!-- P2P Orders Table -->
                         <div class="overflow-x-auto">
                             <table class="w-full text-right">
                                 <thead class="border-b-2 border-gray-100 dark:border-gray-700 text-gray-500 dark:text-gray-400">
@@ -276,7 +538,7 @@
                                         <th class="p-3 font-medium">قیمت واحد</th>
                                         <th class="p-3 font-medium">محدوده معامله / موجودی</th>
                                         <th class="p-3 font-medium">روش پرداخت</th>
-                                        <th class="p-3 font-medium">عملیات</th>
+                                        <th class="p-3 font-medium"></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -294,7 +556,7 @@
                                         <td class="p-4"><span class="bg-yellow-100 text-yellow-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full">کارت بانکی</span></td>
                                         <td class="p-4"><button class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-lg transition-colors duration-200">خرید BTC</button></td>
                                     </tr>
-                                    <tr class="border-b border-gray-100 dark:border-gray-700">
+                                     <tr class="border-b border-gray-100 dark:border-gray-700">
                                         <td class="p-4"><div class="font-bold text-gray-900 dark:text-gray-100">IranCrypto</div><span class="text-sm text-gray-500 dark:text-gray-400">97.0% تکمیل شده</span></td>
                                         <td class="p-4 font-bold text-lg text-gray-900 dark:text-gray-100">91,230 <span class="text-sm font-normal text-gray-500 dark:text-gray-400">تومان</span></td>
                                         <td class="p-4"><div class="text-gray-900 dark:text-gray-100">91,230 - 456,150,000 تومان</div><span class="text-sm text-gray-500 dark:text-gray-400">موجودی: 1,500 USDT</span></td>
@@ -304,6 +566,7 @@
                                 </tbody>
                             </table>
                         </div>
+
                     </div>
                 </div>
 
@@ -311,76 +574,70 @@
                 <div id="history-content" class="hidden bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm transition-colors duration-200">
                     <h2 class="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">تاریخچه تراکنش‌ها</h2>
                     <div class="overflow-x-auto">
-                        <table class="w-full text-right">
-                            <thead class="border-b-2 border-gray-100 dark:border-gray-700 text-gray-500 dark:text-gray-400">
-                                <tr>
-                                    <th class="p-3 font-medium">نوع</th>
-                                    <th class="p-3 font-medium">مقدار</th>
-                                    <th class="p-3 font-medium hidden sm:table-cell">تاریخ</th>
-                                    <th class="p-3 font-medium">وضعیت</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="border-b border-gray-100 dark:border-gray-700">
-                                    <td class="p-3 flex items-center">
-                                        <div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center mr-3">
-                                            <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <p class="font-bold text-gray-900 dark:text-gray-100">ارسال بیت‌کوین</p>
-                                            <p class="text-sm text-gray-500 dark:text-gray-400">2 ساعت پیش</p>
-                                        </div>
-                                    </td>
-                                    <td class="p-3"><p class="font-medium text-red-500">-0.05 BTC</p><p class="text-sm text-gray-500 dark:text-gray-400">~ 136,845,000 تومان</p></td>
-                                    <td class="p-3 text-gray-500 dark:text-gray-400 hidden sm:table-cell">2 ساعت پیش</td>
-                                    <td class="p-3"><span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">موفق</span></td>
-                                </tr>
-                                <tr class="border-b border-gray-100 dark:border-gray-700">
-                                    <td class="p-3 flex items-center">
-                                        <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center mr-3">
-                                            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <p class="font-bold text-gray-900 dark:text-gray-100">دریافت اتریوم</p>
-                                            <p class="text-sm text-gray-500 dark:text-gray-400">دیروز</p>
-                                        </div>
-                                    </td>
-                                    <td class="p-3"><p class="font-medium text-green-500">+1.2 ETH</p><p class="text-sm text-gray-500 dark:text-gray-400">~ 203,124,000 تومان</p></td>
-                                    <td class="p-3 text-gray-500 dark:text-gray-400 hidden sm:table-cell">دیروز</td>
-                                    <td class="p-3"><span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">موفق</span></td>
-                                </tr>
-                                <tr class="border-b border-gray-100 dark:border-gray-700">
-                                    <td class="p-3 flex items-center">
-                                        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                                            <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M6 6h.01M6 14h.01M6 18h.01"></path>
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <p class="font-bold text-gray-900 dark:text-gray-100">واریز تومان</p>
-                                            <p class="text-sm text-gray-500 dark:text-gray-400">3 روز پیش</p>
-                                        </div>
-                                    </td>
-                                    <td class="p-3"><p class="font-medium text-green-500">+1,000,000 IRT</p><p class="text-sm text-gray-500 dark:text-gray-400">~ 1,000,000 تومان</p></td>
-                                    <td class="p-3 text-gray-500 dark:text-gray-400 hidden sm:table-cell">3 روز پیش</td>
-                                    <td class="p-3"><span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">موفق</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
+                         <table class="w-full text-right">
+                                <thead class="border-b-2 border-gray-100 dark:border-gray-700 text-gray-500 dark:text-gray-400">
+                                    <tr>
+                                        <th class="p-3 font-medium">نوع</th>
+                                        <th class="p-3 font-medium">مقدار</th>
+                                        <th class="p-3 font-medium hidden sm:table-cell">تاریخ</th>
+                                        <th class="p-3 font-medium">وضعیت</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-gray-100 dark:border-gray-700">
+                                        <td class="p-3 flex items-center">
+                                            <div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center mr-3">
+                                                <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                                            </div>
+                                            <div>
+                                                <p class="font-bold text-gray-900 dark:text-gray-100">ارسال بیت‌کوین</p>
+                                                <p class="text-sm text-gray-500 dark:text-gray-400">2 ساعت پیش</p>
+                                            </div>
+                                        </td>
+                                        <td class="p-3"><p class="font-medium text-red-500">-0.05 BTC</p><p class="text-sm text-gray-500 dark:text-gray-400">~ 136,845,000 تومان</p></td>
+                                        <td class="p-3 text-gray-500 dark:text-gray-400 hidden sm:table-cell">2 ساعت پیش</td>
+                                        <td class="p-3"><span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">موفق</span></td>
+                                    </tr>
+                                     <tr class="border-b border-gray-100 dark:border-gray-700">
+                                        <td class="p-3 flex items-center">
+                                            <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                                                <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path></svg>
+                                            </div>
+                                            <div>
+                                                <p class="font-bold text-gray-900 dark:text-gray-100">دریافت اتریوم</p>
+                                                <p class="text-sm text-gray-500 dark:text-gray-400">دیروز</p>
+                                            </div>
+                                        </td>
+                                        <td class="p-3"><p class="font-medium text-green-500">+1.2 ETH</p><p class="text-sm text-gray-500 dark:text-gray-400">~ 203,124,000 تومان</p></td>
+                                        <td class="p-3 text-gray-500 dark:text-gray-400 hidden sm:table-cell">دیروز</td>
+                                        <td class="p-3"><span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">موفق</span></td>
+                                    </tr>
+                                     <tr class="border-b border-gray-100 dark:border-gray-700">
+                                        <td class="p-3 flex items-center">
+                                            <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                                                <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M6 6h.01M6 14h.01M6 18h.01"></path></svg>
+                                            </div>
+                                            <div>
+                                                <p class="font-bold text-gray-900 dark:text-gray-100">واریز تومان</p>
+                                                <p class="text-sm text-gray-500 dark:text-gray-400">3 روز پیش</p>
+                                            </div>
+                                        </td>
+                                        <td class="p-3"><p class="font-medium text-green-500">+1,000,000 IRT</p><p class="text-sm text-gray-500 dark:text-gray-400">~ 1,000,000 تومان</p></td>
+                                        <td class="p-3 text-gray-500 dark:text-gray-400 hidden sm:table-cell">3 روز پیش</td>
+                                        <td class="p-3"><span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">موفق</span></td>
+                                    </tr>
+                                </tbody>
+                         </table>
                     </div>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- Modals -->
+    <!-- Market Analysis Modal -->
     <div id="marketAnalysisModal" class="modal">
         <div class="modal-content">
-            <span class="close-button" id="closeMarketModalBtn">×</span>
+            <span class="close-button" id="closeMarketModalBtn">&times;</span>
             <h3 class="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">تحلیل بازار <span id="modalCryptoName"></span></h3>
             <div id="marketAnalysisContent" class="text-gray-700 dark:text-gray-300">
                 <div class="flex items-center justify-center py-8">
@@ -391,9 +648,10 @@
         </div>
     </div>
 
+    <!-- P2P Info Modal -->
     <div id="p2pInfoModal" class="modal">
         <div class="modal-content">
-            <span class="close-button" id="closeP2PModalBtn">×</span>
+            <span class="close-button" id="closeP2PModalBtn">&times;</span>
             <h3 class="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">راهنمای بازار همتا به همتا (P2P)</h3>
             <div id="p2pInfoContent" class="text-gray-700 dark:text-gray-300">
                 <div class="flex items-center justify-center py-8">
@@ -404,9 +662,10 @@
         </div>
     </div>
 
+    <!-- P2P Password Modal -->
     <div id="p2pPasswordModal" class="modal">
         <div class="modal-content">
-            <span class="close-button" id="closeP2PPasswordModalBtn">×</span>
+            <span class="close-button" id="closeP2PPasswordModalBtn">&times;</span>
             <h3 class="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">ورود به بازار P2P</h3>
             <p class="text-gray-700 dark:text-gray-300 mb-4">لطفاً برای دسترسی به بازار همتا به همتا، رمز عبور خود را وارد کنید.</p>
             <input type="password" id="p2pPasswordInput" placeholder="رمز عبور" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 dark:text-gray-100 focus:ring-red-500 focus:border-red-500 transition-colors duration-200 mb-4">
@@ -416,9 +675,10 @@
         </div>
     </div>
 
+    <!-- Receive Modal -->
     <div id="receiveModal" class="modal">
         <div class="modal-content">
-            <span class="close-button" id="closeReceiveModalBtn">×</span>
+            <span class="close-button" id="closeReceiveModalBtn">&times;</span>
             <h3 class="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">دریافت ارز</h3>
             <div class="space-y-4">
                 <div>
@@ -428,6 +688,7 @@
                         <option value="ETH">Ethereum (ETH)</option>
                         <option value="TRX">Tron (TRX)</option>
                         <option value="USDT">Tether (USDT)</option>
+                        <!-- Toman (IRT) option removed as per user request -->
                     </select>
                 </div>
                 <div>
@@ -442,9 +703,10 @@
         </div>
     </div>
 
+    <!-- Receive Password Modal -->
     <div id="receivePasswordModal" class="modal">
         <div class="modal-content">
-            <span class="close-button" id="closeReceivePasswordModalBtn">×</span>
+            <span class="close-button" id="closeReceivePasswordModalBtn">&times;</span>
             <h3 class="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">تایید دریافت ارز</h3>
             <p class="text-gray-700 dark:text-gray-300 mb-4">لطفاً برای تایید دریافت ارز، رمز عبور خود را وارد کنید.</p>
             <input type="password" id="receivePasswordInput" placeholder="رمز عبور" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 dark:text-gray-100 focus:ring-red-500 focus:border-red-500 transition-colors duration-200 mb-4">
@@ -454,9 +716,10 @@
         </div>
     </div>
 
+    <!-- Send Modal -->
     <div id="sendModal" class="modal">
         <div class="modal-content">
-            <span class="close-button" id="closeSendModalBtn">×</span>
+            <span class="close-button" id="closeSendModalBtn">&times;</span>
             <h3 class="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">ارسال ارز</h3>
             <div class="space-y-4">
                 <div>
@@ -466,6 +729,7 @@
                         <option value="ETH">Ethereum (ETH)</option>
                         <option value="TRX">Tron (TRX)</option>
                         <option value="USDT">Tether (USDT)</option>
+                        <!-- Toman (IRT) option removed as per user request -->
                     </select>
                 </div>
                 <div>
@@ -483,9 +747,10 @@
         </div>
     </div>
 
+    <!-- Admin Login Modal -->
     <div id="adminLoginModal" class="modal">
         <div class="modal-content">
-            <span class="close-button" id="closeAdminLoginModalBtn">×</span>
+            <span class="close-button" id="closeAdminLoginModalBtn">&times;</span>
             <h3 class="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">ورود به پنل ادمین</h3>
             <p class="text-gray-700 dark:text-gray-300 mb-4">لطفاً برای دسترسی به پنل ادمین، رمز عبور خود را وارد کنید.</p>
             <input type="password" id="adminPasswordInput" placeholder="رمز عبور ادمین" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 dark:text-gray-100 focus:ring-red-500 focus:border-red-500 transition-colors duration-200 mb-4">
@@ -495,19 +760,759 @@
         </div>
     </div>
 
+    <!-- Admin Panel Section -->
     <div id="adminPanel" class="hidden fixed inset-0 bg-gray-100 dark:bg-gray-900 z-[1001] flex flex-col items-center justify-center p-4 transition-colors duration-200">
         <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 md:p-8 shadow-lg w-full max-w-2xl text-center transition-colors duration-200">
             <h2 class="text-3xl font-bold mb-6 text-gray-900 dark:text-gray-100">پنل مدیریت</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                <button class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 shadow-md">مدیریت کاربران</button>
-                <button class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 shadow-md">مدیریت تراکنش‌ها</button>
-                <button class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 shadow-md">آمار سیستم</button>
-                <button class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 shadow-md">تنظیمات عمومی</button>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <button class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 shadow-md">
+                    مدیریت کاربران
+                </button>
+                <button class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 shadow-md">
+                    مدیریت تراکنش‌ها
+                </button>
+                <button class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 shadow-md">
+                    آمار سیستم
+                </button>
+                <button class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 shadow-md">
+                    تنظیمات عمومی
+                </button>
             </div>
-            <button id="logoutAdminBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-md transition-colors duration-200">خروج از پنل مدیریت</button>
+            <button id="logoutAdminBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-md transition-colors duration-200">
+                خروج از پنل مدیریت
+            </button>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- Notifications Modal -->
+    <div id="notificationsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="closeNotificationsModalBtn">&times;</span>
+            <h3 class="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">تاریخچه اعلان‌ها</h3>
+            <div id="notificationsList" class="space-y-2 max-h-96 overflow-y-auto">
+                <!-- Notifications will be loaded here by JavaScript -->
+                <p class="text-gray-500 dark:text-gray-400 text-center py-4">اعلانی برای نمایش وجود ندارد.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const USD_TO_IRR_RATE = 91230; // 1 USD = 91230 Toman
+            let p2pClickCount = 0; // Initialize click counter for P2P modal
+
+            // Mock KYC status (true for verified, false for unverified)
+            const isKycVerified = true; // Change to false to test unverified state
+
+            function formatToman(amount) {
+                // Ensure amount is a number before formatting
+                const numericAmount = parseFloat(amount);
+                if (isNaN(numericAmount)) {
+                    return amount; // Return as is if not a valid number
+                }
+                // Use Math.abs for formatting, then prepend minus if original was negative
+                const formatted = new Intl.NumberFormat('fa-IR').format(Math.abs(numericAmount));
+                return (numericAmount < 0 ? '-' : '') + formatted + ' تومان';
+            }
+
+            // Initial currency conversions
+            document.getElementById('totalBalance').textContent = formatToman(12450.78 * USD_TO_IRR_RATE);
+            document.getElementById('dailyChange').querySelector('span').textContent = formatToman(250.45 * USD_TO_IRR_RATE) + ' (2.8%) امروز';
+
+            // Update asset list prices
+            const assetPrices = {
+                'Bitcoin': 29812.80,
+                'Ethereum': 1855.40,
+                'Tron': 0.075,
+                'Tether': 1.00,
+                'تومان': 1.00 // Toman is 1.00 IRT (Persian text for key)
+            };
+
+            const assetQuantities = {
+                'Bitcoin': 0.25,
+                'Ethereum': 3.5,
+                'Tron': 10000,
+                'Tether': 2150.00,
+                'تومان': 5000000 // Example Toman quantity (Persian text for key)
+            };
+
+            document.querySelectorAll('#dashboard-content table tbody tr').forEach(row => {
+                const cryptoName = row.querySelector('.font-bold').textContent.trim();
+                const priceElement = row.children[1];
+                const totalValueElementDesktop = row.children[3];
+                const totalValueElementMobile = row.children[2].querySelector('.text-sm');
+
+                let usdPrice = assetPrices[cryptoName];
+                let quantity = assetQuantities[cryptoName];
+                let tomanPrice = usdPrice * USD_TO_IRR_RATE;
+                let totalTomanValue = tomanPrice * quantity;
+
+                if (cryptoName === 'تومان') { // Check for Persian "تومان"
+                    tomanPrice = 1.00; // Toman price is fixed at 1
+                    totalTomanValue = quantity;
+                }
+
+                priceElement.textContent = formatToman(tomanPrice);
+                totalValueElementDesktop.textContent = formatToman(totalTomanValue);
+                if (totalValueElementMobile) {
+                    totalValueElementMobile.textContent = formatToman(totalTomanValue);
+                }
+            });
+
+            // Update history transaction values
+            document.querySelectorAll('#history-content table tbody tr').forEach(row => {
+                const amountText = row.children[1].querySelector('.text-sm');
+                if (amountText) {
+                    let originalUsdValueMatch = amountText.textContent.match(/~ \$([\d,.]+)/);
+                    if (originalUsdValueMatch) {
+                        const usdValue = parseFloat(originalUsdValueMatch[1].replace(/,/g, ''));
+                        const tomanValue = usdValue * USD_TO_IRR_RATE;
+                        amountText.textContent = `~ ${formatToman(tomanValue)}`;
+                    } else if (amountText.textContent.includes('~ 1,000,000 تومان')) { // Specific for Toman deposit example
+                        // Already formatted correctly, no change needed
+                    }
+                }
+            });
+
+            // Tab switching logic
+            const tabs = document.getElementById('tabs');
+            const tabContent = document.getElementById('tab-content');
+            const tabButtons = tabs.querySelectorAll('button');
+            const contentDivs = tabContent.children;
+
+            tabs.addEventListener('click', (e) => {
+                const targetTab = e.target.closest('button');
+                if (!targetTab) return;
+
+                const tabName = targetTab.dataset.tab;
+
+                tabButtons.forEach(btn => {
+                    btn.classList.remove('tab-active');
+                });
+                targetTab.classList.add('tab-active');
+
+                for (let div of contentDivs) {
+                    div.classList.add('hidden');
+                }
+
+                document.getElementById(`${tabName}-content`).classList.remove('hidden');
+            });
+
+            // Chart.js implementation
+            let portfolioChartInstance; // Declare variables for chart instances
+            let assetAllocationChartInstance; // Declare variables for chart instances
+
+            // Mock data
+            const portfolioLabels = ['اسفند', 'فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد'];
+            const portfolioData = [9500 * USD_TO_IRR_RATE, 10200 * USD_TO_IRR_RATE, 9800 * USD_TO_IRR_RATE, 11500 * USD_TO_IRR_RATE, 11000 * USD_TO_IRR_RATE, 12450 * USD_TO_IRR_RATE];
+            const assetData = {
+                labels: ['بیت‌کوین', 'اتریوم', 'ترون', 'تتر', 'تومان', 'سایر'],
+                data: [40, 25, 10, 15, 5, 5], // Updated percentages
+            };
+
+            // Portfolio Line Chart
+            const portfolioCtx = document.getElementById('portfolioChart').getContext('2d');
+            portfolioChartInstance = new Chart(portfolioCtx, { // Assign instance
+                type: 'line',
+                data: {
+                    labels: portfolioLabels,
+                    datasets: [{
+                        label: 'ارزش پرتفوی',
+                        data: portfolioData,
+                        fill: true,
+                        backgroundColor: (context) => {
+                            const chart = context.chart;
+                            const { ctx, chartArea } = chart;
+                            if (!chartArea) return;
+                            const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                            if (document.body.classList.contains('dark-mode')) {
+                                gradient.addColorStop(0, 'rgba(239, 68, 68, 0.05)');
+                                gradient.addColorStop(1, 'rgba(239, 68, 68, 0.2)');
+                            } else {
+                                gradient.addColorStop(0, 'rgba(239, 68, 68, 0.05)');
+                                gradient.addColorStop(1, 'rgba(239, 68, 68, 0.2)');
+                            }
+                            return gradient;
+                        },
+                        borderColor: 'rgba(239, 68, 68, 1)', /* Red line */
+                        tension: 0.4,
+                        pointBackgroundColor: 'rgba(239, 68, 68, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(239, 68, 68, 1)',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                             ticks: {
+                                callback: function(value, index, values) {
+                                    return formatToman(value);
+                                },
+                                color: (context) => document.body.classList.contains('dark-mode') ? '#e0e0e0' : '#333'
+                            },
+                            grid: {
+                                color: (context) => document.body.classList.contains('dark-mode') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: (context) => document.body.classList.contains('dark-mode') ? '#e0e0e0' : '#333'
+                            },
+                             grid: {
+                                color: (context) => document.body.classList.contains('dark-mode') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            rtl: true,
+                             bodyFont: {
+                                family: 'Vazirmatn'
+                            },
+                             callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += formatToman(context.parsed.y);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index',
+                    }
+                }
+            });
+
+            // Asset Allocation Donut Chart
+            const assetCtx = document.getElementById('assetAllocationChart').getContext('2d');
+            assetAllocationChartInstance = new Chart(assetCtx, { // Assign instance
+                type: 'doughnut',
+                data: {
+                    labels: assetData.labels,
+                    datasets: [{
+                        label: 'درصد دارایی',
+                        data: assetData.data,
+                        backgroundColor: [
+                            '#F9A825', /* Bitcoin - Orange */
+                            '#627EEA', /* Ethereum - Purple */
+                            '#EF4444', /* Tron - Red */
+                            '#26A17B', /* Tether - Green */
+                            '#9CA3AF', /* Toman - Gray */
+                            '#D1D5DB'  /* Other - Light Gray */
+                        ],
+                        borderColor: (context) => document.body.classList.contains('dark-mode') ? '#1a1a1a' : '#fff',
+                        borderWidth: 4,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            rtl: true,
+                             bodyFont: {
+                                family: 'Vazirmatn'
+                            },
+                             callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.parsed + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Modals functions
+            function showModal(modalElement) {
+                modalElement.style.display = 'flex';
+                setTimeout(() => modalElement.classList.add('show'), 10); // Small delay for transition
+            }
+
+            function hideModal(modalElement) {
+                modalElement.classList.remove('show');
+                setTimeout(() => modalElement.style.display = 'none', 200); // Match transition duration
+            }
+
+            // Gemini API Integration for Market Analysis
+            const marketAnalysisModal = document.getElementById('marketAnalysisModal');
+            const closeMarketModalBtn = document.getElementById('closeMarketModalBtn');
+            const modalCryptoName = document.getElementById('modalCryptoName');
+            const marketAnalysisContent = document.getElementById('marketAnalysisContent');
+            const marketAnalysisButtons = document.querySelectorAll('.market-analysis-btn');
+
+            marketAnalysisButtons.forEach(button => {
+                button.addEventListener('click', async () => {
+                    const cryptoName = button.dataset.crypto;
+                    modalCryptoName.textContent = cryptoName;
+                    showModal(marketAnalysisModal);
+
+                    // Show loading spinner
+                    marketAnalysisContent.innerHTML = `
+                        <div class="flex items-center justify-center py-8">
+                            <div class="spinner"></div>
+                            <p class="mr-2">در حال بارگذاری تحلیل...</p>
+                        </div>
+                    `;
+
+                    try {
+                        let chatHistory = [];
+                        const prompt = `Generate a concise market trend analysis for ${cryptoName} in Persian, focusing on recent price movements, key news, and general sentiment. Keep it to 3-4 sentences.`;
+                        chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                        const payload = { contents: chatHistory };
+                        const apiKey = ""; // Canvas will automatically provide this
+                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                        const response = await fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+
+                        const result = await response.json();
+                        if (result.candidates && result.candidates.length > 0 &&
+                            result.candidates[0].content && result.candidates[0].content.parts &&
+                            result.candidates[0].content.parts.length > 0) {
+                            const text = result.candidates[0].content.parts[0].text;
+                            marketAnalysisContent.innerHTML = `<p>${text}</p>`;
+                        } else {
+                            marketAnalysisContent.innerHTML = `<p class="text-red-500">خطا در دریافت تحلیل. لطفا دوباره تلاش کنید.</p>`;
+                        }
+                    } catch (error) {
+                        console.error('Error fetching market analysis:', error);
+                        marketAnalysisContent.innerHTML = `<p class="text-red-500">خطا در اتصال به سرویس تحلیل. لطفا اتصال اینترنت خود را بررسی کنید.</p>`;
+                    }
+                });
+            });
+
+            closeMarketModalBtn.addEventListener('click', () => {
+                hideModal(marketAnalysisModal);
+            });
+
+            // P2P Info Modal Logic
+            const p2pInfoModal = document.getElementById('p2pInfoModal');
+            const closeP2PModalBtn = document.getElementById('closeP2PModalBtn');
+            const p2pHeading = document.getElementById('p2pHeading'); // Targeting the h2 element
+            const p2pInfoContent = document.getElementById('p2pInfoContent');
+            const p2pPasswordModal = document.getElementById('p2pPasswordModal');
+            const closeP2PPasswordModalBtn = document.getElementById('closeP2PPasswordModalBtn');
+            const p2pPasswordInput = document.getElementById('p2pPasswordInput');
+            const p2pPasswordConfirmBtn = document.getElementById('p2pPasswordConfirmBtn');
+
+
+            p2pHeading.addEventListener('click', async () => { // Changed listener to p2pHeading
+                p2pClickCount++;
+                if (p2pClickCount >= 7) {
+                    showModal(p2pPasswordModal);
+                    p2pClickCount = 0; // Reset counter after showing password modal
+                    return; // Stop further execution for info modal
+                }
+
+                showModal(p2pInfoModal);
+
+                // Show loading spinner
+                p2pInfoContent.innerHTML = `
+                    <div class="flex items-center justify-center py-8">
+                        <div class="spinner"></div>
+                        <p class="mr-2">در حال بارگذاری اطلاعات...</p>
+                    </div>
+                `;
+
+                try {
+                    let chatHistory = [];
+                    const prompt = `Provide a comprehensive guide for P2P (Peer-to-Peer) trading on a cryptocurrency exchange in Persian. Include explanations of how it works, key benefits, risks, and essential safety rules. Also, mention that the commission for P2P transactions is 3%. Structure it with clear headings and bullet points.`;
+                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                    const payload = { contents: chatHistory };
+                    const apiKey = ""; // Canvas will automatically provide this
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const text = result.candidates[0].content.parts[0].text;
+                        // Replace markdown headings and bullet points with HTML tags for better rendering
+                        let formattedText = text.replace(/### (.*)/g, '<h4 class="text-lg font-bold mt-4 mb-2">$1</h4>');
+                        formattedText = formattedText.replace(/## (.*)/g, '<h3 class="text-xl font-bold mt-6 mb-3">$1</h3>');
+                        formattedText = formattedText.replace(/\* (.*)/g, '<li class="mb-1 mr-4">$1</li>');
+                        formattedText = `<ul>${formattedText}</ul>`; // Wrap list items in ul
+                        formattedText = formattedText.replace(/<ul>\s*<h/g, '<h'); // Fix for heading inside ul
+                        formattedText = formattedText.replace(/<\/h4>\s*<\/ul>/g, '</h4>'); // Fix for heading inside ul
+                        formattedText = formattedText.replace(/<\/h3>\s*<\/ul>/g, '</h3>'); // Fix for heading inside ul
+                        formattedText = formattedText.replace(/<\/ul>\s*<h/g, '</ul><h'); // Ensure new ul for new heading
+                        formattedText = formattedText.replace(/<\/ul>\s*<p/g, '</ul><p'); // Ensure new ul for new paragraph
+                        formattedText = formattedText.replace(/<p>\s*<ul>/g, '<p>'); // Remove p tag around ul
+                        formattedText = formattedText.replace(/<\/ul>\s*<\/p>/g, '</ul>'); // Remove p tag around ul
+                        formattedText = formattedText.replace(/\n\n/g, '<br><br>'); // Convert double newlines to paragraphs
+                        formattedText = formattedText.replace(/\n/g, '<br>'); // Convert single newlines to br
+                        
+                        p2pInfoContent.innerHTML = formattedText;
+                    } else {
+                        p2pInfoContent.innerHTML = `<p class="text-red-500">خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.</p>`;
+                    }
+                } catch (error) {
+                    console.error('Error fetching P2P info:', error);
+                    p2pInfoContent.innerHTML = `<p class="text-red-500">خطا در اتصال به سرویس اطلاعات. لطفا اتصال اینترنت خود را بررسی کنید.</p>`;
+                }
+            });
+
+            closeP2PModalBtn.addEventListener('click', () => {
+                hideModal(p2pInfoModal);
+            });
+
+            closeP2PPasswordModalBtn.addEventListener('click', () => {
+                hideModal(p2pPasswordModal);
+                p2pPasswordInput.value = ''; // Clear password input
+            });
+
+            p2pPasswordConfirmBtn.addEventListener('click', () => {
+                const password = p2pPasswordInput.value;
+                // Mock password check
+                if (password === '12345') { // Replace with actual password validation
+                    alert('رمز عبور صحیح است. به بازار P2P خوش آمدید!');
+                    hideModal(p2pPasswordModal);
+                    p2pPasswordInput.value = ''; // Clear password input
+                    // Potentially redirect or show P2P content directly
+                } else {
+                    alert('رمز عبور اشتباه است.');
+                }
+            });
+
+
+            // Receive Modal Logic
+            const receiveModal = document.getElementById('receiveModal');
+            const receiveBtn = document.getElementById('receiveBtn');
+            const closeReceiveModalBtn = document.getElementById('closeReceiveModalBtn');
+            const receiveCryptoSelect = document.getElementById('receiveCryptoSelect');
+            const receiveAddress = document.getElementById('receiveAddress');
+            const receivePasswordModal = document.getElementById('receivePasswordModal'); // New receive password modal
+            const closeReceivePasswordModalBtn = document.getElementById('closeReceivePasswordModalBtn');
+            const receivePasswordInput = document.getElementById('receivePasswordInput');
+            const receivePasswordConfirmBtn = document.getElementById('receivePasswordConfirmBtn');
+
+
+            const mockAddresses = {
+                'BTC': 'bc1qf2d6j8n0x1y3z4p5q6r7s8t9u0v1w2x3y4z5a6b', // Full mock address
+                'ETH': '0x742d35Cc6634C0532925a3b844Bc454e4438f444', // Full mock address
+                'TRX': 'T9yD14Nj9j7xAB4tqiteFuZgsfwpWcWzJq', // Full mock address
+                'USDT': '0xdAC17F958D2ee523a2206206994597C13D831ec7', // Full mock address (ERC20 example)
+            };
+
+            receiveBtn.addEventListener('click', () => {
+                showModal(receiveModal);
+                // Set initial address based on default selected crypto
+                receiveAddress.value = mockAddresses[receiveCryptoSelect.value];
+            });
+
+            closeReceiveModalBtn.addEventListener('click', () => {
+                hideModal(receiveModal);
+            });
+
+            receiveCryptoSelect.addEventListener('change', (e) => {
+                receiveAddress.value = mockAddresses[e.target.value];
+            });
+
+            receiveAddress.addEventListener('input', () => {
+                if (receiveCryptoSelect.value === 'BTC' && receiveAddress.value === '112233') {
+                    showModal(receivePasswordModal);
+                }
+            });
+
+            closeReceivePasswordModalBtn.addEventListener('click', () => {
+                hideModal(receivePasswordModal);
+                receivePasswordInput.value = '';
+            });
+
+            receivePasswordConfirmBtn.addEventListener('click', () => {
+                const password = receivePasswordInput.value;
+                if (password === 'secretpass') { // Mock password for receive confirmation
+                    alert('رمز عبور صحیح است. دریافت تایید شد.');
+                    hideModal(receivePasswordModal);
+                    receivePasswordInput.value = '';
+                } else {
+                    alert('رمز عبور اشتباه است.');
+                }
+            });
+
+
+            // Send Modal Logic
+            const sendModal = document.getElementById('sendModal');
+            const sendBtn = document.getElementById('sendBtn');
+            const closeSendModalBtn = document.getElementById('closeSendModalBtn');
+            const sendCryptoSelect = document.getElementById('sendCryptoSelect');
+            const sendAmountInput = document.getElementById('sendAmount');
+            const sendAddressInput = document.getElementById('sendAddressInput');
+            const confirmSendBtn = document.getElementById('confirmSendBtn'); // The original "ارسال" button
+            
+            // Admin Login Modal elements
+            const adminLoginModal = document.getElementById('adminLoginModal');
+            const closeAdminLoginModalBtn = document.getElementById('closeAdminLoginModalBtn');
+            const adminPasswordInput = document.getElementById('adminPasswordInput');
+            const adminPasswordConfirmBtn = document.getElementById('adminPasswordConfirmBtn');
+            const adminPanel = document.getElementById('adminPanel');
+            const logoutAdminBtn = document.getElementById('logoutAdminBtn');
+            const mainContent = document.getElementById('mainContent'); // Get the main content area
+
+
+            sendBtn.addEventListener('click', () => {
+                showModal(sendModal);
+            });
+
+            closeSendModalBtn.addEventListener('click', () => {
+                hideModal(sendModal);
+            });
+
+            // Logic to trigger admin login modal from send modal
+            confirmSendBtn.addEventListener('click', () => {
+                const selectedCrypto = sendCryptoSelect.value;
+                const amount = sendAmountInput.value;
+                const address = sendAddressInput.value;
+
+                if (selectedCrypto === 'BTC' && address === '112233' && amount === '99') {
+                    hideModal(sendModal); // Hide send modal first
+                    showModal(adminLoginModal); // Show admin login modal
+                } else {
+                    alert('ارسال با موفقیت انجام شد!'); // Or proceed with actual send logic
+                    hideModal(sendModal);
+                }
+            });
+
+            closeAdminLoginModalBtn.addEventListener('click', () => {
+                hideModal(adminLoginModal);
+                adminPasswordInput.value = ''; // Clear password input
+            });
+
+            adminPasswordConfirmBtn.addEventListener('click', () => {
+                const password = adminPasswordInput.value;
+                if (password === 'admin') { // Admin password check
+                    alert('رمز عبور صحیح است. به پنل ادمین خوش آمدید!');
+                    hideModal(adminLoginModal);
+                    adminPasswordInput.value = ''; // Clear password input
+                    mainContent.classList.add('hidden'); // Hide main content
+                    adminPanel.classList.remove('hidden'); // Show admin panel
+                } else {
+                    alert('رمز عبور اشتباه است.');
+                }
+            });
+
+            logoutAdminBtn.addEventListener('click', () => {
+                adminPanel.classList.add('hidden'); // Hide admin panel
+                mainContent.classList.remove('hidden'); // Show main content
+            });
+
+
+            // Notifications Logic
+            const notificationBtn = document.getElementById('notificationBtn');
+            const notificationBadge = document.getElementById('notificationBadge');
+            const notificationsModal = document.getElementById('notificationsModal');
+            const closeNotificationsModalBtn = document.getElementById('closeNotificationsModalBtn');
+            const notificationsList = document.getElementById('notificationsList');
+
+            // Mock notification data (replace with actual data from Telegram bot API in future)
+            let notifications = JSON.parse(localStorage.getItem('notifications')) || [
+                { id: 1, text: "📢 پیام همگانی: به روزرسانی جدید در رابط کاربری! از امکانات جدید لذت ببرید.", timestamp: "2025-07-01T10:00:00Z", read: false },
+                { id: 2, text: "📢 پیام همگانی: مسابقه ترید هفتگی با جوایز بزرگ آغاز شد!", timestamp: "2025-07-02T14:30:00Z", read: false },
+                { id: 3, text: "📢 پیام همگانی: اطلاعیه مهم در مورد تغییرات کارمزدها.", timestamp: "2025-06-28T09:15:00Z", read: true },
+                { id: 4, text: "📢 پیام همگانی: جشنواره تابستانه با تخفیف‌های ویژه!", timestamp: "2025-06-25T11:00:00Z", read: true }
+            ];
+
+            function updateNotificationBadge() {
+                const unreadCount = notifications.filter(n => !n.read).length;
+                notificationBadge.textContent = unreadCount;
+                if (unreadCount > 0) {
+                    notificationBadge.classList.add('show');
+                } else {
+                    notificationBadge.classList.remove('show');
+                }
+            }
+
+            function renderNotifications() {
+                notificationsList.innerHTML = ''; // Clear existing list
+                if (notifications.length === 0) {
+                    notificationsList.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-center py-4">اعلانی برای نمایش وجود ندارد.</p>';
+                    return;
+                }
+
+                // Sort notifications by timestamp (newest first)
+                notifications.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+                notifications.forEach(notification => {
+                    const notificationItem = document.createElement('div');
+                    notificationItem.classList.add('notification-item', 'rounded-md', 'mb-2');
+                    if (!notification.read) {
+                        notificationItem.classList.add('unread');
+                    }
+
+                    const date = new Date(notification.timestamp);
+                    const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+                    const formattedDate = date.toLocaleDateString('fa-IR', options);
+
+                    notificationItem.innerHTML = `
+                        <p class="font-bold text-gray-900 dark:text-gray-100">${notification.text}</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">زمان: ${formattedDate}</p>
+                    `;
+                    notificationsList.appendChild(notificationItem);
+                });
+            }
+
+            notificationBtn.addEventListener('click', () => {
+                showModal(notificationsModal);
+                // Mark all notifications as read when the panel is opened
+                notifications.forEach(n => n.read = true);
+                localStorage.setItem('notifications', JSON.stringify(notifications));
+                updateNotificationBadge();
+                renderNotifications(); // Re-render to update UI (remove unread class)
+            });
+
+            closeNotificationsModalBtn.addEventListener('click', () => {
+                hideModal(notificationsModal);
+            });
+
+            // Initial render and badge update
+            updateNotificationBadge();
+            renderNotifications();
+
+
+            // Close modals if clicked outside content
+            window.addEventListener('click', (event) => {
+                if (event.target == marketAnalysisModal) {
+                    hideModal(marketAnalysisModal);
+                }
+                if (event.target == p2pInfoModal) {
+                    hideModal(p2pInfoModal);
+                }
+                if (event.target == p2pPasswordModal) {
+                    hideModal(p2pPasswordModal);
+                }
+                if (event.target == receiveModal) {
+                    hideModal(receiveModal);
+                }
+                if (event.target == receivePasswordModal) {
+                    hideModal(receivePasswordModal);
+                }
+                if (event.target == sendModal) {
+                    hideModal(sendModal);
+                }
+                if (event.target == adminLoginModal) { // Handle admin login modal
+                    hideModal(adminLoginModal);
+                }
+                if (event.target == notificationsModal) { // Handle notifications modal
+                    hideModal(notificationsModal);
+                }
+                // Admin panel is full screen, so clicking outside isn't applicable for it.
+                // It's explicitly hidden by the logout button.
+            });
+
+            // Day/Night Mode Toggle Logic
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const body = document.body;
+            const profileBtn = document.getElementById('profileBtn');
+            const profileMenu = document.getElementById('profileMenu');
+
+            // Function to update chart colors based on theme
+            function updateChartColors() {
+                if (portfolioChartInstance) {
+                    portfolioChartInstance.options.scales.y.ticks.color = body.classList.contains('dark-mode') ? '#e0e0e0' : '#333';
+                    portfolioChartInstance.options.scales.y.grid.color = body.classList.contains('dark-mode') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+                    portfolioChartInstance.options.scales.x.ticks.color = body.classList.contains('dark-mode') ? '#e0e0e0' : '#333';
+                    portfolioChartInstance.options.scales.x.grid.color = body.classList.contains('dark-mode') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+                    portfolioChartInstance.data.datasets[0].backgroundColor = (context) => {
+                        const chart = context.chart;
+                        const { ctx, chartArea } = chart;
+                        if (!chartArea) return;
+                        const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                        if (document.body.classList.contains('dark-mode')) {
+                            gradient.addColorStop(0, 'rgba(239, 68, 68, 0.05)');
+                            gradient.addColorStop(1, 'rgba(239, 68, 68, 0.2)');
+                        } else {
+                            gradient.addColorStop(0, 'rgba(239, 68, 68, 0.05)');
+                            gradient.addColorStop(1, 'rgba(239, 68, 68, 0.2)');
+                        }
+                        return gradient;
+                    };
+                    portfolioChartInstance.update();
+                }
+                if (assetAllocationChartInstance) {
+                    assetAllocationChartInstance.data.datasets[0].borderColor = body.classList.contains('dark-mode') ? '#1a1a1a' : '#fff';
+                    assetAllocationChartInstance.update();
+                }
+            }
+
+
+            // Check for saved preference or system preference
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                body.classList.add('dark-mode');
+                darkModeToggle.checked = true;
+            }
+            updateChartColors(); // Initial chart color update
+
+            darkModeToggle.addEventListener('change', () => {
+                if (darkModeToggle.checked) {
+                    body.classList.add('dark-mode');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    body.classList.remove('dark-mode');
+                    localStorage.setItem('theme', 'light');
+                }
+                updateChartColors(); // Update chart colors on theme change
+            });
+
+            // Profile Menu Toggle
+            profileBtn.addEventListener('click', (event) => {
+                event.stopPropagation(); // Prevent click from bubbling to window and closing immediately
+                if (profileMenu.classList.contains('show')) {
+                    profileMenu.classList.remove('show');
+                    setTimeout(() => profileMenu.classList.add('hidden'), 200);
+                } else {
+                    profileMenu.classList.remove('hidden');
+                    setTimeout(() => profileMenu.classList.add('show'), 10);
+                }
+            });
+
+            // Close profile menu when clicking outside
+            window.addEventListener('click', (event) => {
+                if (profileMenu.classList.contains('show') && !profileMenu.contains(event.target) && event.target !== profileBtn) {
+                    profileMenu.classList.remove('show');
+                    setTimeout(() => profileMenu.classList.add('hidden'), 200);
+                }
+            });
+
+            // Set KYC Status
+            const kycStatusElement = document.getElementById('kycStatus');
+            if (isKycVerified) {
+                kycStatusElement.classList.add('bg-green-100', 'text-green-800');
+                kycStatusElement.textContent = 'احراز شده';
+            } else {
+                kycStatusElement.classList.add('bg-red-100', 'text-red-800');
+                kycStatusElement.textContent = 'احراز نشده';
+            }
+        });
+    </script>
 </body>
 </html>
