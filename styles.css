@@ -2,6 +2,7 @@ body {
     font-family: 'Vazirmatn', sans-serif;
     background-color: #f8f9fa;
     transition: background-color 0.3s ease, color 0.3s ease;
+    touch-action: manipulation; /* بهبود تعامل لمسی روی گوشی */
 }
 body.dark-mode {
     background-color: #1a1a1a;
@@ -68,12 +69,12 @@ body.dark-mode .modal-content {
     float: left;
     font-size: 28px;
     font-weight: bold;
+    cursor: pointer;
 }
 .close-button:hover,
 .close-button:focus {
     color: black;
     text-decoration: none;
-    cursor: pointer;
 }
 body.dark-mode .close-button {
     color: #ccc;
@@ -234,6 +235,15 @@ body.dark-mode .notification-item {
 body.dark-mode .notification-item.unread {
     background-color: #7f1d1d;
 }
+/* بهینه‌سازی جدول برای نمایش دکمه‌ها */
+table {
+    min-width: 100%;
+    table-layout: auto;
+}
+td:last-child {
+    white-space: nowrap;
+    min-width: 150px; /* اطمینان از فضای کافی برای دکمه‌ها */
+}
 @media (max-width: 640px) {
     .modal-content {
         width: 95%;
@@ -247,5 +257,16 @@ body.dark-mode .notification-item.unread {
     .profile-menu {
         width: 90%;
         left: 5%;
+    }
+    table {
+        table-layout: fixed;
+    }
+    td:last-child {
+        min-width: 120px;
+    }
+    .flex-col.sm\:flex-row {
+        flex-direction: row !important;
+        flex-wrap: wrap;
+        gap: 8px;
     }
 }

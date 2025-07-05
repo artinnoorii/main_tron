@@ -1,721 +1,795 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const USD_TO_IRR_RATE = 91230; // نرخ تبدیل دلار به تومان
-    let p2pClickCount = 0; // شمارش کلیک‌ها برای دسترسی به P2P
-    const isKycVerified = true; // وضعیت KYC (برای تست)
+    try {
+        console.log('Script loaded, initializing...');
+        const USD_TO_IRR_RATE = 91230;
+        let p2pClickCount = 0;
+        const isKycVerified = true;
 
-    // تابع فرمت کردن مقادیر به تومان
-    function formatToman(amount) {
-        const numericAmount = parseFloat(amount);
-        if (isNaN(numericAmount)) return amount;
-        const formatted = new Intl.NumberFormat('fa-IR').format(Math.abs(numericAmount));
-        return (numericAmount < 0 ? '-' : '') + formatted + ' تومان';
-    }
-
-    // منطق اعلان‌ها
-    const notificationsBtn = document.getElementById('notificationsBtn');
-    const notificationsPanel = document.getElementById('notificationsPanel');
-    const notificationList = document.getElementById('notificationList');
-    const notificationBadge = document.getElementById('notificationBadge');
-
-    // داده‌های نمونه اعلان‌ها (شبیه‌سازی پیام‌های ارسالی از ربات)
-    let notifications = JSON.parse(localStorage.getItem('notifications')) || [
-        { id: 1, message: 'تراکنش جدید: ارسال 0.05 بیت‌کوین با موفقیت انجام شد.', time: '2 ساعت پیش', read: false },
-        { id: 2, message: 'تراکنش جدید: دریافت 1.2 اتریوم با موفقیت انجام شد.', time: 'دیروز', read: false },
-        { id: 3, message: 'واریز 1,000,000 تومان به حساب شما انجام شد.', time: '3 روز پیش', read: true }
-    ];
-
-    // ذخیره اعلان‌ها در LocalStorage
-    function saveNotifications() {
-        localStorage.setItem('notifications', JSON.stringify(notifications));
-    }
-
-    // تابع شبیه‌سازی دریافت اعلان از API ربات
-    async function fetchNotificationsFromBot() {
-        console.log('Fetching notifications from bot...');
-        try {
-            return notifications; // برای حالا از داده‌های نمونه استفاده می‌کنیم
-        } catch (error) {
-            console.error('خطا در دریافت اعلان‌ها از ربات:', error);
-            return notifications;
-        }
-    }
-
-    // رندر کردن اعلان‌ها
-    function renderNotifications() {
-        console.log('Rendering notifications...');
-        notificationList.innerHTML = '';
-        let unreadCount = 0;
-
-        notifications.forEach(notification => {
-            const notificationItem = document.createElement('div');
-            notificationItem.className = `notification-item ${notification.read ? '' : 'unread'}`;
-            notificationItem.innerHTML = `
-                <div class="flex items-center">
-                    <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                        <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-900 dark:text-gray-100">${notification.message}</p>
-                        <p class="text-xs text-gray-400 dark:text-gray-500">${notification.time}</p>
-                    </div>
-                </div>
-            `;
-            notificationList.appendChild(notificationItem);
-            if (!notification.read) unreadCount++;
-        });
-
-        if (unreadCount > 0) {
-            notificationBadge.textContent = unreadCount;
-            notificationBadge.classList.remove('hidden');
-        } else {
-            notificationBadge.classList.add('hidden');
-        }
-    }
-
-    // بارگذاری اولیه اعلان‌ها
-    fetchNotificationsFromBot().then(data => {
-        notifications = data;
-        saveNotifications();
-        renderNotifications();
-    });
-
-    notificationsBtn.addEventListener('click', (event) => {
-        console.log('Notifications button clicked');
-        event.stopPropagation();
-        if (notificationsPanel.classList.contains('show')) {
-            notificationsPanel.classList.remove('show');
-            setTimeout(() => notificationsPanel.classList.add('hidden'), 200);
-            notifications.forEach(notification => notification.read = true);
-            saveNotifications();
-            renderNotifications();
-        } else {
-            notificationsPanel.classList.remove('hidden');
-            setTimeout(() => notificationsPanel.classList.add('show'), 10);
-        }
-    });
-
-    window.addEventListener('click', (event) => {
-        if (notificationsPanel.classList.contains('show') && !notificationsPanel.contains(event.target) && event.target !== notificationsBtn) {
-            console.log('Clicked outside notifications panel');
-            notificationsPanel.classList.remove('show');
-            setTimeout(() => notificationsPanel.classList.add('hidden'), 200);
-            notifications.forEach(notification => notification.read = true);
-            saveNotifications();
-            renderNotifications();
-        }
-    });
-
-    // شبیه‌سازی اعلان جدید
-    function addNewNotification(message, time) {
-        console.log('Adding new notification:', message);
-        const newNotification = {
-            id: notifications.length + 1,
-            message: message,
-            time: time || new Date().toLocaleTimeString('fa-IR'),
-            read: false
-        };
-        notifications.unshift(newNotification);
-        saveNotifications();
-        renderNotifications();
-    }
-
-    setTimeout(() => {
-        addNewNotification('تراکنش جدید: دریافت 0.1 بیت‌کوین با موفقیت انجام شد.', 'اکنون');
-    }, 5000);
-
-    // به‌روزرسانی مقادیر داشبورد
-    document.getElementById('totalBalance').textContent = formatToman(12450.78 * USD_TO_IRR_RATE);
-    document.getElementById('dailyChange').querySelector('span').textContent = formatToman(250.45 * USD_TO_IRR_RATE) + ' (2.8%) امروز';
-
-    // داده‌های دارایی‌ها
-    const assetPrices = {
-        'Bitcoin': 29812.80,
-        'Ethereum': 1855.40,
-        'Tron': 0.075,
-        'Tether': 1.00,
-        'تومان': 1.00
-    };
-
-    const assetQuantities = {
-        'Bitcoin': 0.25,
-        'Ethereum': 3.5,
-        'Tron': 10000,
-        'Tether': 2150.00,
-        'تومان': 5000000
-    };
-
-    // به‌روزرسانی جدول دارایی‌ها
-    document.querySelectorAll('#dashboard-content table tbody tr').forEach(row => {
-        const cryptoName = row.querySelector('.font-bold').textContent.trim();
-        const priceElement = row.children[1];
-        const totalValueElementDesktop = row.children[3];
-        const totalValueElementMobile = row.children[2].querySelector('.text-sm');
-
-        let usdPrice = assetPrices[cryptoName];
-        let quantity = assetQuantities[cryptoName];
-        let tomanPrice = usdPrice * USD_TO_IRR_RATE;
-        let totalTomanValue = tomanPrice * quantity;
-
-        if (cryptoName === 'تومان') {
-            tomanPrice = 1.00;
-            totalTomanValue = quantity;
+        // تابع فرمت کردن مقادیر به تومان
+        function formatToman(amount) {
+            const numericAmount = parseFloat(amount);
+            if (isNaN(numericAmount)) return amount;
+            const formatted = new Intl.NumberFormat('fa-IR').format(Math.abs(numericAmount));
+            return (numericAmount < 0 ? '-' : '') + formatted + ' تومان';
         }
 
-        priceElement.textContent = formatToman(tomanPrice);
-        totalValueElementDesktop.textContent = formatToman(totalTomanValue);
-        if (totalValueElementMobile) {
-            totalValueElementMobile.textContent = formatToman(totalTomanValue);
-        }
-    });
+        // منطق اعلان‌ها
+        const notificationsBtn = document.getElementById('notificationsBtn');
+        const notificationsPanel = document.getElementById('notificationsPanel');
+        const notificationList = document.getElementById('notificationList');
+        const notificationBadge = document.getElementById('notificationBadge');
 
-    // منطق تب‌ها
-    const tabs = document.getElementById('tabs');
-    const tabContent = document.getElementById('tab-content');
-    const tabButtons = tabs.querySelectorAll('button');
-    const contentDivs = tabContent.children;
-
-    tabs.addEventListener('click', (e) => {
-        console.log('Tab clicked:', e.target.dataset.tab);
-        const targetTab = e.target.closest('button');
-        if (!targetTab) return;
-
-        const tabName = targetTab.dataset.tab;
-
-        tabButtons.forEach(btn => btn.classList.remove('tab-active'));
-        targetTab.classList.add('tab-active');
-
-        for (let div of contentDivs) {
-            div.classList.add('hidden');
-        }
-
-        document.getElementById(`${tabName}-content`).classList.remove('hidden');
-    });
-
-    // نمودارهای Chart.js
-    let portfolioChartInstance;
-    let assetAllocationChartInstance;
-
-    const portfolioLabels = ['اسفند', 'فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد'];
-    const portfolioData = [9500 * USD_TO_IRR_RATE, 10200 * USD_TO_IRR_RATE, 9800 * USD_TO_IRR_RATE, 11500 * USD_TO_IRR_RATE, 11000 * USD_TO_IRR_RATE, 12450 * USD_TO_IRR_RATE];
-    const assetData = {
-        labels: ['بیت‌کوین', 'اتریوم', 'ترون', 'تتر', 'تومان', 'سایر'],
-        data: [40, 25, 10, 15, 5, 5]
-    };
-
-    const portfolioCtx = document.getElementById('portfolioChart').getContext('2d');
-    portfolioChartInstance = new Chart(portfolioCtx, {
-        type: 'line',
-        data: {
-            labels: portfolioLabels,
-            datasets: [{
-                label: 'ارزش پرتفوی',
-                data: portfolioData,
-                fill: true,
-                backgroundColor: (context) => {
-                    const chart = context.chart;
-                    const { ctx, chartArea } = chart;
-                    if (!chartArea) return;
-                    const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-                    gradient.addColorStop(0, 'rgba(239, 68, 68, 0.05)');
-                    gradient.addColorStop(1, 'rgba(239, 68, 68, 0.2)');
-                    return gradient;
-                },
-                borderColor: 'rgba(239, 68, 68, 1)',
-                tension: 0.4,
-                pointBackgroundColor: 'rgba(239, 68, 68, 1)',
-                pointBorderColor: '#fff',
-                pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: 'rgba(239, 68, 68, 1)'
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: false,
-                    ticks: {
-                        callback: function(value) {
-                            return formatToman(value);
-                        },
-                        color: document.body.classList.contains('dark-mode') ? '#e0e0e0' : '#333'
-                    },
-                    grid: {
-                        color: document.body.classList.contains('dark-mode') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
-                    }
-                },
-                x: {
-                    ticks: {
-                        color: document.body.classList.contains('dark-mode') ? '#e0e0e0' : '#333'
-                    },
-                    grid: {
-                        color: document.body.classList.contains('dark-mode') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
-                    }
-                }
-            },
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    rtl: true,
-                    bodyFont: { family: 'Vazirmatn' },
-                    callbacks: {
-                        label: function(context) {
-                            return context.dataset.label + ': ' + formatToman(context.parsed.y);
-                        }
-                    }
-                }
-            },
-            interaction: {
-                intersect: false,
-                mode: 'index'
-            }
-        }
-    });
-
-    const assetCtx = document.getElementById('assetAllocationChart').getContext('2d');
-    assetAllocationChartInstance = new Chart(assetCtx, {
-        type: 'doughnut',
-        data: {
-            labels: assetData.labels,
-            datasets: [{
-                label: 'درصد دارایی',
-                data: assetData.data,
-                backgroundColor: ['#F9A825', '#627EEA', '#EF4444', '#26A17B', '#9CA3AF', '#D1D5DB'],
-                borderColor: document.body.classList.contains('dark-mode') ? '#1a1a1a' : '#fff',
-                borderWidth: 4,
-                hoverOffset: 8
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '70%',
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    rtl: true,
-                    bodyFont: { family: 'Vazirmatn' },
-                    callbacks: {
-                        label: function(context) {
-                            return context.label + ': ' + context.parsed + '%';
-                        }
-                    }
-                }
-            }
-        }
-    });
-
-    // توابع مدال‌ها
-    function showModal(modalElement) {
-        console.log('Showing modal:', modalElement.id);
-        modalElement.style.display = 'flex';
-        setTimeout(() => modalElement.classList.add('show'), 10);
-    }
-
-    function hideModal(modalElement) {
-        console.log('Hiding modal:', modalElement.id);
-        modalElement.classList.remove('show');
-        setTimeout(() => modalElement.style.display = 'none', 200);
-    }
-
-    // منطق مدال تحلیل بازار
-    const marketAnalysisModal = document.getElementById('marketAnalysisModal');
-    const closeMarketModalBtn = document.getElementById('closeMarketModalBtn');
-    const modalCryptoName = document.getElementById('modalCryptoName');
-    const marketAnalysisContent = document.getElementById('marketAnalysisContent');
-    const marketAnalysisButtons = document.querySelectorAll('.market-analysis-btn');
-
-    marketAnalysisButtons.forEach(button => {
-        button.addEventListener('click', async () => {
-            console.log('Market analysis button clicked for:', button.dataset.crypto);
-            const cryptoName = button.dataset.crypto;
-            modalCryptoName.textContent = cryptoName;
-            showModal(marketAnalysisModal);
-            marketAnalysisContent.innerHTML = `
-                <div class="flex items-center justify-center py-8">
-                    <div class="spinner"></div>
-                    <p class="mr-2">در حال بارگذاری تحلیل...</p>
-                </div>
-            `;
-            try {
-                let chatHistory = [];
-                const prompt = `Generate a concise market trend analysis for ${cryptoName} in Persian, focusing on recent price movements, key news, and general sentiment. Keep it to 3-4 sentences.`;
-                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-                const payload = { contents: chatHistory };
-                const apiKey = "";
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                const result = await response.json();
-                if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts) {
-                    const text = result.candidates[0].content.parts[0].text;
-                    marketAnalysisContent.innerHTML = `<p>${text}</p>`;
-                } else {
-                    marketAnalysisContent.innerHTML = `<p class="text-red-500">خطا در دریافت تحلیل. لطفا دوباره تلاش کنید.</p>`;
-                }
-            } catch (error) {
-                console.error('خطا در دریافت تحلیل بازار:', error);
-                marketAnalysisContent.innerHTML = `<p class="text-red-500">خطا در اتصال به سرویس تحلیل. لطفا اتصال اینترنت خود را بررسی کنید.</p>`;
-            }
-        });
-    });
-
-    closeMarketModalBtn.addEventListener('click', () => {
-        console.log('Closing market analysis modal');
-        hideModal(marketAnalysisModal);
-    });
-
-    // منطق مدال اطلاعات P2P
-    const p2pInfoModal = document.getElementById('p2pInfoModal');
-    const closeP2PModalBtn = document.getElementById('closeP2PModalBtn');
-    const p2pInfoBtn = document.getElementById('p2pInfoBtn');
-    const p2pInfoContent = document.getElementById('p2pInfoContent');
-    const p2pPasswordModal = document.getElementById('p2pPasswordModal');
-    const closeP2PPasswordModalBtn = document.getElementById('closeP2PPasswordModalBtn');
-    const p2pPasswordInput = document.getElementById('p2pPasswordInput');
-    const p2pPasswordConfirmBtn = document.getElementById('p2pPasswordConfirmBtn');
-
-    p2pInfoBtn.addEventListener('click', async () => {
-        console.log('P2P info button clicked');
-        p2pClickCount++;
-        if (p2pClickCount >= 7) {
-            console.log('Showing P2P password modal');
-            showModal(p2pPasswordModal);
-            p2pClickCount = 0;
+        if (!notificationsBtn || !notificationsPanel || !notificationList || !notificationBadge) {
+            console.error('Notification elements not found');
             return;
         }
 
-        showModal(p2pInfoModal);
-        p2pInfoContent.innerHTML = `
-            <div class="flex items-center justify-center py-8">
-                <div class="spinner"></div>
-                <p class="mr-2">در حال بارگذاری اطلاعات...</p>
-            </div>
-        `;
-        try {
-            let chatHistory = [];
-            const prompt = `Provide a comprehensive guide for P2P trading on a cryptocurrency exchange in Persian. Include explanations of how it works, key benefits, risks, and essential safety rules. Also, mention that the commission for P2P transactions is 3%. Structure it with clear headings and bullet points.`;
-            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-            const payload = { contents: chatHistory };
-            const apiKey = "";
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+        let notifications = JSON.parse(localStorage.getItem('notifications')) || [
+            { id: 1, message: 'تراکنش جدید: ارسال 0.05 بیت‌کوین با موفقیت انجام شد.', time: '2 ساعت پیش', read: false },
+            { id: 2, message: 'تراکنش جدید: دریافت 1.2 اتریوم با موفقیت انجام شد.', time: 'دیروز', read: false },
+            { id: 3, message: 'واریز 1,000,000 تومان به حساب شما انجام شد.', time: '3 روز پیش', read: true }
+        ];
 
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+        function saveNotifications() {
+            localStorage.setItem('notifications', JSON.stringify(notifications));
+        }
+
+        async function fetchNotificationsFromBot() {
+            console.log('Fetching notifications from bot...');
+            try {
+                return notifications;
+            } catch (error) {
+                console.error('خطا در دریافت اعلان‌ها از ربات:', error);
+                return notifications;
+            }
+        }
+
+        function renderNotifications() {
+            console.log('Rendering notifications...');
+            notificationList.innerHTML = '';
+            let unreadCount = 0;
+
+            notifications.forEach(notification => {
+                const notificationItem = document.createElement('div');
+                notificationItem.className = `notification-item ${notification.read ? '' : 'unread'}`;
+                notificationItem.innerHTML = `
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                            <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-900 dark:text-gray-100">${notification.message}</p>
+                            <p class="text-xs text-gray-400 dark:text-gray-500">${notification.time}</p>
+                        </div>
+                    </div>
+                `;
+                notificationList.appendChild(notificationItem);
+                if (!notification.read) unreadCount++;
             });
 
-            const result = await response.json();
-            if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts) {
-                let text = result.candidates[0].content.parts[0].text;
-                let formattedText = text.replace(/### (.*)/g, '<h4 class="text-lg font-bold mt-4 mb-2">$1</h4>')
-                                       .replace(/## (.*)/g, '<h3 class="text-xl font-bold mt-6 mb-3">$1</h3>')
-                                       .replace(/\* (.*)/g, '<li class="mb-1 mr-4">$1</li>');
-                formattedText = `<ul>${formattedText}</ul>`;
-                formattedText = formattedText.replace(/<ul>\s*<h/g, '<h')
-                                            .replace(/<\/h4>\s*<\/ul>/g, '</h4>')
-                                            .replace(/<\/h3>\s*<\/ul>/g, '</h3>')
-                                            .replace(/<\/ul>\s*<h/g, '</ul><h')
-                                            .replace(/<\/ul>\s*<p/g, '</ul><p')
-                                            .replace(/<p>\s*<ul>/g, '<p>')
-                                            .replace(/<\/ul>\s*<\/p>/g, '</ul>')
-                                            .replace(/\n\n/g, '<br><br>')
-                                            .replace(/\n/g, '<br>');
-                p2pInfoContent.innerHTML = formattedText;
+            if (unreadCount > 0) {
+                notificationBadge.textContent = unreadCount;
+                notificationBadge.classList.remove('hidden');
             } else {
-                p2pInfoContent.innerHTML = `<p class="text-red-500">خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.</p>`;
+                notificationBadge.classList.add('hidden');
             }
-        } catch (error) {
-            console.error('خطا در دریافت اطلاعات P2P:', error);
-            p2pInfoContent.innerHTML = `<p class="text-red-500">خطا در اتصال به سرویس اطلاعات. لطفا اتصال اینترنت خود را بررسی کنید.</p>`;
         }
-    });
 
-    closeP2PModalBtn.addEventListener('click', () => {
-        console.log('Closing P2P info modal');
-        hideModal(p2pInfoModal);
-    });
+        fetchNotificationsFromBot().then(data => {
+            notifications = data;
+            saveNotifications();
+            renderNotifications();
+        });
 
-    closeP2PPasswordModalBtn.addEventListener('click', () => {
-        console.log('Closing P2P password modal');
-        hideModal(p2pPasswordModal);
-        p2pPasswordInput.value = '';
-    });
+        notificationsBtn.addEventListener('click', (event) => {
+            console.log('Notifications button clicked');
+            event.stopPropagation();
+            event.preventDefault();
+            if (notificationsPanel.classList.contains('show')) {
+                notificationsPanel.classList.remove('show');
+                setTimeout(() => notificationsPanel.classList.add('hidden'), 200);
+                notifications.forEach(notification => notification.read = true);
+                saveNotifications();
+                renderNotifications();
+            } else {
+                notificationsPanel.classList.remove('hidden');
+                setTimeout(() => notificationsPanel.classList.add('show'), 10);
+            }
+        }, { passive: false });
 
-    p2pPasswordConfirmBtn.addEventListener('click', () => {
-        console.log('P2P password confirm clicked');
-        const password = p2pPasswordInput.value;
-        if (password === '12345') {
-            alert('رمز عبور صحیح است. به بازار P2P خوش آمدید!');
-            hideModal(p2pPasswordModal);
-            p2pPasswordInput.value = '';
-        } else {
-            alert('رمز عبور اشتباه است. لطفاً رمز عبور صحیح را وارد کنید.');
-        }
-    });
+        window.addEventListener('click', (event) => {
+            if (notificationsPanel.classList.contains('show') && !notificationsPanel.contains(event.target) && event.target !== notificationsBtn) {
+                console.log('Clicked outside notifications panel');
+                notificationsPanel.classList.remove('show');
+                setTimeout(() => notificationsPanel.classList.add('hidden'), 200);
+                notifications.forEach(notification => notification.read = true);
+                saveNotifications();
+                renderNotifications();
+            }
+        }, { passive: true });
 
-    // منطق مدال دریافت
-    const receiveModal = document.getElementById('receiveModal');
-    const receiveBtn = document.getElementById('receiveBtn');
-    const closeReceiveModalBtn = document.getElementById('closeReceiveModalBtn');
-    const receiveCryptoSelect = document.getElementById('receiveCryptoSelect');
-    const receiveAddress = document.getElementById('receiveAddress');
-    const receivePasswordModal = document.getElementById('receivePasswordModal');
-    const closeReceivePasswordModalBtn = document.getElementById('closeReceivePasswordModalBtn');
-    const receivePasswordInput = document.getElementById('receivePasswordInput');
-    const receivePasswordConfirmBtn = document.getElementById('receivePasswordConfirmBtn');
-
-    const mockAddresses = {
-        'BTC': 'bc1qf2d6j8n0x1y3z4p5q6r7s8t9u0v1w2x3y4z5a6b',
-        'ETH': '0x742d35Cc6634C0532925a3b844Bc454e4438f444',
-        'TRX': 'T9yD14Nj9j7xAB4tqiteFuZgsfwpWcWzJq',
-        'USDT': '0xdAC17F958D2ee523a2206206994597C13D831ec7'
-    };
-
-    receiveBtn.addEventListener('click', () => {
-        console.log('Receive button clicked');
-        showModal(receiveModal);
-        receiveAddress.value = mockAddresses[receiveCryptoSelect.value];
-    });
-
-    closeReceiveModalBtn.addEventListener('click', () => {
-        console.log('Closing receive modal');
-        hideModal(receiveModal);
-    });
-
-    receiveCryptoSelect.addEventListener('change', (e) => {
-        console.log('Receive crypto selected:', e.target.value);
-        receiveAddress.value = mockAddresses[e.target.value];
-    });
-
-    receiveAddress.addEventListener('input', () => {
-        if (receiveCryptoSelect.value === 'BTC' && receiveAddress.value === '112233') {
-            console.log('Showing receive password modal');
-            showModal(receivePasswordModal);
-        }
-    });
-
-    closeReceivePasswordModalBtn.addEventListener('click', () => {
-        console.log('Closing receive password modal');
-        hideModal(receivePasswordModal);
-        receivePasswordInput.value = '';
-    });
-
-    receivePasswordConfirmBtn.addEventListener('click', () => {
-        console.log('Receive password confirm clicked');
-        const password = receivePasswordInput.value;
-        if (password === 'secretpass') {
-            alert('رمز عبور صحیح است. دریافت تایید شد.');
-            hideModal(receivePasswordModal);
-            receivePasswordInput.value = '';
-        } else {
-            alert('رمز عبور اشتباه است. لطفاً رمز عبور صحیح را وارد کنید.');
-        }
-    });
-
-    // منطق مدال ارسال
-    const sendModal = document.getElementById('sendModal');
-    const sendBtn = document.getElementById('sendBtn');
-    const closeSendModalBtn = document.getElementById('closeSendModalBtn');
-    const sendCryptoSelect = document.getElementById('sendCryptoSelect');
-    const sendAmountInput = document.getElementById('sendAmount');
-    const sendAddressInput = document.getElementById('sendAddressInput');
-    const confirmSendBtn = document.getElementById('confirmSendBtn');
-
-    sendBtn.addEventListener('click', () => {
-        console.log('Send button clicked');
-        showModal(sendModal);
-    });
-
-    closeSendModalBtn.addEventListener('click', () => {
-        console.log('Closing send modal');
-        hideModal(sendModal);
-        sendCryptoSelect.value = 'BTC';
-        sendAmountInput.value = '';
-        sendAddressInput.value = '';
-    });
-
-    confirmSendBtn.addEventListener('click', () => {
-        console.log('Confirm send button clicked');
-        const selectedCrypto = sendCryptoSelect.value;
-        const amount = sendAmountInput.value;
-        const address = sendAddressInput.value;
-
-        console.log('Send details:', { selectedCrypto, amount, address });
-
-        if (selectedCrypto === 'BTC' && address === '112233' && amount === '99') {
-            console.log('Showing admin login modal');
-            hideModal(sendModal);
-            showModal(document.getElementById('adminLoginModal'));
-            sendCryptoSelect.value = 'BTC';
-            sendAmountInput.value = '';
-            sendAddressInput.value = '';
-        } else {
-            alert('ارسال با موفقیت انجام شد!');
-            hideModal(sendModal);
-            sendCryptoSelect.value = 'BTC';
-            sendAmountInput.value = '';
-            sendAddressInput.value = '';
-        }
-    });
-
-    // منطق مدال ورود ادمین
-    const adminLoginModal = document.getElementById('adminLoginModal');
-    const closeAdminLoginModalBtn = document.getElementById('closeAdminLoginModalBtn');
-    const adminPasswordInput = document.getElementById('adminPasswordInput');
-    const adminPasswordConfirmBtn = document.getElementById('adminPasswordConfirmBtn');
-    const adminPanel = document.getElementById('adminPanel');
-    const logoutAdminBtn = document.getElementById('logoutAdminBtn');
-
-    closeAdminLoginModalBtn.addEventListener('click', () => {
-        console.log('Closing admin login modal');
-        hideModal(adminLoginModal);
-        adminPasswordInput.value = '';
-    });
-
-    adminPasswordConfirmBtn.addEventListener('click', () => {
-        console.log('Admin password confirm clicked');
-        const password = adminPasswordInput.value;
-        console.log('Entered password:', password);
-        if (password === 'admin') {
-            console.log('Password correct, showing admin panel');
-            alert('رمز عبور صحیح است. به پنل ادمین خوش آمدید!');
-            hideModal(adminLoginModal);
-            adminPasswordInput.value = '';
-            adminPanel.classList.remove('hidden');
-        } else {
-            console.log('Incorrect password');
-            alert('رمز عبور اشتباه است. لطفاً رمز عبور صحیح (admin) را وارد کنید.');
-        }
-    });
-
-    logoutAdminBtn.addEventListener('click', () => {
-        console.log('Logout admin button clicked');
-        adminPanel.classList.add('hidden');
-    });
-
-    // بستن مدال‌ها با کلیک خارج
-    window.addEventListener('click', (event) => {
-        if (event.target == marketAnalysisModal) {
-            console.log('Clicked outside market analysis modal');
-            hideModal(marketAnalysisModal);
-        }
-        if (event.target == p2pInfoModal) {
-            console.log('Clicked outside P2P info modal');
-            hideModal(p2pInfoModal);
-        }
-        if (event.target == p2pPasswordModal) {
-            console.log('Clicked outside P2P password modal');
-            hideModal(p2pPasswordModal);
-            p2pPasswordInput.value = '';
-        }
-        if (event.target == receiveModal) {
-            console.log('Clicked outside receive modal');
-            hideModal(receiveModal);
-        }
-        if (event.target == receivePasswordModal) {
-            console.log('Clicked outside receive password modal');
-            hideModal(receivePasswordModal);
-            receivePasswordInput.value = '';
-        }
-        if (event.target == sendModal) {
-            console.log('Clicked outside send modal');
-            hideModal(sendModal);
-            sendCryptoSelect.value = 'BTC';
-            sendAmountInput.value = '';
-            sendAddressInput.value = '';
-        }
-        if (event.target == adminLoginModal) {
-            console.log('Clicked outside admin login modal');
-            hideModal(adminLoginModal);
-            adminPasswordInput.value = '';
-        }
-    });
-
-    // منطق حالت روز/شب
-    const darkModeToggle = document.getElementById('darkModeToggle');
-    const body = document.body;
-    const profileBtn = document.getElementById('profileBtn');
-    const profileMenu = document.getElementById('profileMenu');
-
-    function updateChartColors() {
-        if (portfolioChartInstance) {
-            portfolioChartInstance.options.scales.y.ticks.color = body.classList.contains('dark-mode') ? '#e0e0e0' : '#333';
-            portfolioChartInstance.options.scales.y.grid.color = body.classList.contains('dark-mode') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
-            portfolioChartInstance.options.scales.x.ticks.color = body.classList.contains('dark-mode') ? '#e0e0e0' : '#333';
-            portfolioChartInstance.options.scales.x.grid.color = body.classList.contains('dark-mode') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
-            portfolioChartInstance.data.datasets[0].backgroundColor = (context) => {
-                const chart = context.chart;
-                const { ctx, chartArea } = chart;
-                if (!chartArea) return;
-                const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-                gradient.addColorStop(0, 'rgba(239, 68, 68, 0.05)');
-                gradient.addColorStop(1, 'rgba(239, 68, 68, 0.2)');
-                return gradient;
+        function addNewNotification(message, time) {
+            console.log('Adding new notification:', message);
+            const newNotification = {
+                id: notifications.length + 1,
+                message: message,
+                time: time || new Date().toLocaleTimeString('fa-IR'),
+                read: false
             };
-            portfolioChartInstance.update();
+            notifications.unshift(newNotification);
+            saveNotifications();
+            renderNotifications();
         }
-        if (assetAllocationChartInstance) {
-            assetAllocationChartInstance.data.datasets[0].borderColor = body.classList.contains('dark-mode') ? '#1a1a1a' : '#fff';
-            assetAllocationChartInstance.update();
-        }
-    }
 
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        body.classList.add('dark-mode');
-        darkModeToggle.checked = true;
-    }
-    updateChartColors();
+        setTimeout(() => {
+            addNewNotification('تراکنش جدید: دریافت 0.1 بیت‌کوین با موفقیت انجام شد.', 'اکنون');
+        }, 5000);
 
-    darkModeToggle.addEventListener('change', () => {
-        console.log('Dark mode toggle changed:', darkModeToggle.checked);
-        if (darkModeToggle.checked) {
-            body.classList.add('dark-mode');
-            localStorage.setItem('theme', 'dark');
+        // به‌روزرسانی مقادیر داشبورد
+        const totalBalance = document.getElementById('totalBalance');
+        const dailyChange = document.getElementById('dailyChange');
+        if (totalBalance && dailyChange) {
+            totalBalance.textContent = formatToman(12450.78 * USD_TO_IRR_RATE);
+            dailyChange.querySelector('span').textContent = formatToman(250.45 * USD_TO_IRR_RATE) + ' (2.8%) امروز';
         } else {
-            body.classList.remove('dark-mode');
-            localStorage.setItem('theme', 'light');
+            console.error('Total balance or daily change elements not found');
         }
-        updateChartColors();
-    });
 
-    // منطق منوی پروفایل
-    profileBtn.addEventListener('click', (event) => {
-        console.log('Profile button clicked');
-        event.stopPropagation();
-        if (profileMenu.classList.contains('show')) {
-            profileMenu.classList.remove('show');
-            setTimeout(() => profileMenu.classList.add('hidden'), 200);
+        // داده‌های دارایی‌ها
+        const assetPrices = {
+            'Bitcoin': 29812.80,
+            'Ethereum': 1855.40,
+            'Tron': 0.075,
+            'Tether': 1.00,
+            'تومان': 1.00
+        };
+
+        const assetQuantities = {
+            'Bitcoin': 0.25,
+            'Ethereum': 3.5,
+            'Tron': 10000,
+            'Tether': 2150.00,
+            'تومان': 5000000
+        };
+
+        // به‌روزرسانی جدول دارایی‌ها
+        document.querySelectorAll('#dashboard-content table tbody tr').forEach(row => {
+            const cryptoName = row.querySelector('.font-bold').textContent.trim();
+            const priceElement = row.children[1];
+            const totalValueElementDesktop = row.children[3];
+            const totalValueElementMobile = row.children[2].querySelector('.text-sm');
+
+            let usdPrice = assetPrices[cryptoName];
+            let quantity = assetQuantities[cryptoName];
+            let tomanPrice = usdPrice * USD_TO_IRR_RATE;
+            let totalTomanValue = tomanPrice * quantity;
+
+            if (cryptoName === 'تومان') {
+                tomanPrice = 1.00;
+                totalTomanValue = quantity;
+            }
+
+            priceElement.textContent = formatToman(tomanPrice);
+            totalValueElementDesktop.textContent = formatToman(totalTomanValue);
+            if (totalValueElementMobile) {
+                totalValueElementMobile.textContent = formatToman(totalTomanValue);
+            }
+        });
+
+        // منطق تب‌ها
+        const tabs = document.getElementById('tabs');
+        const tabContent = document.getElementById('tab-content');
+        const tabButtons = tabs.querySelectorAll('button');
+        const contentDivs = tabContent.children;
+
+        if (!tabs || !tabContent) {
+            console.error('Tabs or tab content not found');
+            return;
+        }
+
+        tabs.addEventListener('click', (e) => {
+            console.log('Tab clicked:', e.target.dataset.tab);
+            const targetTab = e.target.closest('button');
+            if (!targetTab) return;
+
+            const tabName = targetTab.dataset.tab;
+
+            tabButtons.forEach(btn => btn.classList.remove('tab-active'));
+            targetTab.classList.add('tab-active');
+
+            for (let div of contentDivs) {
+                div.classList.add('hidden');
+            }
+
+            const tabContentElement = document.getElementById(`${tabName}-content`);
+            if (tabContentElement) {
+                tabContentElement.classList.remove('hidden');
+            } else {
+                console.error(`Tab content for ${tabName} not found`);
+            }
+        }, { passive: false });
+
+        // نمودارهای Chart.js
+        let portfolioChartInstance;
+        let assetAllocationChartInstance;
+
+        const portfolioLabels = ['اسفند', 'فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد'];
+        const portfolioData = [9500 * USD_TO_IRR_RATE, 10200 * USD_TO_IRR_RATE, 9800 * USD_TO_IRR_RATE, 11500 * USD_TO_IRR_RATE, 11000 * USD_TO_IRR_RATE, 12450 * USD_TO_IRR_RATE];
+        const assetData = {
+            labels: ['بیت‌کوین', 'اتریوم', 'ترون', 'تتر', 'تومان', 'سایر'],
+            data: [40, 25, 10, 15, 5, 5]
+        };
+
+        const portfolioCtx = document.getElementById('portfolioChart')?.getContext('2d');
+        if (portfolioCtx) {
+            portfolioChartInstance = new Chart(portfolioCtx, {
+                type: 'line',
+                data: {
+                    labels: portfolioLabels,
+                    datasets: [{
+                        label: 'ارزش پرتفوی',
+                        data: portfolioData,
+                        fill: true,
+                        backgroundColor: (context) => {
+                            const chart = context.chart;
+                            const { ctx, chartArea } = chart;
+                            if (!chartArea) return;
+                            const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                            gradient.addColorStop(0, 'rgba(239, 68, 68, 0.05)');
+                            gradient.addColorStop(1, 'rgba(239, 68, 68, 0.2)');
+                            return gradient;
+                        },
+                        borderColor: 'rgba(239, 68, 68, 1)',
+                        tension: 0.4,
+                        pointBackgroundColor: 'rgba(239, 68, 68, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(239, 68, 68, 1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            ticks: {
+                                callback: function(value) {
+                                    return formatToman(value);
+                                },
+                                color: document.body.classList.contains('dark-mode') ? '#e0e0e0' : '#333'
+                            },
+                            grid: {
+                                color: document.body.classList.contains('dark-mode') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: document.body.classList.contains('dark-mode') ? '#e0e0e0' : '#333'
+                            },
+                            grid: {
+                                color: document.body.classList.contains('dark-mode') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            rtl: true,
+                            bodyFont: { family: 'Vazirmatn' },
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + formatToman(context.parsed.y);
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    }
+                }
+            });
         } else {
-            profileMenu.classList.remove('hidden');
-            setTimeout(() => profileMenu.classList.add('show'), 10);
+            console.error('Portfolio chart canvas not found');
         }
-    });
 
-    window.addEventListener('click', (event) => {
-        if (profileMenu.classList.contains('show') && !profileMenu.contains(event.target) && event.target !== profileBtn) {
-            console.log('Clicked outside profile menu');
-            profileMenu.classList.remove('show');
-            setTimeout(() => profileMenu.classList.add('hidden'), 200);
+        const assetCtx = document.getElementById('assetAllocationChart')?.getContext('2d');
+        if (assetCtx) {
+            assetAllocationChartInstance = new Chart(assetCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: assetData.labels,
+                    datasets: [{
+                        label: 'درصد دارایی',
+                        data: assetData.data,
+                        backgroundColor: ['#F9A825', '#627EEA', '#EF4444', '#26A17B', '#9CA3AF', '#D1D5DB'],
+                        borderColor: document.body.classList.contains('dark-mode') ? '#1a1a1a' : '#fff',
+                        borderWidth: 4,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            rtl: true,
+                            bodyFont: { family: 'Vazirmatn' },
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.parsed + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        } else {
+            console.error('Asset allocation chart canvas not found');
         }
-    });
 
-    // تنظیم وضعیت KYC
-    const kycStatusElement = document.getElementById('kycStatus');
-    if (isKycVerified) {
-        kycStatusElement.classList.add('bg-green-100', 'text-green-800');
-        kycStatusElement.textContent = 'احراز شده';
-    } else {
-        kycStatusElement.classList.add('bg-red-100', 'text-red-800');
-        kycStatusElement.textContent = 'احراز نشده';
+        // توابع مدال‌ها
+        function showModal(modalElement) {
+            if (!modalElement) {
+                console.error('Modal element not found');
+                return;
+            }
+            console.log('Showing modal:', modalElement.id);
+            modalElement.style.display = 'flex';
+            setTimeout(() => modalElement.classList.add('show'), 10);
+        }
+
+        function hideModal(modalElement) {
+            if (!modalElement) {
+                console.error('Modal element not found');
+                return;
+            }
+            console.log('Hiding modal:', modalElement.id);
+            modalElement.classList.remove('show');
+            setTimeout(() => modalElement.style.display = 'none', 200);
+        }
+
+        // منطق مدال تحلیل بازار
+        const marketAnalysisModal = document.getElementById('marketAnalysisModal');
+        const closeMarketModalBtn = document.getElementById('closeMarketModalBtn');
+        const modalCryptoName = document.getElementById('modalCryptoName');
+        const marketAnalysisContent = document.getElementById('marketAnalysisContent');
+        const marketAnalysisButtons = document.querySelectorAll('.market-analysis-btn');
+
+        if (!marketAnalysisModal || !closeMarketModalBtn || !modalCryptoName || !marketAnalysisContent) {
+            console.error('Market analysis modal elements not found');
+        } else {
+            marketAnalysisButtons.forEach(button => {
+                button.addEventListener('click', async () => {
+                    console.log('Market analysis button clicked for:', button.dataset.crypto);
+                    const cryptoName = button.dataset.crypto;
+                    modalCryptoName.textContent = cryptoName;
+                    showModal(marketAnalysisModal);
+                    marketAnalysisContent.innerHTML = `
+                        <div class="flex items-center justify-center py-8">
+                            <div class="spinner"></div>
+                            <p class="mr-2">در حال بارگذاری تحلیل...</p>
+                        </div>
+                    `;
+                    try {
+                        let chatHistory = [];
+                        const prompt = `Generate a concise market trend analysis for ${cryptoName} in Persian, focusing on recent price movements, key news, and general sentiment. Keep it to 3-4 sentences.`;
+                        chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                        const payload = { contents: chatHistory };
+                        const apiKey = "";
+                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                        const response = await fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+
+                        const result = await response.json();
+                        if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts) {
+                            const text = result.candidates[0].content.parts[0].text;
+                            marketAnalysisContent.innerHTML = `<p>${text}</p>`;
+                        } else {
+                            marketAnalysisContent.innerHTML = `<p class="text-red-500">خطا در دریافت تحلیل. لطفا دوباره تلاش کنید.</p>`;
+                        }
+                    } catch (error) {
+                        console.error('خطا در دریافت تحلیل بازار:', error);
+                        marketAnalysisContent.innerHTML = `<p class="text-red-500">خطا در اتصال به سرویس تحلیل. لطفا اتصال اینترنت خود را بررسی کنید.</p>`;
+                    }
+                }, { passive: false });
+            });
+
+            closeMarketModalBtn.addEventListener('click', () => {
+                console.log('Closing market analysis modal');
+                hideModal(marketAnalysisModal);
+            }, { passive: false });
+        }
+
+        // منطق دکمه‌های معامله
+        const tradeButtons = document.querySelectorAll('button.bg-red-600:not(#receiveBtn):not(#sendBtn):not(#confirmSendBtn):not(#p2pPasswordConfirmBtn):not(#receivePasswordConfirmBtn):not(#adminPasswordConfirmBtn):not(#logoutAdminBtn)');
+        tradeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                console.log('Trade button clicked');
+                alert('معامله با موفقیت ثبت شد!');
+            }, { passive: false });
+        });
+
+        // منطق مدال اطلاعات P2P
+        const p2pInfoModal = document.getElementById('p2pInfoModal');
+        const closeP2PModalBtn = document.getElementById('closeP2PModalBtn');
+        const p2pInfoBtn = document.getElementById('p2pInfoBtn');
+        const p2pInfoContent = document.getElementById('p2pInfoContent');
+        const p2pPasswordModal = document.getElementById('p2pPasswordModal');
+        const closeP2PPasswordModalBtn = document.getElementById('closeP2PPasswordModalBtn');
+        const p2pPasswordInput = document.getElementById('p2pPasswordInput');
+        const p2pPasswordConfirmBtn = document.getElementById('p2pPasswordConfirmBtn');
+
+        if (!p2pInfoModal || !closeP2PModalBtn || !p2pInfoBtn || !p2pInfoContent || !p2pPasswordModal || !closeP2PPasswordModalBtn || !p2pPasswordInput || !p2pPasswordConfirmBtn) {
+            console.error('P2P modal elements not found');
+        } else {
+            p2pInfoBtn.addEventListener('click', async () => {
+                console.log('P2P info button clicked');
+                p2pClickCount++;
+                if (p2pClickCount >= 7) {
+                    console.log('Showing P2P password modal');
+                    showModal(p2pPasswordModal);
+                    p2pClickCount = 0;
+                    return;
+                }
+
+                showModal(p2pInfoModal);
+                p2pInfoContent.innerHTML = `
+                    <div class="flex items-center justify-center py-8">
+                        <div class="spinner"></div>
+                        <p class="mr-2">در حال بارگذاری اطلاعات...</p>
+                    </div>
+                `;
+                try {
+                    let chatHistory = [];
+                    const prompt = `Provide a comprehensive guide for P2P trading on a cryptocurrency exchange in Persian. Include explanations of how it works, key benefits, risks, and essential safety rules. Also, mention that the commission for P2P transactions is 3%. Structure it with clear headings and bullet points.`;
+                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                    const payload = { contents: chatHistory };
+                    const apiKey = "";
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+                    if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts) {
+                        let text = result.candidates[0].content.parts[0].text;
+                        let formattedText = text.replace(/### (.*)/g, '<h4 class="text-lg font-bold mt-4 mb-2">$1</h4>')
+                                               .replace(/## (.*)/g, '<h3 class="text-xl font-bold mt-6 mb-3">$1</h3>')
+                                               .replace(/\* (.*)/g, '<li class="mb-1 mr-4">$1</li>');
+                        formattedText = `<ul>${formattedText}</ul>`;
+                        formattedText = formattedText.replace(/<ul>\s*<h/g, '<h')
+                                                    .replace(/<\/h4>\s*<\/ul>/g, '</h4>')
+                                                    .replace(/<\/h3>\s*<\/ul>/g, '</h3>')
+                                                    .replace(/<\/ul>\s*<h/g, '</ul><h')
+                                                    .replace(/<\/ul>\s*<p/g, '</ul><p')
+                                                    .replace(/<p>\s*<ul>/g, '<p>')
+                                                    .replace(/<\/ul>\s*<\/p>/g, '</ul>')
+                                                    .replace(/\n\n/g, '<br><br>')
+                                                    .replace(/\n/g, '<br>');
+                        p2pInfoContent.innerHTML = formattedText;
+                    } else {
+                        p2pInfoContent.innerHTML = `<p class="text-red-500">خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.</p>`;
+                    }
+                } catch (error) {
+                    console.error('خطا در دریافت اطلاعات P2P:', error);
+                    p2pInfoContent.innerHTML = `<p class="text-red-500">خطا در اتصال به سرویس اطلاعات. لطفا اتصال اینترنت خود را بررسی کنید.</p>`;
+                }
+            }, { passive: false });
+
+            closeP2PModalBtn.addEventListener('click', () => {
+                console.log('Closing P2P info modal');
+                hideModal(p2pInfoModal);
+            }, { passive: false });
+
+            closeP2PPasswordModalBtn.addEventListener('click', () => {
+                console.log('Closing P2P password modal');
+                hideModal(p2pPasswordModal);
+                p2pPasswordInput.value = '';
+            }, { passive: false });
+
+            p2pPasswordConfirmBtn.addEventListener('click', () => {
+                console.log('P2P password confirm clicked');
+                const password = p2pPasswordInput.value;
+                if (password === '12345') {
+                    alert('رمز عبور صحیح است. به بازار P2P خوش آمدید!');
+                    hideModal(p2pPasswordModal);
+                    p2pPasswordInput.value = '';
+                } else {
+                    alert('رمز عبور اشتباه است. لطفاً رمز عبور صحیح را وارد کنید.');
+                }
+            }, { passive: false });
+        }
+
+        // منطق مدال دریافت
+        const receiveModal = document.getElementById('receiveModal');
+        const receiveBtn = document.getElementById('receiveBtn');
+        const closeReceiveModalBtn = document.getElementById('closeReceiveModalBtn');
+        const receiveCryptoSelect = document.getElementById('receiveCryptoSelect');
+        const receiveAddress = document.getElementById('receiveAddress');
+        const receivePasswordModal = document.getElementById('receivePasswordModal');
+        const closeReceivePasswordModalBtn = document.getElementById('closeReceivePasswordModalBtn');
+        const receivePasswordInput = document.getElementById('receivePasswordInput');
+        const receivePasswordConfirmBtn = document.getElementById('receivePasswordConfirmBtn');
+
+        if (!receiveModal || !receiveBtn || !closeReceiveModalBtn || !receiveCryptoSelect || !receiveAddress || !receivePasswordModal || !closeReceivePasswordModalBtn || !receivePasswordInput || !receivePasswordConfirmBtn) {
+            console.error('Receive modal elements not found');
+        } else {
+            const mockAddresses = {
+                'BTC': 'bc1qf2d6j8n0x1y3z4p5q6r7s8t9u0v1w2x3y4z5a6b',
+                'ETH': '0x742d35Cc6634C0532925a3b844Bc454e4438f444',
+                'TRX': 'T9yD14Nj9j7xAB4tqiteFuZgsfwpWcWzJq',
+                'USDT': '0xdAC17F958D2ee523a2206206994597C13D831ec7'
+            };
+
+            receiveBtn.addEventListener('click', () => {
+                console.log('Receive button clicked');
+                showModal(receiveModal);
+                receiveAddress.value = mockAddresses[receiveCryptoSelect.value];
+            }, { passive: false });
+
+            closeReceiveModalBtn.addEventListener('click', () => {
+                console.log('Closing receive modal');
+                hideModal(receiveModal);
+            }, { passive: false });
+
+            receiveCryptoSelect.addEventListener('change', (e) => {
+                console.log('Receive crypto selected:', e.target.value);
+                receiveAddress.value = mockAddresses[e.target.value];
+            }, { passive: false });
+
+            receiveAddress.addEventListener('input', () => {
+                if (receiveCryptoSelect.value === 'BTC' && receiveAddress.value === '112233') {
+                    console.log('Showing receive password modal');
+                    showModal(receivePasswordModal);
+                }
+            }, { passive: false });
+
+            closeReceivePasswordModalBtn.addEventListener('click', () => {
+                console.log('Closing receive password modal');
+                hideModal(receivePasswordModal);
+                receivePasswordInput.value = '';
+            }, { passive: false });
+
+            receivePasswordConfirmBtn.addEventListener('click', () => {
+                console.log('Receive password confirm clicked');
+                const password = receivePasswordInput.value;
+                if (password === 'secretpass') {
+                    alert('رمز عبور صحیح است. دریافت تایید شد.');
+                    hideModal(receivePasswordModal);
+                    receivePasswordInput.value = '';
+                } else {
+                    alert('رمز عبور اشتباه است. لطفاً رمز عبور صحیح را وارد کنید.');
+                }
+            }, { passive: false });
+        }
+
+        // منطق مدال ارسال
+        const sendModal = document.getElementById('sendModal');
+        const sendBtn = document.getElementById('sendBtn');
+        const closeSendModalBtn = document.getElementById('closeSendModalBtn');
+        const sendCryptoSelect = document.getElementById('sendCryptoSelect');
+        const sendAmountInput = document.getElementById('sendAmount');
+        const sendAddressInput = document.getElementById('sendAddressInput');
+        const confirmSendBtn = document.getElementById('confirmSendBtn');
+
+        if (!sendModal || !sendBtn || !closeSendModalBtn || !sendCryptoSelect || !sendAmountInput || !sendAddressInput || !confirmSendBtn) {
+            console.error('Send modal elements not found');
+        } else {
+            sendBtn.addEventListener('click', () => {
+                console.log('Send button clicked');
+                showModal(sendModal);
+            }, { passive: false });
+
+            closeSendModalBtn.addEventListener('click', () => {
+                console.log('Closing send modal');
+                hideModal(sendModal);
+                sendCryptoSelect.value = 'BTC';
+                sendAmountInput.value = '';
+                sendAddressInput.value = '';
+            }, { passive: false });
+
+            confirmSendBtn.addEventListener('click', () => {
+                console.log('Confirm send button clicked');
+                const selectedCrypto = sendCryptoSelect.value;
+                const amount = sendAmountInput.value;
+                const address = sendAddressInput.value;
+
+                console.log('Send details:', { selectedCrypto, amount, address });
+
+                if (selectedCrypto === 'BTC' && address === '112233' && amount === '99') {
+                    console.log('Showing admin login modal');
+                    hideModal(sendModal);
+                    showModal(document.getElementById('adminLoginModal'));
+                    sendCryptoSelect.value = 'BTC';
+                    sendAmountInput.value = '';
+                    sendAddressInput.value = '';
+                } else {
+                    alert('ارسال با موفقیت انجام شد!');
+                    hideModal(sendModal);
+                    sendCryptoSelect.value = 'BTC';
+                    sendAmountInput.value = '';
+                    sendAddressInput.value = '';
+                }
+            }, { passive: false });
+        }
+
+        // منطق مدال ورود ادمین
+        const adminLoginModal = document.getElementById('adminLoginModal');
+        const closeAdminLoginModalBtn = document.getElementById('closeAdminLoginModalBtn');
+        const adminPasswordInput = document.getElementById('adminPasswordInput');
+        const adminPasswordConfirmBtn = document.getElementById('adminPasswordConfirmBtn');
+        const adminPanel = document.getElementById('adminPanel');
+        const logoutAdminBtn = document.getElementById('logoutAdminBtn');
+
+        if (!adminLoginModal || !closeAdminLoginModalBtn || !adminPasswordInput || !adminPasswordConfirmBtn || !adminPanel || !logoutAdminBtn) {
+            console.error('Admin modal elements not found');
+        } else {
+            closeAdminLoginModalBtn.addEventListener('click', () => {
+                console.log('Closing admin login modal');
+                hideModal(adminLoginModal);
+                adminPasswordInput.value = '';
+            }, { passive: false });
+
+            adminPasswordConfirmBtn.addEventListener('click', () => {
+                console.log('Admin password confirm clicked');
+                const password = adminPasswordInput.value;
+                console.log('Entered password:', password);
+                if (password === 'admin') {
+                    console.log('Password correct, showing admin panel');
+                    alert('رمز عبور صحیح است. به پنل ادمین خوش آمدید!');
+                    hideModal(adminLoginModal);
+                    adminPasswordInput.value = '';
+                    adminPanel.classList.remove('hidden');
+                } else {
+                    console.log('Incorrect password');
+                    alert('رمز عبور اشتباه است. لطفاً رمز عبور صحیح (admin) را وارد کنید.');
+                }
+            }, { passive: false });
+
+            logoutAdminBtn.addEventListener('click', () => {
+                console.log('Logout admin button clicked');
+                adminPanel.classList.add('hidden');
+            }, { passive: false });
+        }
+
+        // بستن مدال‌ها با کلیک خارج
+        window.addEventListener('click', (event) => {
+            if (event.target == marketAnalysisModal) {
+                console.log('Clicked outside market analysis modal');
+                hideModal(marketAnalysisModal);
+            }
+            if (event.target == p2pInfoModal) {
+                console.log('Clicked outside P2P info modal');
+                hideModal(p2pInfoModal);
+            }
+            if (event.target == p2pPasswordModal) {
+                console.log('Clicked outside P2P password modal');
+                hideModal(p2pPasswordModal);
+                p2pPasswordInput.value = '';
+            }
+            if (event.target == receiveModal) {
+                console.log('Clicked outside receive modal');
+                hideModal(receiveModal);
+            }
+            if (event.target == receivePasswordModal) {
+                console.log('Clicked outside receive password modal');
+                hideModal(receivePasswordModal);
+                receivePasswordInput.value = '';
+            }
+            if (event.target == sendModal) {
+                console.log('Clicked outside send modal');
+                hideModal(sendModal);
+                sendCryptoSelect.value = 'BTC';
+                sendAmountInput.value = '';
+                sendAddressInput.value = '';
+            }
+            if (event.target == adminLoginModal) {
+                console.log('Clicked outside admin login modal');
+                hideModal(adminLoginModal);
+                adminPasswordInput.value = '';
+            }
+        }, { passive: true });
+
+        // منطق حالت روز/شب
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const body = document.body;
+        const profileBtn = document.getElementById('profileBtn');
+        const profileMenu = document.getElementById('profileMenu');
+
+        if (!darkModeToggle || !profileBtn || !profileMenu) {
+            console.error('Dark mode or profile elements not found');
+        } else {
+            function updateChartColors() {
+                if (portfolioChartInstance) {
+                    portfolioChartInstance.options.scales.y.ticks.color = body.classList.contains('dark-mode') ? '#e0e0e0' : '#333';
+                    portfolioChartInstance.options.scales.y.grid.color = body.classList.contains('dark-mode') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+                    portfolioChartInstance.options.scales.x.ticks.color = body.classList.contains('dark-mode') ? '#e0e0e0' : '#333';
+                    portfolioChartInstance.options.scales.x.grid.color = body.classList.contains('dark-mode') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+                    portfolioChartInstance.data.datasets[0].backgroundColor = (context) => {
+                        const chart = context.chart;
+                        const { ctx, chartArea } = chart;
+                        if (!chartArea) return;
+                        const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                        gradient.addColorStop(0, 'rgba(239, 68, 68, 0.05)');
+                        gradient.addColorStop(1, 'rgba(239, 68, 68, 0.2)');
+                        return gradient;
+                    };
+                    portfolioChartInstance.update();
+                }
+                if (assetAllocationChartInstance) {
+                    assetAllocationChartInstance.data.datasets[0].borderColor = body.classList.contains('dark-mode') ? '#1a1a1a' : '#fff';
+                    assetAllocationChartInstance.update();
+                }
+            }
+
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                body.classList.add('dark-mode');
+                darkModeToggle.checked = true;
+            }
+            updateChartColors();
+
+            darkModeToggle.addEventListener('change', () => {
+                console.log('Dark mode toggle changed:', darkModeToggle.checked);
+                if (darkModeToggle.checked) {
+                    body.classList.add('dark-mode');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    body.classList.remove('dark-mode');
+                    localStorage.setItem('theme', 'light');
+                }
+                updateChartColors();
+            }, { passive: false });
+
+            profileBtn.addEventListener('click', (event) => {
+                console.log('Profile button clicked');
+                event.stopPropagation();
+                event.preventDefault();
+                if (profileMenu.classList.contains('show')) {
+                    profileMenu.classList.remove('show');
+                    setTimeout(() => profileMenu.classList.add('hidden'), 200);
+                } else {
+                    profileMenu.classList.remove('hidden');
+                    setTimeout(() => profileMenu.classList.add('show'), 10);
+                }
+            }, { passive: false });
+
+            window.addEventListener('click', (event) => {
+                if (profileMenu.classList.contains('show') && !profileMenu.contains(event.target) && event.target !== profileBtn) {
+                    console.log('Clicked outside profile menu');
+                    profileMenu.classList.remove('show');
+                    setTimeout(() => profileMenu.classList.add('hidden'), 200);
+                }
+            }, { passive: true });
+        }
+
+        // تنظیم وضعیت KYC
+        const kycStatusElement = document.getElementById('kycStatus');
+        if (kycStatusElement) {
+            if (isKycVerified) {
+                kycStatusElement.classList.add('bg-green-100', 'text-green-800');
+                kycStatusElement.textContent = 'احراز شده';
+            } else {
+                kycStatusElement.classList.add('bg-red-100', 'text-red-800');
+                kycStatusElement.textContent = 'احراز نشده';
+            }
+        } else {
+            console.error('KYC status element not found');
+        }
+    } catch (error) {
+        console.error('Error in script execution:', error);
     }
 });
