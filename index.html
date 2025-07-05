@@ -12,7 +12,7 @@
 <body class="text-gray-800">
     <div class="container mx-auto p-4 md:p-6 lg:p-8 max-w-7xl">
         <!-- Header -->
-        <header class="flex justify-between items-center mb-6">
+        <header class="flex flex-wrap justify-between items-center mb-6 gap-4">
             <h1 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100">داشبورد</h1>
             <div class="flex items-center space-x-4 space-x-reverse">
                 <!-- Notifications Icon -->
@@ -26,9 +26,7 @@
                     <!-- Notifications Panel -->
                     <div id="notificationsPanel" class="notifications-panel hidden">
                         <h3 class="text-lg font-bold p-4 border-b border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">اعلان‌ها</h3>
-                        <div id="notificationList">
-                            <!-- Notifications will be populated by JavaScript -->
-                        </div>
+                        <div id="notificationList"></div>
                     </div>
                 </div>
                 <!-- Banking Icon -->
@@ -68,7 +66,7 @@
         <main>
             <!-- Total Balance Card -->
             <div class="bg-gradient-to-br from-gray-900 to-red-900 rounded-2xl p-6 md:p-8 mb-8 text-white shadow-lg">
-                <div class="flex justify-between items-start">
+                <div class="flex flex-wrap justify-between items-start gap-4">
                     <div>
                         <p class="text-lg text-gray-200">موجودی کل</p>
                         <p class="text-3xl md:text-4xl font-bold mt-2" id="totalBalance">1,136,787,000 تومان</p>
@@ -79,7 +77,7 @@
                             <span>22,852,000 تومان (2.8%) امروز</span>
                         </p>
                     </div>
-                    <div class="flex space-x-3 space-x-reverse">
+                    <div class="flex flex-wrap gap-3">
                         <button id="receiveBtn" class="bg-white/20 hover:bg-white/30 text-white font-bold py-2 px-4 rounded-full flex items-center transition-colors duration-200">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.707-10.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L9.414 11H13a1 1 0 100-2H9.414l1.293-1.293z" clip-rule="evenodd" />
@@ -98,7 +96,7 @@
 
             <!-- Tabs Navigation -->
             <div class="border-b border-gray-200 dark:border-gray-700 mb-6">
-                <nav class="flex space-x-6 space-x-reverse" id="tabs">
+                <nav class="flex flex-wrap space-x-6 space-x-reverse gap-4" id="tabs">
                     <button data-tab="dashboard" class="py-4 px-1 text-gray-500 hover:text-red-500 focus:outline-none tab-active dark:text-gray-400 dark:hover:text-red-500">داشبورد</button>
                     <button data-tab="p2p" class="py-4 px-1 text-gray-500 hover:text-red-500 focus:outline-none dark:text-gray-400 dark:hover:text-red-500">بازار P2P</button>
                     <button data-tab="history" class="py-4 px-1 text-gray-500 hover:text-red-500 focus:outline-none dark:text-gray-400 dark:hover:text-red-500">تاریخچه</button>
@@ -145,7 +143,7 @@
                                         <th class="p-3 font-medium">قیمت</th>
                                         <th class="p-3 font-medium">موجودی</th>
                                         <th class="p-3 font-medium hidden sm:table-cell">ارزش کل</th>
-                                        <th class="p-3 font-medium"></th>
+                                        <th class="p-3 font-medium">عملیات</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -165,9 +163,8 @@
                                         </td>
                                         <td class="p-3 font-medium hidden sm:table-cell text-gray-900 dark:text-gray-100">679,987,500 تومان</td>
                                         <td class="p-3 flex flex-col sm:flex-row items-end sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 sm:space-x-reverse">
-                                            <button class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold hover:bg-red-200 transition-colors duration-200 market-analysis-btn" data-crypto="Bitcoin">
-                                                تحلیل بازار ✨
-                                            </button>
+                                            <button class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition-colors duration-200">معامله</button>
+                                            <button class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold hover:bg-red-200 transition-colors duration-200 market-analysis-btn" data-crypto="Bitcoin">تحلیل بازار ✨</button>
                                         </td>
                                     </tr>
                                     <!-- Ethereum Row -->
@@ -186,9 +183,8 @@
                                         </td>
                                         <td class="p-3 font-medium hidden sm:table-cell text-gray-900 dark:text-gray-100">592,445,000 تومان</td>
                                         <td class="p-3 flex flex-col sm:flex-row items-end sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 sm:space-x-reverse">
-                                            <button class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold hover:bg-red-200 transition-colors duration-200 market-analysis-btn" data-crypto="Ethereum">
-                                                تحلیل بازار ✨
-                                            </button>
+                                            <button class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition-colors duration-200">معامله</button>
+                                            <button class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold hover:bg-red-200 transition-colors duration-200 market-analysis-btn" data-crypto="Ethereum">تحلیل بازار ✨</button>
                                         </td>
                                     </tr>
                                     <!-- Tron Row -->
@@ -208,9 +204,7 @@
                                         <td class="p-3 font-medium hidden sm:table-cell text-gray-900 dark:text-gray-100">68,422,500 تومان</td>
                                         <td class="p-3 flex flex-col sm:flex-row items-end sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 sm:space-x-reverse">
                                             <button class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition-colors duration-200">معامله</button>
-                                            <button class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold hover:bg-red-200 transition-colors duration-200 market-analysis-btn" data-crypto="Tron">
-                                                تحلیل بازار ✨
-                                            </button>
+                                            <button class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold hover:bg-red-200 transition-colors duration-200 market-analysis-btn" data-crypto="Tron">تحلیل بازار ✨</button>
                                         </td>
                                     </tr>
                                     <!-- Tether Row -->
@@ -229,9 +223,8 @@
                                         </td>
                                         <td class="p-3 font-medium hidden sm:table-cell text-gray-900 dark:text-gray-100">196,144,500 تومان</td>
                                         <td class="p-3 flex flex-col sm:flex-row items-end sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 sm:space-x-reverse">
-                                            <button class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold hover:bg-red-200 transition-colors duration-200 market-analysis-btn" data-crypto="Tether">
-                                                تحلیل بازار ✨
-                                            </button>
+                                            <button class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition-colors duration-200">معامله</button>
+                                            <button class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold hover:bg-red-200 transition-colors duration-200 market-analysis-btn" data-crypto="Tether">تحلیل بازار ✨</button>
                                         </td>
                                     </tr>
                                     <!-- Toman Row -->
@@ -250,7 +243,7 @@
                                         </td>
                                         <td class="p-3 font-medium hidden sm:table-cell text-gray-900 dark:text-gray-100">5,000,000 تومان</td>
                                         <td class="p-3 flex flex-col sm:flex-row items-end sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 sm:space-x-reverse">
-                                            <!-- No market analysis for Toman -->
+                                            <button class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition-colors duration-200">معامله</button>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -283,7 +276,7 @@
                                         <th class="p-3 font-medium">قیمت واحد</th>
                                         <th class="p-3 font-medium">محدوده معامله / موجودی</th>
                                         <th class="p-3 font-medium">روش پرداخت</th>
-                                        <th class="p-3 font-medium"></th>
+                                        <th class="p-3 font-medium">عملیات</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -505,7 +498,7 @@
     <div id="adminPanel" class="hidden fixed inset-0 bg-gray-100 dark:bg-gray-900 z-[1001] flex flex-col items-center justify-center p-4 transition-colors duration-200">
         <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 md:p-8 shadow-lg w-full max-w-2xl text-center transition-colors duration-200">
             <h2 class="text-3xl font-bold mb-6 text-gray-900 dark:text-gray-100">پنل مدیریت</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
                 <button class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 shadow-md">مدیریت کاربران</button>
                 <button class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 shadow-md">مدیریت تراکنش‌ها</button>
                 <button class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 shadow-md">آمار سیستم</button>

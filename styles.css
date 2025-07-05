@@ -234,3 +234,18 @@ body.dark-mode .notification-item {
 body.dark-mode .notification-item.unread {
     background-color: #7f1d1d;
 }
+@media (max-width: 640px) {
+    .modal-content {
+        width: 95%;
+        max-width: 100%;
+        padding: 16px;
+    }
+    .notifications-panel {
+        width: 90%;
+        left: 5%;
+    }
+    .profile-menu {
+        width: 90%;
+        left: 5%;
+    }
+}

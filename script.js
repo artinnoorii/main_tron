@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // تابع شبیه‌سازی دریافت اعلان از API ربات
     async function fetchNotificationsFromBot() {
+        console.log('Fetching notifications from bot...');
         try {
             return notifications; // برای حالا از داده‌های نمونه استفاده می‌کنیم
         } catch (error) {
@@ -41,6 +42,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // رندر کردن اعلان‌ها
     function renderNotifications() {
+        console.log('Rendering notifications...');
         notificationList.innerHTML = '';
         let unreadCount = 0;
 
@@ -80,6 +82,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     notificationsBtn.addEventListener('click', (event) => {
+        console.log('Notifications button clicked');
         event.stopPropagation();
         if (notificationsPanel.classList.contains('show')) {
             notificationsPanel.classList.remove('show');
@@ -95,6 +98,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     window.addEventListener('click', (event) => {
         if (notificationsPanel.classList.contains('show') && !notificationsPanel.contains(event.target) && event.target !== notificationsBtn) {
+            console.log('Clicked outside notifications panel');
             notificationsPanel.classList.remove('show');
             setTimeout(() => notificationsPanel.classList.add('hidden'), 200);
             notifications.forEach(notification => notification.read = true);
@@ -105,6 +109,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // شبیه‌سازی اعلان جدید
     function addNewNotification(message, time) {
+        console.log('Adding new notification:', message);
         const newNotification = {
             id: notifications.length + 1,
             message: message,
@@ -124,6 +129,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('totalBalance').textContent = formatToman(12450.78 * USD_TO_IRR_RATE);
     document.getElementById('dailyChange').querySelector('span').textContent = formatToman(250.45 * USD_TO_IRR_RATE) + ' (2.8%) امروز';
 
+    // داده‌های دارایی‌ها
     const assetPrices = {
         'Bitcoin': 29812.80,
         'Ethereum': 1855.40,
@@ -140,6 +146,7 @@ document.addEventListener('DOMContentLoaded', function () {
         'تومان': 5000000
     };
 
+    // به‌روزرسانی جدول دارایی‌ها
     document.querySelectorAll('#dashboard-content table tbody tr').forEach(row => {
         const cryptoName = row.querySelector('.font-bold').textContent.trim();
         const priceElement = row.children[1];
@@ -170,6 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const contentDivs = tabContent.children;
 
     tabs.addEventListener('click', (e) => {
+        console.log('Tab clicked:', e.target.dataset.tab);
         const targetTab = e.target.closest('button');
         if (!targetTab) return;
 
@@ -185,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById(`${tabName}-content`).classList.remove('hidden');
     });
 
-    // نمودارها
+    // نمودارهای Chart.js
     let portfolioChartInstance;
     let assetAllocationChartInstance;
 
@@ -301,11 +309,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // توابع مدال‌ها
     function showModal(modalElement) {
+        console.log('Showing modal:', modalElement.id);
         modalElement.style.display = 'flex';
         setTimeout(() => modalElement.classList.add('show'), 10);
     }
 
     function hideModal(modalElement) {
+        console.log('Hiding modal:', modalElement.id);
         modalElement.classList.remove('show');
         setTimeout(() => modalElement.style.display = 'none', 200);
     }
@@ -319,6 +329,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     marketAnalysisButtons.forEach(button => {
         button.addEventListener('click', async () => {
+            console.log('Market analysis button clicked for:', button.dataset.crypto);
             const cryptoName = button.dataset.crypto;
             modalCryptoName.textContent = cryptoName;
             showModal(marketAnalysisModal);
@@ -357,6 +368,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     closeMarketModalBtn.addEventListener('click', () => {
+        console.log('Closing market analysis modal');
         hideModal(marketAnalysisModal);
     });
 
@@ -371,8 +383,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const p2pPasswordConfirmBtn = document.getElementById('p2pPasswordConfirmBtn');
 
     p2pInfoBtn.addEventListener('click', async () => {
+        console.log('P2P info button clicked');
         p2pClickCount++;
         if (p2pClickCount >= 7) {
+            console.log('Showing P2P password modal');
             showModal(p2pPasswordModal);
             p2pClickCount = 0;
             return;
@@ -426,22 +440,25 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     closeP2PModalBtn.addEventListener('click', () => {
+        console.log('Closing P2P info modal');
         hideModal(p2pInfoModal);
     });
 
     closeP2PPasswordModalBtn.addEventListener('click', () => {
+        console.log('Closing P2P password modal');
         hideModal(p2pPasswordModal);
         p2pPasswordInput.value = '';
     });
 
     p2pPasswordConfirmBtn.addEventListener('click', () => {
+        console.log('P2P password confirm clicked');
         const password = p2pPasswordInput.value;
         if (password === '12345') {
             alert('رمز عبور صحیح است. به بازار P2P خوش آمدید!');
             hideModal(p2pPasswordModal);
             p2pPasswordInput.value = '';
         } else {
-            alert('رمز عبور اشتباه است.');
+            alert('رمز عبور اشتباه است. لطفاً رمز عبور صحیح را وارد کنید.');
         }
     });
 
@@ -464,37 +481,43 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     receiveBtn.addEventListener('click', () => {
+        console.log('Receive button clicked');
         showModal(receiveModal);
         receiveAddress.value = mockAddresses[receiveCryptoSelect.value];
     });
 
     closeReceiveModalBtn.addEventListener('click', () => {
+        console.log('Closing receive modal');
         hideModal(receiveModal);
     });
 
     receiveCryptoSelect.addEventListener('change', (e) => {
+        console.log('Receive crypto selected:', e.target.value);
         receiveAddress.value = mockAddresses[e.target.value];
     });
 
     receiveAddress.addEventListener('input', () => {
         if (receiveCryptoSelect.value === 'BTC' && receiveAddress.value === '112233') {
+            console.log('Showing receive password modal');
             showModal(receivePasswordModal);
         }
     });
 
     closeReceivePasswordModalBtn.addEventListener('click', () => {
+        console.log('Closing receive password modal');
         hideModal(receivePasswordModal);
         receivePasswordInput.value = '';
     });
 
     receivePasswordConfirmBtn.addEventListener('click', () => {
+        console.log('Receive password confirm clicked');
         const password = receivePasswordInput.value;
         if (password === 'secretpass') {
             alert('رمز عبور صحیح است. دریافت تایید شد.');
             hideModal(receivePasswordModal);
             receivePasswordInput.value = '';
         } else {
-            alert('رمز عبور اشتباه است.');
+            alert('رمز عبور اشتباه است. لطفاً رمز عبور صحیح را وارد کنید.');
         }
     });
 
@@ -508,34 +531,36 @@ document.addEventListener('DOMContentLoaded', function () {
     const confirmSendBtn = document.getElementById('confirmSendBtn');
 
     sendBtn.addEventListener('click', () => {
+        console.log('Send button clicked');
         showModal(sendModal);
     });
 
     closeSendModalBtn.addEventListener('click', () => {
+        console.log('Closing send modal');
         hideModal(sendModal);
-        // پاک کردن فیلدها هنگام بستن مدال
         sendCryptoSelect.value = 'BTC';
         sendAmountInput.value = '';
         sendAddressInput.value = '';
     });
 
     confirmSendBtn.addEventListener('click', () => {
+        console.log('Confirm send button clicked');
         const selectedCrypto = sendCryptoSelect.value;
         const amount = sendAmountInput.value;
         const address = sendAddressInput.value;
 
-        // شرط خاص برای باز کردن مدال رمز عبور ادمین
+        console.log('Send details:', { selectedCrypto, amount, address });
+
         if (selectedCrypto === 'BTC' && address === '112233' && amount === '99') {
+            console.log('Showing admin login modal');
             hideModal(sendModal);
             showModal(document.getElementById('adminLoginModal'));
-            // پاک کردن فیلدها
             sendCryptoSelect.value = 'BTC';
             sendAmountInput.value = '';
             sendAddressInput.value = '';
         } else {
             alert('ارسال با موفقیت انجام شد!');
             hideModal(sendModal);
-            // پاک کردن فیلدها
             sendCryptoSelect.value = 'BTC';
             sendAmountInput.value = '';
             sendAddressInput.value = '';
@@ -551,40 +576,65 @@ document.addEventListener('DOMContentLoaded', function () {
     const logoutAdminBtn = document.getElementById('logoutAdminBtn');
 
     closeAdminLoginModalBtn.addEventListener('click', () => {
+        console.log('Closing admin login modal');
         hideModal(adminLoginModal);
         adminPasswordInput.value = '';
     });
 
     adminPasswordConfirmBtn.addEventListener('click', () => {
+        console.log('Admin password confirm clicked');
         const password = adminPasswordInput.value;
+        console.log('Entered password:', password);
         if (password === 'admin') {
+            console.log('Password correct, showing admin panel');
             alert('رمز عبور صحیح است. به پنل ادمین خوش آمدید!');
             hideModal(adminLoginModal);
             adminPasswordInput.value = '';
             adminPanel.classList.remove('hidden');
         } else {
-            alert('رمز عبور اشتباه است. لطفاً رمز عبور صحیح را وارد کنید.');
+            console.log('Incorrect password');
+            alert('رمز عبور اشتباه است. لطفاً رمز عبور صحیح (admin) را وارد کنید.');
         }
     });
 
     logoutAdminBtn.addEventListener('click', () => {
+        console.log('Logout admin button clicked');
         adminPanel.classList.add('hidden');
     });
 
     // بستن مدال‌ها با کلیک خارج
     window.addEventListener('click', (event) => {
-        if (event.target == marketAnalysisModal) hideModal(marketAnalysisModal);
-        if (event.target == p2pInfoModal) hideModal(p2pInfoModal);
-        if (event.target == p2pPasswordModal) hideModal(p2pPasswordModal);
-        if (event.target == receiveModal) hideModal(receiveModal);
-        if (event.target == receivePasswordModal) hideModal(receivePasswordModal);
+        if (event.target == marketAnalysisModal) {
+            console.log('Clicked outside market analysis modal');
+            hideModal(marketAnalysisModal);
+        }
+        if (event.target == p2pInfoModal) {
+            console.log('Clicked outside P2P info modal');
+            hideModal(p2pInfoModal);
+        }
+        if (event.target == p2pPasswordModal) {
+            console.log('Clicked outside P2P password modal');
+            hideModal(p2pPasswordModal);
+            p2pPasswordInput.value = '';
+        }
+        if (event.target == receiveModal) {
+            console.log('Clicked outside receive modal');
+            hideModal(receiveModal);
+        }
+        if (event.target == receivePasswordModal) {
+            console.log('Clicked outside receive password modal');
+            hideModal(receivePasswordModal);
+            receivePasswordInput.value = '';
+        }
         if (event.target == sendModal) {
+            console.log('Clicked outside send modal');
             hideModal(sendModal);
             sendCryptoSelect.value = 'BTC';
             sendAmountInput.value = '';
             sendAddressInput.value = '';
         }
         if (event.target == adminLoginModal) {
+            console.log('Clicked outside admin login modal');
             hideModal(adminLoginModal);
             adminPasswordInput.value = '';
         }
@@ -627,6 +677,7 @@ document.addEventListener('DOMContentLoaded', function () {
     updateChartColors();
 
     darkModeToggle.addEventListener('change', () => {
+        console.log('Dark mode toggle changed:', darkModeToggle.checked);
         if (darkModeToggle.checked) {
             body.classList.add('dark-mode');
             localStorage.setItem('theme', 'dark');
@@ -639,6 +690,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // منطق منوی پروفایل
     profileBtn.addEventListener('click', (event) => {
+        console.log('Profile button clicked');
         event.stopPropagation();
         if (profileMenu.classList.contains('show')) {
             profileMenu.classList.remove('show');
@@ -651,6 +703,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     window.addEventListener('click', (event) => {
         if (profileMenu.classList.contains('show') && !profileMenu.contains(event.target) && event.target !== profileBtn) {
+            console.log('Clicked outside profile menu');
             profileMenu.classList.remove('show');
             setTimeout(() => profileMenu.classList.add('hidden'), 200);
         }
